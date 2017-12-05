@@ -2,3 +2,4 @@
 build/*
 dist/*
 media/*
+bridgekeeper.egg-info

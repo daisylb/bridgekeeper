@@ -13,11 +13,11 @@ setup(
     include_package_data=True,
 
     install_requires=[
-        'begins',
     ],
     extras_require={
         'dev': [
             'pytest',
+            'pytest-django',
             'prospector',
         ]
     },
