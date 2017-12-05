@@ -15,7 +15,7 @@ repos:
     sha: v1.1.4
     hooks:
     -   id: forbid-crlf
-        exclude: \.csv$
+        exclude: \.csv$|\.bat$
     -   id: forbid-tabs
         exclude: Makefile|\.bat$
 -   repo: git://github.com/adambrenecki/pre-commit-python-sorter

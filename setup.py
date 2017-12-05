@@ -19,6 +19,7 @@ setup(
             'pytest',
             'pytest-django',
             'prospector',
+            'sphinx==1.6.5',
         ]
     },
     entry_points={
