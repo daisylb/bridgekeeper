@@ -1,0 +1,4 @@
+# This file is entirely for the benefit of ReadTheDocs. Don't actually use it
+# when trying to install Bridgekeeper.
+-e .[dev]
+django
