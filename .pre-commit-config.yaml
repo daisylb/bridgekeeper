@@ -1,0 +1,33 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    sha: v1.1.1
+    hooks:
+    -   id: check-added-large-files
+    -   id: check-case-conflict
+    -   id: check-merge-conflict
+    -   id: debug-statements
+        language_version: python3.6
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: autopep8-wrapper
+        language_version: python3.6
+-   repo: https://github.com/Lucas-C/pre-commit-hooks
+    sha: v1.1.4
+    hooks:
+    -   id: forbid-crlf
+        exclude: \.csv$
+    -   id: forbid-tabs
+        exclude: Makefile|\.bat$
+-   repo: git://github.com/adambrenecki/pre-commit-python-sorter
+    sha: 1.0.5
+    hooks:
+    -   id: python-import-sorter
+        language_version: python3.6
+-   repo: local
+    hooks:
+    -   id: prospector
+        name: Prospector
+        description: 'This hook runs Prospector: https://github.com/landscapeio/prospector'
+        entry: prospector
+        language: system
+        files: \.py$

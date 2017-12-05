@@ -1,0 +1,48 @@
+image: python:3.6
+stages:
+    - test
+    - package
+    - deploy
+cache:
+    paths:
+        - cache/
+    key: $CI_BUILD_REF_NAME
+before_script:
+    - export PIP_CACHE_DIR=$PWD/cache/pip/; export PRE_COMMIT_HOME=$PWD/cache/precommit/
+
+test:
+    stage: test
+    script:
+        - pip install -U pip
+        - pip install -e .[dev]
+        - pytest
+
+style:
+    stage: test
+    script:
+        - pip install pre-commit -e .[dev]
+        - pre-commit run --all-files
+    except:
+        - tags
+
+package:
+    stage: package
+    script:
+        - pip install wheel
+        - python setup.py bdist_wheel
+        - mv dist/*.whl .
+    artifacts:
+        paths:
+            - "*.whl"
+
+deploy:
+    stage: deploy
+    script:
+        - mkdir -p ~/.ssh
+        - echo -e $SSH_KNOWN_HOSTS > ~/.ssh/known_hosts
+        - echo -e $SSH_PUBLIC_KEY > ~/.ssh/id_rsa.pub
+        - echo -e $SSH_PRIVATE_KEY > ~/.ssh/id_rsa
+        - chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
+        - scp *.whl deploy@web1.cmvhodom.cmv:/srv/www/pkg-shed/bridgekeeper/
+    only:
+        - tags
