@@ -1,0 +1,39 @@
+version: 2
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-py36-dj111
+      - test-py35-dj111
+      - test-py36-dj20
+      - test-py35-dj20
+jobs:
+  test-py36-dj111: &test-template
+    docker:
+      - image: circleci/python:3.6
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "setup.py" }}
+          - v1-dependencies-
+      - run:
+          name: Install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install -e .[dev]
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "setup.py" }}
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            pytest
+  test-py35-dj111:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5
