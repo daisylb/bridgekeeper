@@ -11,6 +11,8 @@ jobs:
   test-py36-dj111: &test-template
     docker:
       - image: circleci/python:3.6
+    environment:
+      DJANGO_VERSION: 1.11.0
     working_directory: ~/repo
     steps:
       - checkout
@@ -23,7 +25,7 @@ jobs:
           command: |
             python -m venv venv
             . venv/bin/activate
-            pip install -e .[dev]
+            pip install -e .[dev] django~=$DJANGO_VERSION
       - save_cache:
           paths:
             - ./venv
@@ -37,3 +39,13 @@ jobs:
     <<: *test-template
     docker:
       - image: circleci/python:3.5
+  test-py36-dj20:
+    <<: *test-template
+    environment:
+      DJANGO_VERSION: 2.0.0
+  test-py35-dj20:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5
+    environment:
+      DJANGO_VERSION: 2.0.0
