@@ -2,11 +2,11 @@ from setuptools import find_packages, setup
 
 setup(
     name='bridgekeeper',
-    description='My awesome project',
-    url='https://example.com/',
+    description='Django permissions, but with QuerySets',
+    url='https://bridgekeeper.readthedocs.io/',
     author='Adam Brenecki',
-    author_email='abrenecki@cmv.com.au',
-    license='Proprietary',
+    author_email='adam@brenecki.id.au',
+    license='MIT',
     setup_requires=["setuptools_scm>=1.11.1"],
     use_scm_version=True,
     packages=find_packages(),
