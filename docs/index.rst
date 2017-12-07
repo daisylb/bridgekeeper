@@ -2,10 +2,21 @@
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Tutorial
 
    installation
    tutorial
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Guides
+
+   predicates
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference
+
    access_control
 
 

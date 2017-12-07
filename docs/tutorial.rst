@@ -31,6 +31,8 @@ We turn predicates into permissions by putting them into the :data:`~bridgekeepe
 
 These permissions are now fully working; if you wanted, you could skip right through to the next section to see how to use them in your views. Don't, though, because we've just scratched the surface.
 
+.. _tutorial-ambient:
+
 Ambient Predicates
 ::::::::::::::::::
 
@@ -52,20 +54,6 @@ We can define our own, too, by using the :class:`~bridgekeeper.predicates.ambien
     @ambient
     def is_shrubber(user):
         return user.profile.role == 'shrubber'
-
-The above is fine while we only have two roles, but if we want to add more it might get a bit tedious. Let's replace it with a function that returns predicates:
-
-.. code-block:: python
-    :caption: shrubberies/predicates.py
-
-    from bridgekeeper.predicates import ambient
-
-    def has_role(role):
-
-        def checker(user):
-            return user.profile.role == role
-
-        return ambient(checker, repr_string=f"has_role({role!r})")
 
 If we wanted to restrict the ability to edit shrubberies in our app to only users that have the Shrubber role, we could write something like this:
 
