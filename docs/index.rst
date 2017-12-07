@@ -5,6 +5,7 @@
    :caption: Contents:
 
    installation
+   tutorial
    access_control
 
 
