@@ -420,7 +420,7 @@ class Relation(Predicate):
         related_q = self.predicate.query(user)
         if related_q is UNIVERSAL or related_q is EMPTY:
             return related_q
-        return Q(**{self.attr: self.model.objects.filter(related_q)})
+        return Q(**{self.attr + '__in': self.model.objects.filter(related_q)})
 
     def apply(self, user, instance=None):
         if instance is None:
