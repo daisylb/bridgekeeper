@@ -1,15 +1,10 @@
-Tutorial
-========
+Defining Permissions
+====================
 
-In this tutorial, we'll be using a demo app; an online marketplace for shrubberies. It has a single app called ``shrubberies``, with a ``models.py`` looks something like this:
+In this tutorial, we'll be using a example app, an online stock management portal for shrubberies; we'll define some permissions for it in this section, then use them in views in the next section. It has a single app called ``shrubberies``, with a ``models.py`` looks something like this:
 
 .. literalinclude:: ../testproject/shrubberies/models.py
     :caption: shrubberies/models.py
-
-First we're going to define some permissions, and then we'll write some views for the app that check those permissions.
-
-Defining Permissions
---------------------
 
 First, we'll define permissions for our ``Store`` model. We'll define them in ``permissions.py``, because that's where Bridgekeeper will automatically load them from.
 

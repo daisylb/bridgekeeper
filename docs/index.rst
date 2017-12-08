@@ -4,8 +4,8 @@
    :maxdepth: 2
    :caption: Tutorial
 
-   installation
-   tutorial
+   tutorial/installation
+   tutorial/permissions
 
 .. toctree::
    :maxdepth: 2
