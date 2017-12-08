@@ -6,6 +6,7 @@
 
    tutorial/installation
    tutorial/permissions
+   tutorial/views
 
 .. toctree::
    :maxdepth: 2
