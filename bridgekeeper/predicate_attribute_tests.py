@@ -42,3 +42,10 @@ def test_user_func_attribute():
     assert qs2.count() == 1
     assert s2 in qs2
     assert s1 not in qs2
+
+
+@pytest.mark.django_db
+def test_when_called_without_object():
+    user = UserFactory(username='a')
+    p = Attribute('name', lambda u: u.username)
+    assert not p.apply(user)
