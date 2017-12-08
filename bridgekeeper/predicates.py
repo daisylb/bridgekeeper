@@ -161,11 +161,12 @@ class BinaryCompositePredicate(Predicate):
         self.right = right
 
     def __repr__(self):
-        return "{}({!r}, {!r})".format(self.__class__.__name__,
-                                       self.left, self.right)
+        return "({!r} {} {!r})".format(self.left, self.sym, self.right)
 
 
 class And(BinaryCompositePredicate):
+    sym = "&"
+
     def query(self, user):
         # Effectively an intersection (∩) of the two sets represented by
         # left and right's Q expressions, but wth special-casing for the
@@ -194,6 +195,8 @@ class And(BinaryCompositePredicate):
 
 
 class Or(BinaryCompositePredicate):
+    sym = "|"
+
     def query(self, user):
         # Effectively a union (∪) of the two sets represented by left
         # and right's Q expressions, but wth special-casing for the
@@ -226,7 +229,7 @@ class Not(Predicate):
         self.base = base
 
     def __repr__(self):
-        return "Not({!r})".format(self.base)
+        return "~{!r}".format(self.base)
 
     def query(self, user):
         base = self.base.query(user)

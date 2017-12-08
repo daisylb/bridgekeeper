@@ -1,8 +1,8 @@
 import pytest
 from shrubberies import factories
 
-from .. import registry as registry_mod
-from .. import predicates
+from . import registry as registry_mod
+from . import predicates
 
 
 @pytest.fixture
