@@ -306,12 +306,11 @@ class Attribute(Predicate):
     """Predicate class that checks the value of an instance attribute.
 
     This predicate is satisfied by model instances where the attribute
-    given in ``attr_or_chain`` matches the value given in ``matches``.
+    given in ``attr`` matches the value given in ``matches``.
 
-    :param attr_or_chain: An attribute name to match against on the
-        model instance, or to traverse foreign keys, an iterable of
-        attributes.
-    :type attr_or_chain: str | Iterable[str]
+    :param attr: An attribute name to match against on the
+        model instance.
+    :type attr: str
     :param value: The value to match against, or a callable that takes
         a user and returns a value to match against.
 
@@ -321,11 +320,10 @@ class Attribute(Predicate):
 
         blue_widgets_only = Attribute('colour', matches='blue')
 
-    A more advanced use case, restricting access to an ``Application``
-    in a multitenanted application by matching the related ``Applicant``
+    Restricting access in a multi-tenanted application by matching a
     model's ``tenant`` to the user's might look like this::
 
-        applications_by_tenant = Attribute(('applicant', 'tenant'),
+        applications_by_tenant = Attribute('tenant',
                                            lambda user: user.tenant)
 
     .. warning::
@@ -338,29 +336,23 @@ class Attribute(Predicate):
         rather than floats or strings), to prevent inconsistencies.
     """
 
-    def __init__(self, attr_or_chain, matches):
-        if isinstance(attr_or_chain, str):
-            self.chain = (attr_or_chain,)
-        else:
-            self.chain = attr_or_chain
+    def __init__(self, attr, matches):
+        self.attr = attr
         self.matches = matches
 
     def get_match(self, user):
         return self.matches(user) if callable(self.matches) else self.matches
 
     def __repr__(self):
-        return "Attribute({!r}, matches={!r})".format(self.chain, self.matches)
+        return "Attribute({!r}, matches={!r})".format(self.attr, self.matches)
 
     def query(self, user):
-        return Q(**{'__'.join(self.chain): self.get_match(user)})
+        return Q(**{self.attr: self.get_match(user)})
 
     def apply(self, user, instance=None):
         if instance is None:
             return False
-        value = instance
-        for attr in self.chain:
-            value = getattr(value, attr)
-        return value == self.get_match(user)
+        return getattr(instance, self.attr) == self.get_match(user)
 
 
 class Is(Predicate):
