@@ -18,7 +18,7 @@ class Shrubbery(models.Model):
 
 
 class Profile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
     role = models.CharField(max_length=16, choices=(
         ('apprentice', 'Apprentice Shrubber'),

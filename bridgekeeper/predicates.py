@@ -367,7 +367,7 @@ class Is(Predicate):
     For instance, if you only wanted a user to be able to update their
     own profile::
 
-        blue_widgets_only = Is(lambda user: user.profile)
+        own_profile = Is(lambda user: user.profile)
     """
 
     def __init__(self, instance):
@@ -385,7 +385,7 @@ class Is(Predicate):
     def apply(self, user, instance=None):
         if instance is None:
             return False
-        return self.instance == self.get_instance(user)
+        return instance == self.get_instance(user)
 
 
 class Relation(Predicate):
