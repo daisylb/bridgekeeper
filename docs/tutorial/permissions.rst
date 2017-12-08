@@ -29,7 +29,7 @@ These permissions are now fully working; if you wanted, you could skip right thr
 .. _tutorial-ambient:
 
 Ambient Predicates
-::::::::::::::::::
+------------------
 
 Ambient predicates are predicates whose outcome is only affected by the user. We said earlier that predicates are *questions to ask about the user that is trying to gain access, and the objects they're trying to gain access to*; ambient predicates are *questions to ask about the user that is trying to gain access*, without regard for what they're accessing.
 
@@ -55,6 +55,45 @@ If we wanted to restrict the ability to edit shrubberies in our app to only user
 .. code-block:: python
     :caption: shrubberies/permissions.py
 
-    from .predicates import has_role
+    from .predicates import is_shrubber
 
-    registry['shrubbery.update_shrubbery'] = has_role('shrubber')
+    registry['shrubbery.update_shrubbery'] = is_shrubber
+
+Model Predicates
+----------------
+
+.. todo::
+
+    Fill out this section
+
+Combining Predicates Together
+-----------------------------
+
+Predicates, much like :class:`~django.db.models.Q` objects, can be combined using the ``|`` (or), ``&`` (and), and ``~`` (not) operators.
+
+For instance, the expression ``~is_apprentice`` will return a new predicate that is true for all users that aren't apprentices, and the expression ``is_staff | is_shrubber`` for all users that have the ``is_staff`` flag set, or that have the ``'shrubber'`` role in their profile.
+
+For a more complex example, let's say that we wanted the following rule to apply:
+
+    Administrative staff (with ``is_staff`` set) can edit all shrubberies in the system. Shrubbers can edit all shrubberies in the store they belong to. Apprentice shrubbers can edit all shrubberies in their branch.
+
+We can implement that behaviour with the following permission:
+
+.. code-block:: python
+    :caption: shrubberies/permissions.py
+
+    from bridgekeeper.predicates import is_staff
+    from .predicates import is_shrubber, is_apprentice
+    from . import models
+
+    registry['shrubbery.update_shrubbery'] = is_staff | (
+        is_apprentice & Relation(
+            'branch', models.Branch, Is(lambda user: user.profile.branch),
+        )
+    ) | (
+        is_shrubber & Relation(
+            'branch', models.Branch, Relation(
+                'store', models.Store, Is(lambda user: user.profile.branch.store),
+            )
+        )
+    )
