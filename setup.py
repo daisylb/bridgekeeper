@@ -20,6 +20,7 @@ setup(
             'pytest-django',
             'pytest-pythonpath',
             'prospector',
+            'factory-boy~=2.9.2',
             'sphinx==1.6.5',
             'sphinx-rtd-theme==0.2.4',
         ]

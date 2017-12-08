@@ -1,4 +1,4 @@
-from django.contrib.auth import User
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -19,7 +19,7 @@ class Shrubbery(models.Model):
 
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    branch = models.ForeignKey(Branch)
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
     role = models.CharField(max_length=16, choices=(
         ('apprentice', 'Apprentice Shrubber'),
         ('shrubber', 'Shrubber'),
