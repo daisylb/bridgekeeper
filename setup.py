@@ -18,6 +18,7 @@ setup(
         'dev': [
             'pytest',
             'pytest-django',
+            'pytest-pythonpath',
             'prospector',
             'sphinx==1.6.5',
             'sphinx-rtd-theme==0.2.4',
