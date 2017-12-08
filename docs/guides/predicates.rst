@@ -1,6 +1,21 @@
 Writing Predicates
 ==================
 
+Predicates are instances of (subclasses of) the :class:`~bridgekeeper.predicates.Predicate` class. Permissions are a mapping from a permission name (which is a string) the mapping is stored in the :class:`~bridgekeeper.registry.registry`, which acts like a dictionary::
+
+    from bridgekeeper.predicates import Attribute, is_staff
+    from bridgekeeper.registry import registry
+
+    registry['foo.update_widget'] = is_staff
+
+The :mod:`~bridgekeeper.predicates` module provides a range of pre-made predicate instances as well as predicate classes you can instantiate, as shown above. You can also combine predicates using the ``&`` (and), ``|`` (or), and ``~`` (not) operators::
+
+    registry['foo.view_widget'] = is_staff | Attribute(
+        'company', lambda user: user.company)
+
+Finally, if none of the built-in predicates do what you want, you can subclass :class:`~bridgekeeper.predicates.Predicate` yourself and write your own.
+
+
 Ambient Predicates
 ------------------
 

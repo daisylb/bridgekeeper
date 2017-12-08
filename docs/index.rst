@@ -11,7 +11,8 @@
    :maxdepth: 2
    :caption: Guides
 
-   predicates
+   guides/predicates
+   guides/permissions
 
 .. toctree::
    :maxdepth: 2
@@ -19,7 +20,6 @@
 
    api/predicates
    api/querysets
-   access_control
 
 
 
