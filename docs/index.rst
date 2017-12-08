@@ -17,6 +17,8 @@
    :maxdepth: 2
    :caption: Reference
 
+   api/predicates
+   api/querysets
    access_control
 
 

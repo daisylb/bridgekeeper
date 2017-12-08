@@ -1,3 +1,9 @@
+"""Predicate library that forms the core of Bridgekeeper.
+
+This module defines the :class:`Predicate` base class, as well as a
+number of built-in predicates.
+"""
+
 from django.db.models import Q
 
 
