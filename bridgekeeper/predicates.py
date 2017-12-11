@@ -43,20 +43,20 @@ class Predicate:
         - For every user ``u``, for every instance ``i`` of a given
           model ``A``, ``check(u, i)`` should be ``True`` if and only if
           ``u`` is in the queryset returned by
-          ``filter(A.objects.all(), u)``
+          ``filter(u, A.objects.all())``
         - For every user ``u``, for every queryset ``q``:
 
-            - ``filter(q, u)`` returns ``UNIVERSAL`` if and only if
+            - ``filter(u, q)`` returns ``UNIVERSAL`` if and only if
               ``check(u, i)`` returns ``True`` for every possible
               instance ``i``.
-            - ``filter(q, u)`` returns ``EMPTY`` if and only if
+            - ``filter(u, q)`` returns ``EMPTY`` if and only if
               ``check(u, i)`` returns ``False`` for every possible
               instance ``i``.
             - ``check(u, None)`` returns ``True`` if and only if
-              ``filter(q, u)`` returns ``UNIVERSAL``.
+              ``filter(u, q)`` returns ``UNIVERSAL``.
     """
 
-    def filter(self, queryset, user):
+    def filter(self, user, queryset):
         """Filter a queryset to instances that satisfy this predicate.
 
         Given a queryset and a user, this method will return a filtered

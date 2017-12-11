@@ -15,7 +15,7 @@ def test_constant_attribute():
     assert p.check(user, s1)
     assert not p.check(user, s2)
 
-    filtered_qs = p.filter(Store.objects.all(), user)
+    filtered_qs = p.filter(user, Store.objects.all())
     assert filtered_qs.count() == 1
     assert s1 in filtered_qs
     assert s2 not in filtered_qs
@@ -34,8 +34,8 @@ def test_user_func_attribute():
     assert not p.check(u1, s2)
     assert not p.check(u2, s1)
 
-    qs1 = p.filter(Store.objects.all(), u1)
-    qs2 = p.filter(Store.objects.all(), u2)
+    qs1 = p.filter(u1, Store.objects.all())
+    qs2 = p.filter(u2, Store.objects.all())
     assert qs1.count() == 1
     assert s1 in qs1
     assert s2 not in qs1

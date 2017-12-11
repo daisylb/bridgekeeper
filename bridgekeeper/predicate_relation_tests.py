@@ -19,8 +19,8 @@ def test_relation_to_user():
     assert not belongs_to_branch.check(u1, s2)
     assert not belongs_to_branch.check(u2, s1)
 
-    qs1 = belongs_to_branch.filter(Shrubbery.objects.all(), u1)
-    qs2 = belongs_to_branch.filter(Shrubbery.objects.all(), u2)
+    qs1 = belongs_to_branch.filter(u1, Shrubbery.objects.all())
+    qs2 = belongs_to_branch.filter(u2, Shrubbery.objects.all())
     assert qs1.count() == 1
     assert s1 in qs1
     assert s2 not in qs1

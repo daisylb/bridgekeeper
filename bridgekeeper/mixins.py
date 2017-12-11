@@ -20,7 +20,7 @@ class BasePermissionMixin:
 class QuerySetPermissionMixin(BasePermissionMixin):
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
-        return self.predicate.filter(qs, self.request.user)
+        return self.predicate.filter(self.request.user, qs)
 
 
 class CreatePermissionGuardMixin(BasePermissionMixin):

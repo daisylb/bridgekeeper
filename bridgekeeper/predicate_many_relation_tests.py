@@ -19,8 +19,8 @@ def test_many_relation_to_user():
     assert not user_branch_in_store.check(u1, s2)
     assert not user_branch_in_store.check(u2, s1)
 
-    qs1 = user_branch_in_store.filter(Store.objects.all(), u1)
-    qs2 = user_branch_in_store.filter(Store.objects.all(), u2)
+    qs1 = user_branch_in_store.filter(u1, Store.objects.all())
+    qs2 = user_branch_in_store.filter(u2, Store.objects.all())
     assert qs1.count() == 1
     assert s1 in qs1
     assert s2 not in qs1

@@ -28,7 +28,7 @@ Of course, Bridgekeeper's headline feature is that it works with QuerySets; give
 All we need to do is call :meth:`~bridgekeeper.predicates.Predicate.filter` instead of :meth:`~bridgekeeper.predicates.Predicate.check`, and pass it a QuerySet instead of a single model instance::
 
     qs = models.Shrubbery.objects.all()
-    filtered_qs = perms['shrubberies.view_shrubbery'].filter(qs, user)
+    filtered_qs = perms['shrubberies.view_shrubbery'].filter(user, qs)
 
 Bridgekeeper's :meth:`~bridgekeeper.predicates.Predicate.filter` method just calls :meth:`~django.db.models.query.QuerySet.filter` on the QuerySet it's supplied and returns the result. This means it's safe to call :meth:`~django.db.models.query.QuerySet.filter`, :meth:`~django.db.models.query.QuerySet.exclude`, :meth:`~django.db.models.query.QuerySet.order_by` and so on, on your QuerySet either before you pass it in to Bridgekeeper or after it's returned; it's also safe to slice the queryset or pass it into a paginator after you get it out of Bridgekeeper.
 
@@ -100,7 +100,7 @@ Permission Check Summary
 | have some permission ``foo.*``  |                               |                                         |
 | for some object                 |                               |                                         |
 +---------------------------------+-------------------------------+-----------------------------------------+
-| Filter the queryset ``qs`` to   | *n/a*                         | ``perms['foo.bar'].filter(qs, u)``      |
+| Filter the queryset ``qs`` to   | *n/a*                         | ``perms['foo.bar'].filter(u, qs)``      |
 | only the objects that the user  |                               |                                         |
 | has permission ``foo.bar`` for  |                               |                                         |
 +---------------------------------+-------------------------------+-----------------------------------------+

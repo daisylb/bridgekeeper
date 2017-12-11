@@ -16,8 +16,8 @@ def test_is_user_function():
     assert not is_own_profile.check(u1, u2.profile)
     assert not is_own_profile.check(u2, u1.profile)
 
-    qs1 = is_own_profile.filter(Profile.objects.all(), u1)
-    qs2 = is_own_profile.filter(Profile.objects.all(), u2)
+    qs1 = is_own_profile.filter(u1, Profile.objects.all())
+    qs2 = is_own_profile.filter(u2, Profile.objects.all())
     assert qs1.count() == 1
     assert u1.profile in qs1
     assert u2.profile not in qs1

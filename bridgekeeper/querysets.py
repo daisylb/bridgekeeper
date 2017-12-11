@@ -30,7 +30,7 @@ class PermissionQuerySet(QuerySet):
         except KeyError:
             raise ValueError("Permission {} does not exist, or is not "
                              "registered in Bridgekeeper".format(permission))
-        return predicate.filter(self, user)
+        return predicate.filter(user, self)
 
 
 #: Django model manager using :class:`PermissionQuerySet`.
