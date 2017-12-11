@@ -21,6 +21,7 @@
 
    api/predicates
    api/querysets
+   changelog
 
 
 
