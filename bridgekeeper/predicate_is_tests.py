@@ -11,10 +11,10 @@ def test_is_user_function():
     u2 = UserFactory()
     is_own_profile = Is(lambda u: u.profile)
 
-    assert is_own_profile.apply(u1, u1.profile)
-    assert is_own_profile.apply(u2, u2.profile)
-    assert not is_own_profile.apply(u1, u2.profile)
-    assert not is_own_profile.apply(u2, u1.profile)
+    assert is_own_profile.check(u1, u1.profile)
+    assert is_own_profile.check(u2, u2.profile)
+    assert not is_own_profile.check(u1, u2.profile)
+    assert not is_own_profile.check(u2, u1.profile)
 
     qs1 = is_own_profile.filter(Profile.objects.all(), u1)
     qs2 = is_own_profile.filter(Profile.objects.all(), u2)
@@ -30,4 +30,4 @@ def test_is_user_function():
 def test_is_never_global():
     user = UserFactory()
     is_own_profile = Is(lambda u: u.profile)
-    assert not is_own_profile.apply(user)
+    assert not is_own_profile.check(user)

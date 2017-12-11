@@ -16,16 +16,16 @@ Given an instance of our ``Shrubbery`` model called ``shrubbery``, and a :class:
     # through Django:
     user.has_perm('shrubberies.update_shrubbery', obj=shrubbery)
     # or through Bridgekeeper:
-    perms['shrubberies.update_shrubbery'].apply(user, shrubbery)
+    perms['shrubberies.update_shrubbery'].check(user, shrubbery)
 
-Both of these expressions will return either ``True`` or ``False``. Aside from the caveat described above regarding authorisation backends other than Bridgekeeper, these two calls are equivalent; in fact, when you call :meth:`~django.contrib.auth.models.User.has_perm`, Django will trigger a call to :meth:`~bridgekeeper.predicates.Predicate.apply` under the hood.
+Both of these expressions will return either ``True`` or ``False``. Aside from the caveat described above regarding authorisation backends other than Bridgekeeper, these two calls are equivalent; in fact, when you call :meth:`~django.contrib.auth.models.User.has_perm`, Django will trigger a call to :meth:`~bridgekeeper.predicates.Predicate.check` under the hood.
 
 Checking Permissions on a QuerySet
 ----------------------------------
 
 Of course, Bridgekeeper's headline feature is that it works with QuerySets; given a user and a permission, it can filter down a QuerySet to only return instances for which the user holds the permission.
 
-All we need to do is call :meth:`~bridgekeeper.predicates.Predicate.filter` instead of :meth:`~bridgekeeper.predicates.Predicate.apply`, and pass it a QuerySet instead of a single model instance::
+All we need to do is call :meth:`~bridgekeeper.predicates.Predicate.filter` instead of :meth:`~bridgekeeper.predicates.Predicate.check`, and pass it a QuerySet instead of a single model instance::
 
     qs = models.Shrubbery.objects.all()
     filtered_qs = perms['shrubberies.view_shrubbery'].filter(qs, user)
@@ -35,11 +35,11 @@ Bridgekeeper's :meth:`~bridgekeeper.predicates.Predicate.filter` method just cal
 Checking Permissions Globally
 -----------------------------
 
-Django's :meth:`~django.contrib.auth.models.User.has_perm` (and thus also Bridgekeeper's :meth:`~bridgekeeper.predicates.Predicate.apply`) allows supplying only a permission name, and not an object instance::
+Django's :meth:`~django.contrib.auth.models.User.has_perm` (and thus also Bridgekeeper's :meth:`~bridgekeeper.predicates.Predicate.check`) allows supplying only a permission name, and not an object instance::
 
     user.has_perm('shrubberies.view_shrubbery')
     # or,
-    perms['shrubberies.view_shrubbery'].apply(user)
+    perms['shrubberies.view_shrubbery'].check(user)
 
 Once again, these calls are equivalent, aside from the caveat described above regarding authorisation backends other than Bridgekeeper.
 
@@ -65,7 +65,7 @@ In this case, the check will return ``False`` for a user with the ``'apprentice'
 
 .. note::
 
-    The behaviours in this section are effectively implemented by checking whether a permission is always allowed (in the case of :meth:`~bridgekeeper.predicates.Predicate.apply`) or always denied (in the case of :meth:`~bridgekeeper.predicates.is_possible_for`) due to the presence of ambient predicates.
+    The behaviours in this section are effectively implemented by checking whether a permission is always allowed (in the case of :meth:`~bridgekeeper.predicates.Predicate.check`) or always denied (in the case of :meth:`~bridgekeeper.predicates.is_possible_for`) due to the presence of ambient predicates.
 
     In normal use, these methods should always behave how you'd expect. However, if you create a combination of predicates that just happens to be tautological for a particular user, Bridgekeeper isn't clever enough to detect that.
 
@@ -86,10 +86,10 @@ Permission Check Summary
 +---------------------------------+-------------------------------+-----------------------------------------+
 |             Meaning             |            Django             |              Bridgekeeper               |
 +=================================+===============================+=========================================+
-| User has permission ``foo.bar`` | ``u.has_perm('foo.bar', x)``  | ``perms['foo.bar'].apply(u, x)``        |
+| User has permission ``foo.bar`` | ``u.has_perm('foo.bar', x)``  | ``perms['foo.bar'].check(u, x)``        |
 | for object ``x``                |                               |                                         |
 +---------------------------------+-------------------------------+-----------------------------------------+
-| User has permission ``foo.bar`` | ``u.has_perm('foo.bar')``     | ``perms['foo.bar'].apply(u)``           |
+| User has permission ``foo.bar`` | ``u.has_perm('foo.bar')``     | ``perms['foo.bar'].check(u)``           |
 | for all possible objects        |                               |                                         |
 +---------------------------------+-------------------------------+-----------------------------------------+
 | It is possible for the user to  | *n/a*                         | ``perms['foo.bar'].is_possible_for(u)`` |

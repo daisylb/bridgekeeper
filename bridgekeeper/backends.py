@@ -20,7 +20,7 @@ class RulePermissionBackend:
 
     def has_perm(self, user, perm, obj=None):
         try:
-            return self.permission_map[perm].apply(user, obj)
+            return self.permission_map[perm].check(user, obj)
         except KeyError:
             return False
 

@@ -30,7 +30,7 @@ class CreatePermissionGuardMixin(BasePermissionMixin):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        if not self.predicate.apply(self.request.user, form.instance):
+        if not self.predicate.check(self.request.user, form.instance):
             raise SuspiciousOperation("Tried to create an instance which "
                                       "permissions do not allow")
         return super().form_valid(form)

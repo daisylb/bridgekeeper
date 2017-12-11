@@ -14,10 +14,10 @@ def test_relation_to_user():
     belongs_to_branch = Relation(
         'branch', Branch, Is(lambda u: u.profile.branch))
 
-    assert belongs_to_branch.apply(u1, s1)
-    assert belongs_to_branch.apply(u2, s2)
-    assert not belongs_to_branch.apply(u1, s2)
-    assert not belongs_to_branch.apply(u2, s1)
+    assert belongs_to_branch.check(u1, s1)
+    assert belongs_to_branch.check(u2, s2)
+    assert not belongs_to_branch.check(u1, s2)
+    assert not belongs_to_branch.check(u2, s1)
 
     qs1 = belongs_to_branch.filter(Shrubbery.objects.all(), u1)
     qs2 = belongs_to_branch.filter(Shrubbery.objects.all(), u2)
@@ -34,4 +34,4 @@ def test_relation_never_global():
     user = UserFactory()
     belongs_to_branch = Relation(
         'branch', Branch, Is(lambda u: u.profile.branch))
-    assert not belongs_to_branch.apply(user)
+    assert not belongs_to_branch.check(user)

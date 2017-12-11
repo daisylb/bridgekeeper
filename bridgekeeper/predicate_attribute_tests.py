@@ -12,8 +12,8 @@ def test_constant_attribute():
     s2 = StoreFactory(name='b')
     p = Attribute('name', 'a')
 
-    assert p.apply(user, s1)
-    assert not p.apply(user, s2)
+    assert p.check(user, s1)
+    assert not p.check(user, s2)
 
     filtered_qs = p.filter(Store.objects.all(), user)
     assert filtered_qs.count() == 1
@@ -29,10 +29,10 @@ def test_user_func_attribute():
     s2 = StoreFactory(name='b')
     p = Attribute('name', lambda u: u.username)
 
-    assert p.apply(u1, s1)
-    assert p.apply(u2, s2)
-    assert not p.apply(u1, s2)
-    assert not p.apply(u2, s1)
+    assert p.check(u1, s1)
+    assert p.check(u2, s2)
+    assert not p.check(u1, s2)
+    assert not p.check(u2, s1)
 
     qs1 = p.filter(Store.objects.all(), u1)
     qs2 = p.filter(Store.objects.all(), u2)
@@ -48,4 +48,4 @@ def test_user_func_attribute():
 def test_when_called_without_object():
     user = UserFactory(username='a')
     p = Attribute('name', lambda u: u.username)
-    assert not p.apply(user)
+    assert not p.check(user)

@@ -32,7 +32,7 @@ class Predicate:
     :class:`NotImplementedError` if you try to actually do anything
     with it.
 
-    Subclasses will need to override the :meth:`query` and :meth:`apply`
+    Subclasses will need to override the :meth:`query` and :meth:`check`
     methods.
 
     .. note::
@@ -41,18 +41,18 @@ class Predicate:
         of every subclass of this class should satisfy:
 
         - For every user ``u``, for every instance ``i`` of a given
-          model ``A``, ``apply(u, i)`` should be ``True`` if and only if
+          model ``A``, ``check(u, i)`` should be ``True`` if and only if
           ``u`` is in the queryset returned by
           ``filter(A.objects.all(), u)``
         - For every user ``u``, for every queryset ``q``:
 
             - ``filter(q, u)`` returns ``UNIVERSAL`` if and only if
-              ``apply(u, i)`` returns ``True`` for every possible
+              ``check(u, i)`` returns ``True`` for every possible
               instance ``i``.
             - ``filter(q, u)`` returns ``EMPTY`` if and only if
-              ``apply(u, i)`` returns ``False`` for every possible
+              ``check(u, i)`` returns ``False`` for every possible
               instance ``i``.
-            - ``apply(u, None)`` returns ``True`` if and only if
+            - ``check(u, None)`` returns ``True`` if and only if
               ``filter(q, u)`` returns ``UNIVERSAL``.
     """
 
@@ -93,7 +93,7 @@ class Predicate:
         that allows access to model instances if a user is a staff user,
         or if the instance's tenant matches the user's tenant.
 
-        In that case, :meth:`apply`, when called without an instance,
+        In that case, :meth:`check`, when called without an instance,
         would return ``True`` only for staff users (since only they can
         see *every* instance). This method would return ``True`` for all
         users, because every user could possibly see an instance
@@ -136,7 +136,7 @@ class Predicate:
         """
         raise NotImplementedError()
 
-    def apply(self, user, instance=None):
+    def check(self, user, instance=None):
         """Check if a user satisfies this predicate.
 
         Given a user, return a boolean indicating if that user satisfies
@@ -189,9 +189,9 @@ class And(BinaryCompositePredicate):
             return left
         return left & right
 
-    def apply(self, user, instance=None):
-        return (self.left.apply(user, instance) and
-                self.right.apply(user, instance))
+    def check(self, user, instance=None):
+        return (self.left.check(user, instance) and
+                self.right.check(user, instance))
 
 
 class Or(BinaryCompositePredicate):
@@ -219,9 +219,9 @@ class Or(BinaryCompositePredicate):
             return left
         return left | right
 
-    def apply(self, user, instance=None):
-        return (self.left.apply(user, instance) or
-                self.right.apply(user, instance))
+    def check(self, user, instance=None):
+        return (self.left.check(user, instance) or
+                self.right.check(user, instance))
 
 
 class Not(Predicate):
@@ -240,8 +240,8 @@ class Not(Predicate):
             return EMPTY
         return ~base
 
-    def apply(self, user, instance=None):
-        return not self.base.apply(user, instance)
+    def check(self, user, instance=None):
+        return not self.base.check(user, instance)
 
 
 class ambient(Predicate):  # noqa: used as a decorator, so should be lowercase
@@ -268,7 +268,7 @@ class ambient(Predicate):  # noqa: used as a decorator, so should be lowercase
     def query(self, user):
         return UNIVERSAL if self.predicate_func(user) else EMPTY
 
-    def apply(self, user, instance=None):
+    def check(self, user, instance=None):
         return self.predicate_func(user)
 
 
@@ -349,7 +349,7 @@ class Attribute(Predicate):
     def query(self, user):
         return Q(**{self.attr: self.get_match(user)})
 
-    def apply(self, user, instance=None):
+    def check(self, user, instance=None):
         if instance is None:
             return False
         return getattr(instance, self.attr) == self.get_match(user)
@@ -382,7 +382,7 @@ class Is(Predicate):
     def query(self, user):
         return Q(pk=self.get_instance(user).pk)
 
-    def apply(self, user, instance=None):
+    def check(self, user, instance=None):
         if instance is None:
             return False
         return instance == self.get_instance(user)
@@ -423,10 +423,10 @@ class Relation(Predicate):
             return related_q
         return Q(**{self.attr + '__in': self.model.objects.filter(related_q)})
 
-    def apply(self, user, instance=None):
+    def check(self, user, instance=None):
         if instance is None:
-            return self.predicate.apply(user, None)
-        return self.predicate.apply(user, getattr(instance, self.attr))
+            return self.predicate.check(user, None)
+        return self.predicate.check(user, getattr(instance, self.attr))
 
 
 class ManyRelation(Predicate):
@@ -485,9 +485,9 @@ class ManyRelation(Predicate):
             return related_q
         return Q(**{self.query_attr + '__in': self.model.objects.filter(related_q)})
 
-    def apply(self, user, instance=None):
+    def check(self, user, instance=None):
         if instance is None:
-            return self.predicate.apply(user, None)
+            return self.predicate.check(user, None)
         related_q = self.predicate.query(user)
         if related_q is UNIVERSAL or related_q is EMPTY:
             return related_q
