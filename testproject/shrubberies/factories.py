@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import factory
 from django.contrib.auth.models import User
 from factory.django import DjangoModelFactory
@@ -27,6 +29,14 @@ class ProfileFactory(DjangoModelFactory):
 
     class Meta:
         model = models.Profile
+
+
+class ShrubberyFactory(DjangoModelFactory):
+    name = factory.Faker('catch_phrase')
+    price = Decimal('14.99')
+
+    class Meta:
+        model = models.Shrubbery
 
 
 class UserFactory(DjangoModelFactory):
