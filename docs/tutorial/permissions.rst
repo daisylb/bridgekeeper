@@ -43,14 +43,14 @@ In Bridgekeeper, permissions are made up of **predicates**, which you can think 
 .. code-block:: python
     :caption: shrubberies/permissions.py
 
-    from bridgekeeper.registry import registry
+    from bridgekeeper import perms
     from bridgekeeper.predicates import is_staff
 
-    registry['shrubbery.create_store'] = is_staff
-    registry['shrubbery.update_store'] = is_staff
-    registry['shrubbery.delete_store'] = is_staff
+    perms['shrubbery.create_store'] = is_staff
+    perms['shrubbery.update_store'] = is_staff
+    perms['shrubbery.delete_store'] = is_staff
 
-We turn predicates into permissions by putting them into the :data:`~bridgekeeper.registry.registry`, which is a Python dictionary that maps permission names to their predicates. (It's actually a custom subclass of :class:`dict` with a few small changes, but you can treat it as if it's a normal dictionary anyway.)
+We turn predicates into permissions by putting them into :data:`bridgekeeper.perms`, which is a Python dictionary that maps permission names to their predicates. (It's actually a custom subclass of :class:`dict` with a few small changes, but you can treat it as if it's a normal dictionary anyway.)
 
 These permissions are now fully working; if you wanted, you could skip right through to the next section to see how to use them in your views. Don't, though, because we've just scratched the surface.
 
@@ -85,7 +85,7 @@ If we wanted to restrict the ability to edit shrubberies in our app to only user
 
     from .predicates import is_shrubber
 
-    registry['shrubbery.update_shrubbery'] = is_shrubber
+    perms['shrubbery.update_shrubbery'] = is_shrubber
 
 Model Predicates
 ----------------
@@ -114,7 +114,7 @@ We can implement that behaviour with the following permission:
     from .predicates import is_shrubber, is_apprentice
     from . import models
 
-    registry['shrubbery.update_shrubbery'] = is_staff | (
+    perms['shrubbery.update_shrubbery'] = is_staff | (
         is_apprentice & Relation(
             'branch', models.Branch, Is(lambda user: user.profile.branch),
         )

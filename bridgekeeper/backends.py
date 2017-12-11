@@ -1,14 +1,5 @@
+from . import perms as global_permission_map
 from .predicates import EMPTY
-
-
-class Registry(dict):
-    def __setitem__(self, key, value):
-        if key in self:
-            raise ValueError("The permission already exists", value)
-        super().__setitem__(key, value)
-
-
-registry = Registry()
 
 
 class RulePermissionBackend:
@@ -17,10 +8,10 @@ class RulePermissionBackend:
     # Fortunately, Django consults every authentication backend, not
     # just the one the user logged in with.
 
-    def __init__(self, registry=None):
-        if registry is None:
-            registry = globals()['registry']
-        self.registry = registry
+    def __init__(self, permission_map=None):
+        if permission_map is None:
+            permission_map = global_permission_map
+        self.permission_map = permission_map
 
     def authenticate(self, **kwargs):
         # We don't actually want to handle authentication in
@@ -29,7 +20,7 @@ class RulePermissionBackend:
 
     def has_perm(self, user, perm, obj=None):
         try:
-            return self.registry[perm].apply(user, obj)
+            return self.permission_map[perm].apply(user, obj)
         except KeyError:
             return False
 
@@ -41,9 +32,9 @@ class RulePermissionBackend:
 
     def has_module_perms(self, user, app_label):
         prefix = "{}.".format(app_label)
-        for label, predicate in self.registry.items():
+        for label, predicate in self.permission_map.items():
             if not label.startswith(prefix):
                 continue
-            if predicate.query(user) is not EMPTY:
+            if predicate.is_possible_for(user):
                 return True
         return False

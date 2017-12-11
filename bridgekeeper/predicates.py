@@ -402,8 +402,8 @@ class Relation(Predicate):
     to allow access to all applications to anyone who has permission to
     access the related applicant::
 
-        registry['foo.view_application'] = Relation(
-            'applicant', Applicant, registry['foo.view_applicant'])
+        perms['foo.view_application'] = Relation(
+            'applicant', Applicant, perms['foo.view_applicant'])
     """
 
     def __init__(self, attr, model, predicate):
@@ -462,7 +462,7 @@ class ManyRelation(Predicate):
     to allow agency users access only to customers that have a
     relationship with their agency::
 
-        registry['foo.view_customer'] = ManyRelation(
+        perms['foo.view_customer'] = ManyRelation(
             'agencies', Agency, Is(lambda user: user.agency))
     """
 

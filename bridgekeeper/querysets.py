@@ -1,10 +1,12 @@
 from django.db.models import Manager, QuerySet
 
-from .registry import registry
+from . import perms as global_permission_map
 
 
 class PermissionQuerySet(QuerySet):
     """A QuerySet subclass that provides a convenience method."""
+
+    __permission_map = global_permission_map
 
     def visible_to(self, user, permission):
         """Filter the QuerySet to objects a user has a permission for.
@@ -14,8 +16,8 @@ class PermissionQuerySet(QuerySet):
         :param permission: Permission to check.
         :type permission: str
 
-        This method only works with permissions that are defined in the
-        Bridgekeeper :data:`~bridgekeeper.registry.registry`;
+        This method only works with permissions that are defined in
+        :data:`~bridgekeeper.perms`;
         regular Django row-level permission checkers can't be invoked on
         the QuerySet level.
 
@@ -24,10 +26,10 @@ class PermissionQuerySet(QuerySet):
         """
 
         try:
-            predicate = registry[permission]
+            predicate = self.__permission_map[permission]
         except KeyError:
-            raise ValueError("Permission {} does not exist, or is not in "
-                             "the Bridgekeeper registry".format(permission))
+            raise ValueError("Permission {} does not exist, or is not "
+                             "registered in Bridgekeeper".format(permission))
         return predicate.filter(self, user)
 
 

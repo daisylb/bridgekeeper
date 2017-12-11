@@ -24,7 +24,7 @@ Then, add Bridgekeeper to your ``settings.py``:
 
      AUTHENTICATION_BACKENDS = (
          'django.contrib.auth.backends.ModelBackend',
-    +    'bridgekeeper.registry.RulePermissionBackend',
+    +    'bridgekeeper.backends.RulePermissionBackend',
      )
 
 .. note::

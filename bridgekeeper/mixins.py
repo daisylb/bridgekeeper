@@ -1,15 +1,15 @@
 from django.core.exceptions import (ImproperlyConfigured, PermissionDenied,
                                     SuspiciousOperation)
 
-from .registry import registry as global_registry
+from . import perms as global_permission_map
 
 
 class BasePermissionMixin:
-    def __init__(self, registry=None, *args, **kwargs):
-        if registry is None:
-            registry = global_registry
+    def __init__(self, permission_map=None, *args, **kwargs):
+        if permission_map is None:
+            permission_map = global_permission_map
         try:
-            self.predicate = registry[self.permission_name]
+            self.predicate = permission_map[self.permission_name]
         except AttributeError:
             raise ImproperlyConfigured("permission_name is not set")
         except KeyError:

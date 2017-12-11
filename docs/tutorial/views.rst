@@ -21,17 +21,17 @@ Bridgekeeper integrates with Django's built-in user permissions mechanism, so yo
             'shrubbery': shrubbery,
         })
 
-We can also do the same thing directly through Bridgekeeper. Remember, the :data:`~bridgekeeper.registry.registry` is more or less just a dict, so we can pull it out of there and call the predicate's :meth:`~bridgekeeper.predicates.Predicate.apply` method:
+We can also do the same thing directly through Bridgekeeper. Remember, :data:`bridgekeeper.perms` is more or less just a dict, so we can pull it out of there and call the predicate's :meth:`~bridgekeeper.predicates.Predicate.apply` method:
 
 .. code-block:: python
     :caption: shrubberies/views.py
     :emphasize-lines: 5
 
-    from bridgekeeper.registry import registry
+    from bridgekeeper import perms
 
     def shrubbery_edit(request, shrubbery_id):
         # ...
-        if not registry['shrubberies.update_shrubbery'].apply(request.user, shrubbery):
+        if not perms['shrubberies.update_shrubbery'].apply(request.user, shrubbery):
             raise Http404()
         # ...
 

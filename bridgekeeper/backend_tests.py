@@ -1,18 +1,18 @@
 import pytest
 from shrubberies import factories
 
-from . import registry as registry_mod
-from . import predicates
+from . import perms as global_permission_map
+from . import backends, permission_map, predicates
 
 
 @pytest.fixture
-def registry():
-    return registry_mod.Registry()
+def perms():
+    return permission_map.PermissionMap()
 
 
 @pytest.fixture
-def backend(registry):
-    return registry_mod.RulePermissionBackend(registry=registry)
+def backend(perms):
+    return backends.RulePermissionBackend(permission_map=perms)
 
 
 @predicates.ambient
@@ -25,10 +25,10 @@ store_name_matches_username = predicates.Attribute(
 
 
 @pytest.mark.django_db
-def test_ambient_predicate(registry, backend):
+def test_ambient_predicate(perms, backend):
     user_a = factories.UserFactory(username='aaa')
     user_b = factories.UserFactory(username='bbb')
-    registry['foo.username_starts_with_a'] = username_starts_with_a
+    perms['foo.username_starts_with_a'] = username_starts_with_a
     assert backend.has_perm(user_a, 'foo.username_starts_with_a')
     assert not backend.has_perm(user_b, 'foo.username_starts_with_a')
     assert backend.has_module_perms(user_a, 'foo')
@@ -36,10 +36,10 @@ def test_ambient_predicate(registry, backend):
 
 
 @pytest.mark.django_db
-def test_queryset_predicate(registry, backend):
+def test_queryset_predicate(perms, backend):
     user_a = factories.UserFactory(username='aaa')
     user_b = factories.UserFactory(username='bbb')
-    registry['foo.bar'] = store_name_matches_username
+    perms['foo.bar'] = store_name_matches_username
     store_a = factories.StoreFactory(name='aaa')
     store_b = factories.StoreFactory(name='bbb')
     assert backend.has_perm(user_a, 'foo.bar', store_a)
@@ -53,8 +53,15 @@ def test_queryset_predicate(registry, backend):
 
 
 @pytest.mark.django_db
-def test_module_perms_with_no_matching_objects(registry, backend):
+def test_module_perms_with_no_matching_objects(perms, backend):
     user_b = factories.UserFactory(username='bbb')
-    registry['foo.bar'] = store_name_matches_username
+    perms['foo.bar'] = store_name_matches_username
     factories.StoreFactory(name='aaa')
     assert backend.has_module_perms(user_b, 'foo')
+
+
+@pytest.mark.django_db
+def test_backend_uses_global_permission_map():
+    assert isinstance(global_permission_map, permission_map.PermissionMap)
+    backend = backends.RulePermissionBackend()
+    assert backend.permission_map is global_permission_map
