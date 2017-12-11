@@ -3,8 +3,36 @@ Defining Permissions
 
 In this tutorial, we'll be using a example app, an online stock management portal for shrubberies; we'll define some permissions for it in this section, then use them in views in the next section. It has a single app called ``shrubberies``, with a ``models.py`` looks something like this:
 
-.. literalinclude:: ../testproject/shrubberies/models.py
+.. code-block:: python
     :caption: shrubberies/models.py
+
+    from django.contrib.auth.models import User
+    from django.db import models
+
+
+    class Store(models.Model):
+        name = models.CharField(max_length=255)
+
+
+    class Branch(models.Model):
+        store = models.ForeignKey(Store, on_delete=models.CASCADE)
+        name = models.CharField(max_length=255)
+
+
+    class Shrubbery(models.Model):
+        branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
+        name = models.CharField(max_length=255)
+        price = models.DecimalField(max_digits=5, decimal_places=2)
+
+
+    class Profile(models.Model):
+        user = models.OneToOneField(User, on_delete=models.CASCADE)
+        branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
+        role = models.CharField(max_length=16, choices=(
+            ('apprentice', 'Apprentice Shrubber'),
+            ('shrubber', 'Shrubber'),
+        ))
+
 
 First, we'll define permissions for our ``Store`` model. We'll define them in ``permissions.py``, because that's where Bridgekeeper will automatically load them from.
 
