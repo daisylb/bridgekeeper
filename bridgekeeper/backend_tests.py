@@ -15,7 +15,7 @@ def backend(perms):
     return backends.RulePermissionBackend(permission_map=perms)
 
 
-@rules.ambient
+@rules.blanket_rule
 def username_starts_with_a(user):
     return user.username.startswith('a')
 
@@ -25,7 +25,7 @@ store_name_matches_username = rules.Attribute(
 
 
 @pytest.mark.django_db
-def test_ambient_rule(perms, backend):
+def test_blanket_rule(perms, backend):
     user_a = factories.UserFactory(username='aaa')
     user_b = factories.UserFactory(username='bbb')
     perms['foo.username_starts_with_a'] = username_starts_with_a

@@ -55,7 +55,7 @@ Bridgekeeper also provides a second method, :meth:`~bridgekeeper.rules.is_possib
 
     perms['shrubberies.update_shrubbery'].is_possible_for(user)
 
-This check will return ``False`` if and only if the user cannot have that permission for *any possible instance* that could ever exist. As an example of this, let's say that the permission we checked for above was defined to allow only shrubbers to edit shrubberies inside their own branch, using the ``is_shrubber`` rule we created in the :ref:`tutorial-ambient` section of the tutorial::
+This check will return ``False`` if and only if the user cannot have that permission for *any possible instance* that could ever exist. As an example of this, let's say that the permission we checked for above was defined to allow only shrubbers to edit shrubberies inside their own branch, using the ``is_shrubber`` rule we created in the :ref:`tutorial-blanket` section of the tutorial::
 
     perms['shrubberies.view_shrubbery'] = is_shrubber & Attribute(
         'branch', lambda user: user.profile.branch,
@@ -65,7 +65,7 @@ In this case, the check will return ``False`` for a user with the ``'apprentice'
 
 .. note::
 
-    The behaviours in this section are effectively implemented by checking whether a permission is always allowed (in the case of :meth:`~bridgekeeper.rules.Rule.check`) or always denied (in the case of :meth:`~bridgekeeper.rules.is_possible_for`) due to the presence of ambient rules.
+    The behaviours in this section are effectively implemented by checking whether a permission is always allowed (in the case of :meth:`~bridgekeeper.rules.Rule.check`) or always denied (in the case of :meth:`~bridgekeeper.rules.is_possible_for`) due to the presence of blanket rules.
 
     In normal use, these methods should always behave how you'd expect. However, if you create a combination of rules that just happens to be tautological for a particular user, Bridgekeeper isn't clever enough to detect that.
 

@@ -5,6 +5,7 @@ Changelog
 ---
 
 - Renamed **predicates** to **rules**, because the latter is a more accessible term that describe the concept just as well. Besides, "permissions are made up of rules" sounds a lot better than "permissions are made up of predicates".
+- Renamed **ambient predicates** to **blanket rules**, because it's a more descriptive name. Note that the ``@ambient`` decorator is now called ``@blanket_rule``, because having a ``@blanket`` decorator would be weird.
 
 0.2
 ---

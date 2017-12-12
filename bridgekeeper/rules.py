@@ -123,10 +123,10 @@ class Rule:
         Alternatively, return :data:`UNIVERSAL` if this user satisfies
         this rule for every possible object, or :data:`EMPTY` if
         this user cannot satisfy this rule for any possible object.
-        (These two values are usually only returned in "ambient
+        (These two values are usually only returned in "blanket
         rules" which depend only on some property of the user, e.g.
         the built-in :any:`is_staff`, but these are usually best created
-        with the :class:`ambient` decorator.)
+        with the :class:`blanket_rule` decorator.)
 
         :param user: The user to match against.
         :type user: django.contrib.auth.models.User
@@ -244,7 +244,7 @@ class Not(Rule):
         return not self.base.check(user, instance)
 
 
-class ambient(Rule):  # noqa: used as a decorator, so should be lowercase
+class blanket_rule(Rule):  # noqa: used as a decorator, so should be lowercase
     """A decorator for rules that don't depend on objects.
 
     This decorator provides a shorthand method for defining rules
@@ -253,7 +253,7 @@ class ambient(Rule):  # noqa: used as a decorator, so should be lowercase
     boolean, and it will be turned into a :class:`Rule` instance,
     for example::
 
-        @ambient
+        @blanket_rule
         def is_anonymous(user):
             return user.is_anonymous
     """
@@ -272,32 +272,32 @@ class ambient(Rule):  # noqa: used as a decorator, so should be lowercase
         return self.rule_func(user)
 
 
-@ambient
+@blanket_rule
 def always_allow(_):
     return True
 
 
-@ambient
+@blanket_rule
 def always_deny(_):
     return False
 
 
-@ambient
+@blanket_rule
 def is_authenticated(user):
     return user.is_authenticated()
 
 
-@ambient
+@blanket_rule
 def is_superuser(user):
     return user.is_superuser
 
 
-@ambient
+@blanket_rule
 def is_staff(user):
     return user.is_staff
 
 
-@ambient
+@blanket_rule
 def is_active(user):
     return user.is_active()
 

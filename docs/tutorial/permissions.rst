@@ -54,27 +54,27 @@ We turn rules into permissions by putting them into :data:`bridgekeeper.perms`, 
 
 These permissions are now fully working; if you wanted, you could skip right through to the next section to see how to use them in your views. Don't, though, because we've just scratched the surface.
 
-.. _tutorial-ambient:
+.. _tutorial-blanket:
 
-Ambient Rules
+Blanket Rules
 -------------
 
-Ambient rules are rules whose outcome is only affected by the user. We said earlier that rules are *questions to ask about the user that is trying to gain access, and the objects they're trying to gain access to*; ambient rules are *questions to ask about the user that is trying to gain access*, without regard for what they're accessing.
+Blanket rules are rules whose outcome is only affected by the user. We said earlier that rules are *questions to ask about the user that is trying to gain access, and the objects they're trying to gain access to*; blanket rules are *questions to ask about the user that is trying to gain access*, without regard for what they're accessing.
 
-The built-in rule :data:`~bridgekeeper.rules.is_staff` is an ambient rule, as are :data:`~bridgekeeper.rules.is_authenticated`, :data:`~bridgekeeper.rules.is_superuser` and :data:`~bridgekeeper.rules.is_active`.
+The built-in rule :data:`~bridgekeeper.rules.is_staff` is an blanket rule, as are :data:`~bridgekeeper.rules.is_authenticated`, :data:`~bridgekeeper.rules.is_superuser` and :data:`~bridgekeeper.rules.is_active`.
 
-We can define our own, too, by using the :class:`~bridgekeeper.rules.ambient` decorator to wrap a function that takes a user and returns a boolean:
+We can define our own, too, by using the :class:`~bridgekeeper.rules.blanket` decorator to wrap a function that takes a user and returns a boolean:
 
 .. code-block:: python
     :caption: shrubberies/rules.py
 
-    from bridgekeeper.rules import ambient
+    from bridgekeeper.rules import blanket_rule
 
-    @ambient
+    @blanket_rule
     def is_apprentice(user):
         return user.profile.role == 'apprentice'
 
-    @ambient
+    @blanket_rule
     def is_shrubber(user):
         return user.profile.role == 'shrubber'
 
