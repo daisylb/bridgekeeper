@@ -1,7 +1,9 @@
-Writing Rules
-=============
+Writing Rules and Permissions
+=============================
 
-Rules are instances of (subclasses of) the :class:`~bridgekeeper.rules.Rule` class. Permissions are a mapping from a permission name (which is a string) the mapping is stored in :data:`bridgekeeper.perms`, which acts like a dictionary::
+In Bridgekeeper, a **rule** is something that is given a user and a resource, and either **allows** or **blocks** access to the resource. Rules are instances of the :class:`~bridgekeeper.rules.Rule` class (or rather, subclasses of that class), and can be combined together into composite rules.
+
+A Bridgekeeper **permission** consists of a name, usually conforming to Django permission name conventions e.g. ``shrubberies.update_shrubbery``, and a rule. Permissions are created by assigning a rule instance to a name in :data:`bridgekeeper.perms`, which acts like a dictionary::
 
     from bridgekeeper.rules import Attribute, is_staff
     from bridgekeeper import perms
