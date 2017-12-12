@@ -1,7 +1,7 @@
-"""Predicate library that forms the core of Bridgekeeper.
+"""Rule library that forms the core of Bridgekeeper.
 
-This module defines the :class:`Predicate` base class, as well as a
-number of built-in predicates.
+This module defines the :class:`Rule` base class, as well as a
+number of built-in rules.
 """
 
 from django.db.models import Q
@@ -16,18 +16,18 @@ class Sentinel:
 
 
 #: A sentinel value that represents the universal set. See
-#: :meth:`Predicate.query` for usage.
+#: :meth:`Rule.query` for usage.
 UNIVERSAL = Sentinel("UNIVERSAL")
 
 #: A sentinel value that represents the empty set. See
-#: :meth:`Predicate.query` for usage.
+#: :meth:`Rule.query` for usage.
 EMPTY = Sentinel("EMPTY")
 
 
-class Predicate:
-    """Base class for predicates.
+class Rule:
+    """Base class for rules.
 
-    All predicates are instances of this class, but not directly;
+    All rules are instances of this class, but not directly;
     use (or write!) a subclass instead, as this class will raise
     :class:`NotImplementedError` if you try to actually do anything
     with it.
@@ -57,11 +57,11 @@ class Predicate:
     """
 
     def filter(self, user, queryset):
-        """Filter a queryset to instances that satisfy this predicate.
+        """Filter a queryset to instances that satisfy this rule.
 
         Given a queryset and a user, this method will return a filtered
         queryset that contains only instances from the original
-        queryset for which the user satisfies this predicate.
+        queryset for which the user satisfies this rule.
 
         :param queryset: The initial queryset to filter
         :type queryset: django.db.models.QuerySet
@@ -83,13 +83,13 @@ class Predicate:
         return queryset.filter(q_obj)
 
     def is_possible_for(self, user):
-        """Check if it is possible for a user to satisfy this predicate.
+        """Check if it is possible for a user to satisfy this rule.
 
         Returns ``True`` if it is possible for an instance to exist for
-        which the given user satisfies this predicate, ``False``
+        which the given user satisfies this rule, ``False``
         otherwise.
 
-        For example, in a multi-tenanted app, you might have a predicate
+        For example, in a multi-tenanted app, you might have a rule
         that allows access to model instances if a user is a staff user,
         or if the instance's tenant matches the user's tenant.
 
@@ -118,29 +118,29 @@ class Predicate:
 
         Given a user, return a :class:`~django.db.models.Q` object which
         will filter a queryset down to only instances for which the
-        given user satisfies this predicate.
+        given user satisfies this rule.
 
         Alternatively, return :data:`UNIVERSAL` if this user satisfies
-        this predicate for every possible object, or :data:`EMPTY` if
-        this user cannot satisfy this predicate for any possible object.
+        this rule for every possible object, or :data:`EMPTY` if
+        this user cannot satisfy this rule for any possible object.
         (These two values are usually only returned in "ambient
-        predicates" which depend only on some property of the user, e.g.
+        rules" which depend only on some property of the user, e.g.
         the built-in :any:`is_staff`, but these are usually best created
         with the :class:`ambient` decorator.)
 
         :param user: The user to match against.
         :type user: django.contrib.auth.models.User
         :returns: A query that will filter a queryset to match this
-            predicate.
+            rule.
         :rtype: django.db.models.Q
         """
         raise NotImplementedError()
 
     def check(self, user, instance=None):
-        """Check if a user satisfies this predicate.
+        """Check if a user satisfies this rule.
 
         Given a user, return a boolean indicating if that user satisfies
-        this predicate for a given instance, or if none is provided,
+        this rule for a given instance, or if none is provided,
         every instance.
         """
         raise NotImplementedError()
@@ -155,7 +155,7 @@ class Predicate:
         return Not(self)
 
 
-class BinaryCompositePredicate(Predicate):
+class BinaryCompositeRule(Rule):
     def __init__(self, left, right):
         self.left = left
         self.right = right
@@ -164,7 +164,7 @@ class BinaryCompositePredicate(Predicate):
         return "({!r} {} {!r})".format(self.left, self.sym, self.right)
 
 
-class And(BinaryCompositePredicate):
+class And(BinaryCompositeRule):
     sym = "&"
 
     def query(self, user):
@@ -194,7 +194,7 @@ class And(BinaryCompositePredicate):
                 self.right.check(user, instance))
 
 
-class Or(BinaryCompositePredicate):
+class Or(BinaryCompositeRule):
     sym = "|"
 
     def query(self, user):
@@ -224,7 +224,7 @@ class Or(BinaryCompositePredicate):
                 self.right.check(user, instance))
 
 
-class Not(Predicate):
+class Not(Rule):
     def __init__(self, base):
         self.base = base
 
@@ -244,13 +244,13 @@ class Not(Predicate):
         return not self.base.check(user, instance)
 
 
-class ambient(Predicate):  # noqa: used as a decorator, so should be lowercase
-    """A decorator for predicates that don't depend on objects.
+class ambient(Rule):  # noqa: used as a decorator, so should be lowercase
+    """A decorator for rules that don't depend on objects.
 
-    This decorator provides a shorthand method for defining predicates
+    This decorator provides a shorthand method for defining rules
     that depend only on the user. Decorate a function that takes a
     :class:`~django.contrib.auth.models.User` object and returns a
-    boolean, and it will be turned into a :class:`Predicate` instance,
+    boolean, and it will be turned into a :class:`Rule` instance,
     for example::
 
         @ambient
@@ -258,18 +258,18 @@ class ambient(Predicate):  # noqa: used as a decorator, so should be lowercase
             return user.is_anonymous
     """
 
-    def __init__(self, predicate_func, repr_string=None):
-        self.predicate_func = predicate_func
-        self.repr = repr_string or predicate_func.__name__
+    def __init__(self, rule_func, repr_string=None):
+        self.rule_func = rule_func
+        self.repr = repr_string or rule_func.__name__
 
     def __repr__(self):
         return self.repr
 
     def query(self, user):
-        return UNIVERSAL if self.predicate_func(user) else EMPTY
+        return UNIVERSAL if self.rule_func(user) else EMPTY
 
     def check(self, user, instance=None):
-        return self.predicate_func(user)
+        return self.rule_func(user)
 
 
 @ambient
@@ -302,10 +302,10 @@ def is_active(user):
     return user.is_active()
 
 
-class Attribute(Predicate):
-    """Predicate class that checks the value of an instance attribute.
+class Attribute(Rule):
+    """Rule class that checks the value of an instance attribute.
 
-    This predicate is satisfied by model instances where the attribute
+    This rule is satisfied by model instances where the attribute
     given in ``attr`` matches the value given in ``matches``.
 
     :param attr: An attribute name to match against on the
@@ -328,7 +328,7 @@ class Attribute(Predicate):
 
     .. warning::
 
-        This predicate uses Python equality (``==``) when checking a
+        This rule uses Python equality (``==``) when checking a
         retrieved Python object, but performs an equality check on the
         database when filtering a QuerySet. Avoid using it with
         imprecise types (e.g. floats), and ensure that you are using the
@@ -355,10 +355,10 @@ class Attribute(Predicate):
         return getattr(instance, self.attr) == self.get_match(user)
 
 
-class Is(Predicate):
-    """Predicate class that checks the identity of the instance.
+class Is(Rule):
+    """Rule class that checks the identity of the instance.
 
-    This predicate is satisfied only by the specific model instance that
+    This rule is satisfied only by the specific model instance that
     is passed in as an argument.
 
     :param instance: The instance to match against, or a callable that
@@ -388,15 +388,15 @@ class Is(Predicate):
         return instance == self.get_instance(user)
 
 
-class Relation(Predicate):
-    """Check that a predicate applies to a ForeignKey.
+class Relation(Rule):
+    """Check that a rule applies to a ForeignKey.
 
     :param attr: Name of a foreign key attribute to check.
     :type attr: str
     :param model: Model class on the other side of the foreign key.
     :type model: type
-    :param predicate: Predicate to check the foreign key against.
-    :type predicate: Predicate
+    :param rule: Rule to check the foreign key against.
+    :type rule: Rule
 
     For example, given ``Applicant`` and ``Application`` models,
     to allow access to all applications to anyone who has permission to
@@ -406,31 +406,31 @@ class Relation(Predicate):
             'applicant', Applicant, perms['foo.view_applicant'])
     """
 
-    def __init__(self, attr, model, predicate):
+    def __init__(self, attr, model, rule):
         self.attr = attr
         self.model = model
-        self.predicate = predicate
+        self.rule = rule
 
     def __repr__(self):
         return "Relation({!r}, {}, {!r})".format(
-            self.attr, self.model.__name__, self.predicate)
+            self.attr, self.model.__name__, self.rule)
 
     def query(self, user):
         # Unfortunately you can't use Q objects on a relation, only proper
         # QuerySets.
-        related_q = self.predicate.query(user)
+        related_q = self.rule.query(user)
         if related_q is UNIVERSAL or related_q is EMPTY:
             return related_q
         return Q(**{self.attr + '__in': self.model.objects.filter(related_q)})
 
     def check(self, user, instance=None):
         if instance is None:
-            return self.predicate.check(user, None)
-        return self.predicate.check(user, getattr(instance, self.attr))
+            return self.rule.check(user, None)
+        return self.rule.check(user, getattr(instance, self.attr))
 
 
-class ManyRelation(Predicate):
-    """Check that a predicate applies to a many-object relationship.
+class ManyRelation(Rule):
+    """Check that a rule applies to a many-object relationship.
 
     This can be used in a similar fashion to :class:`Relation`, but
     across a :class:`~django.db.models.ManyToManyField`, or the remote
@@ -455,8 +455,8 @@ class ManyRelation(Predicate):
     :type query_attr: str
     :param model: Model class on the other side of the relationship.
     :type model: type
-    :param predicate: Predicate to check the foreign object against.
-    :type predicate: Predicate
+    :param rule: Rule to check the foreign object against.
+    :type rule: Rule
 
     For example, given ``Agency`` and ``Customer`` models,
     to allow agency users access only to customers that have a
@@ -466,29 +466,29 @@ class ManyRelation(Predicate):
             'agencies', Agency, Is(lambda user: user.agency))
     """
 
-    def __init__(self, attr, query_attr, model, predicate):
+    def __init__(self, attr, query_attr, model, rule):
         # TODO: add support for 'all' as well as 'exists'
         self.attr = attr
         self.query_attr = query_attr
         self.model = model
-        self.predicate = predicate
+        self.rule = rule
 
     def __repr__(self):
         return "ManyRelation({!r}, {}, {}, {!r})".format(
-            self.attr, self.query_attr, self.model.__name__, self.predicate)
+            self.attr, self.query_attr, self.model.__name__, self.rule)
 
     def query(self, user):
         # Unfortunately you can't use Q objects on a relation, only proper
         # QuerySets.
-        related_q = self.predicate.query(user)
+        related_q = self.rule.query(user)
         if related_q is UNIVERSAL or related_q is EMPTY:
             return related_q
         return Q(**{self.query_attr + '__in': self.model.objects.filter(related_q)})
 
     def check(self, user, instance=None):
         if instance is None:
-            return self.predicate.check(user, None)
-        related_q = self.predicate.query(user)
+            return self.rule.check(user, None)
+        related_q = self.rule.query(user)
         if related_q is UNIVERSAL or related_q is EMPTY:
             return related_q
         related_manager = getattr(instance, self.attr)

@@ -22,15 +22,15 @@ class PermissionQuerySet(QuerySet):
         the QuerySet level.
 
         It is a convenience wrapper around
-        :meth:`~bridgekeeper.predicates.Predicate.filter`.
+        :meth:`~bridgekeeper.rules.Rule.filter`.
         """
 
         try:
-            predicate = self.__permission_map[permission]
+            rule = self.__permission_map[permission]
         except KeyError:
             raise ValueError("Permission {} does not exist, or is not "
                              "registered in Bridgekeeper".format(permission))
-        return predicate.filter(user, self)
+        return rule.filter(user, self)
 
 
 #: Django model manager using :class:`PermissionQuerySet`.

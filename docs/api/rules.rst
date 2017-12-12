@@ -1,16 +1,16 @@
-Predicates
-==========
+Rules
+=====
 
-.. automodule:: bridgekeeper.predicates
+.. automodule:: bridgekeeper.rules
     :members:
 
     .. data:: always_allow
 
-        Predicate that is always satisfied.
+        Rule that is always satisfied.
 
     .. data:: always_deny
 
-        Predicate that is never satisfied.
+        Rule that is never satisfied.
 
     .. data:: is_authenticated
     .. data:: is_superuser

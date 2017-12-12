@@ -2,7 +2,7 @@ import pytest
 from shrubberies import factories
 
 from . import perms as global_permission_map
-from . import backends, permission_map, predicates
+from . import backends, permission_map, rules
 
 
 @pytest.fixture
@@ -15,17 +15,17 @@ def backend(perms):
     return backends.RulePermissionBackend(permission_map=perms)
 
 
-@predicates.ambient
+@rules.ambient
 def username_starts_with_a(user):
     return user.username.startswith('a')
 
 
-store_name_matches_username = predicates.Attribute(
+store_name_matches_username = rules.Attribute(
     'name', lambda u: u.username)
 
 
 @pytest.mark.django_db
-def test_ambient_predicate(perms, backend):
+def test_ambient_rule(perms, backend):
     user_a = factories.UserFactory(username='aaa')
     user_b = factories.UserFactory(username='bbb')
     perms['foo.username_starts_with_a'] = username_starts_with_a
@@ -36,7 +36,7 @@ def test_ambient_predicate(perms, backend):
 
 
 @pytest.mark.django_db
-def test_queryset_predicate(perms, backend):
+def test_queryset_rule(perms, backend):
     user_a = factories.UserFactory(username='aaa')
     user_b = factories.UserFactory(username='bbb')
     perms['foo.bar'] = store_name_matches_username

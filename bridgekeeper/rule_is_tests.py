@@ -2,7 +2,7 @@ import pytest
 from shrubberies.factories import UserFactory
 from shrubberies.models import Profile
 
-from .predicates import Is
+from .rules import Is
 
 
 @pytest.mark.django_db

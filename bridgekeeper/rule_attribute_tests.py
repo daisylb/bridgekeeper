@@ -2,7 +2,7 @@ import pytest
 from shrubberies.factories import StoreFactory, UserFactory
 from shrubberies.models import Store
 
-from .predicates import Attribute
+from .rules import Attribute
 
 
 @pytest.mark.django_db

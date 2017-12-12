@@ -1,5 +1,5 @@
 from . import perms as global_permission_map
-from .predicates import EMPTY
+from .rules import EMPTY
 
 
 class RulePermissionBackend:
@@ -32,9 +32,9 @@ class RulePermissionBackend:
 
     def has_module_perms(self, user, app_label):
         prefix = "{}.".format(app_label)
-        for label, predicate in self.permission_map.items():
+        for label, rule in self.permission_map.items():
             if not label.startswith(prefix):
                 continue
-            if predicate.is_possible_for(user):
+            if rule.is_possible_for(user):
                 return True
         return False

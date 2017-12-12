@@ -9,7 +9,7 @@ class BasePermissionMixin:
         if permission_map is None:
             permission_map = global_permission_map
         try:
-            self.predicate = permission_map[self.permission_name]
+            self.rule = permission_map[self.permission_name]
         except AttributeError:
             raise ImproperlyConfigured("permission_name is not set")
         except KeyError:
@@ -20,17 +20,17 @@ class BasePermissionMixin:
 class QuerySetPermissionMixin(BasePermissionMixin):
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
-        return self.predicate.filter(self.request.user, qs)
+        return self.rule.filter(self.request.user, qs)
 
 
 class CreatePermissionGuardMixin(BasePermissionMixin):
     def dispatch(self, request, *args, **kwargs):
-        if not self.predicate.is_possible_for(self.request.user):
+        if not self.rule.is_possible_for(self.request.user):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        if not self.predicate.check(self.request.user, form.instance):
+        if not self.rule.check(self.request.user, form.instance):
             raise SuspiciousOperation("Tried to create an instance which "
                                       "permissions do not allow")
         return super().form_valid(form)

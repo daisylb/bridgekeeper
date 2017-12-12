@@ -12,14 +12,14 @@
    :maxdepth: 2
    :caption: Guides
 
-   guides/predicates
+   guides/rules
    guides/permissions
 
 .. toctree::
    :maxdepth: 2
    :caption: Reference
 
-   api/predicates
+   api/rules
    api/querysets
    changelog
 

@@ -2,7 +2,7 @@ import pytest
 from shrubberies.factories import BranchFactory, ShrubberyFactory, UserFactory
 from shrubberies.models import Branch, Shrubbery
 
-from .predicates import Is, Relation
+from .rules import Is, Relation
 
 
 @pytest.mark.django_db

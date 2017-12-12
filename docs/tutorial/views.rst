@@ -21,7 +21,7 @@ Bridgekeeper integrates with Django's built-in user permissions mechanism, so yo
             'shrubbery': shrubbery,
         })
 
-We can also do the same thing directly through Bridgekeeper. Remember, :data:`bridgekeeper.perms` is more or less just a dict, so we can pull it out of there and call the predicate's :meth:`~bridgekeeper.predicates.Predicate.check` method:
+We can also do the same thing directly through Bridgekeeper. Remember, :data:`bridgekeeper.perms` is more or less just a dict, so we can pull it out of there and call the rule's :meth:`~bridgekeeper.rules.Rule.check` method:
 
 .. code-block:: python
     :caption: shrubberies/views.py
