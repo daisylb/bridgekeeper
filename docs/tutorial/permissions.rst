@@ -80,7 +80,7 @@ Blanket rules are rules whose outcome is only affected by the user. We said earl
 
 The built-in rule :data:`~bridgekeeper.rules.is_staff` is an blanket rule, as are :data:`~bridgekeeper.rules.is_authenticated`, :data:`~bridgekeeper.rules.is_superuser` and :data:`~bridgekeeper.rules.is_active`.
 
-We can define our own, too, by using the :class:`~bridgekeeper.rules.blanket` decorator to wrap a function that takes a user and returns a boolean:
+We can define our own, too, by using the :class:`~bridgekeeper.rules.blanket_rule` decorator to wrap a function that takes a user and returns a boolean:
 
 .. code-block:: python
     :caption: shrubberies/rules.py
