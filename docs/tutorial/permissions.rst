@@ -33,10 +33,8 @@ In this tutorial, we'll be using a example app, an online stock management porta
             ('shrubber', 'Shrubber'),
         ))
 
-
-First, we'll define permissions for our ``Store`` model. We'll define them in ``permissions.py``, because that's where Bridgekeeper will automatically load them from.
-
-:ref:`Permissions in Django <django:topic-authorization>` typically have names of the form ``appname.action_modelname``, where ``appname`` is the app name (``shrubbery`` in our case), ``modelname`` is the lowercased version of the model name, and ``action`` is one of ``create``, ``update`` or ``delete``. So, the permissions we want to create, we'll call ``shrubbery.create_store``, ``shrubbery.update_store`` and ``shrubbery.delete_store``.
+Defining Our First Permission
+-----------------------------
 
 In Bridgekeeper, permissions are defined by **rules**. A rule is an object that represents a question to ask about the user trying to gain access to something and the something that they're trying to access, and gives a yes or no answer.
 
@@ -45,6 +43,8 @@ In Bridgekeeper, permissions are defined by **rules**. A rule is an object that 
     From that description, you might be thinking that a rule object is just a function that takes a user object and a model instance and returns a boolean. While you can certainly think of them that way, internally they're a little more complex than that, for reasons that will become apparent in the next section.
 
 One of the simplest rules in Bridgekeeper is the built-in :data:`~bridgekeeper.rules.is_staff` rule, which answers "yes" if the user trying to log in has :attr:`~django.contrib.auth.models.User.is_staff` set, or "no" otherwise.
+
+We turn a rule into a **permission** by assigning it to a name. We do that by creating a file called ``permissions.py`` inside our app, importing :data:`bridgekeeper.perms` (which is a Python dictionary [#permissionmap]_ that maps permission names to their corresponding rules) and adding entries to it.
 
 .. code-block:: python
     :caption: shrubberies/permissions.py
@@ -56,7 +56,10 @@ One of the simplest rules in Bridgekeeper is the built-in :data:`~bridgekeeper.r
     perms['shrubbery.update_store'] = is_staff
     perms['shrubbery.delete_store'] = is_staff
 
-We turn rules into permissions by putting them into :data:`bridgekeeper.perms`, which is a Python dictionary that maps permission names to their rules. (It's actually a custom subclass of :class:`dict` with a few small changes, but you can treat it as if it's a normal dictionary anyway.)
+
+.. note::
+
+    We've used permission names that follow the convention set by :ref:`Django's built-in permissions mechanism <django:topic-authorization>`, so that they're used by other apps that expect that naming convention, such as Django's built-in admin. You can use whatever permission names you like, although it's best to namespace them with the name of your app followed by a full stop at the start (e.g. ``shrubbery.foo``).
 
 These permissions are now fully working; if you wanted, you could skip right through to the next section to see how to use them in your views. Don't, though, because Bridgekeeper is capable of far more.
 
@@ -131,3 +134,5 @@ We can implement that behaviour with the following permission:
             )
         )
     )
+
+.. [#permissionmap] :data:`bridgekeeper.perms` is actually an instance of :class:`~bridgekeeper.permission_map.PermissionMap`, which is a subclass of :class:`dict` with a few small changes, but you can treat it as a normal dictionary anyway.
