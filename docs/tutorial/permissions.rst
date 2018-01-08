@@ -36,11 +36,11 @@ In this tutorial, we'll be using a example app, an online stock management porta
 Defining Our First Permission
 -----------------------------
 
-In Bridgekeeper, permissions are defined by **rules**. A rule is an object that represents a question to ask about the user trying to gain access to something and the something that they're trying to access, and gives a yes or no answer.
+In Bridgekeeper, permissions are defined by **rules**. A rule is an object that can be given a user and a model instance, and decides whether or not to allow that user access to that instance.
 
 .. note::
 
-    From that description, you might be thinking that a rule object is just a function that takes a user object and a model instance and returns a boolean. While you can certainly think of them that way, internally they're a little more complex than that, for reasons that will become apparent in the next section.
+    From that description, you might be thinking that a rule object is just a function with the signature ``(user, model_instance) -> bool``. While you can certainly think of them that way, internally they're a little more complex than that, for reasons that will become apparent in the next section.
 
 One of the simplest rules in Bridgekeeper is the built-in :data:`~bridgekeeper.rules.is_staff` rule, which answers "yes" if the user trying to log in has :attr:`~django.contrib.auth.models.User.is_staff` set, or "no" otherwise.
 
