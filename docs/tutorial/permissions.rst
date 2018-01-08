@@ -26,6 +26,14 @@ In this tutorial, we'll be using a example app, an online stock management porta
 
 
     class Profile(models.Model):
+        """User profile.
+
+        Every user has one Profile object attached to them, which is
+        automatically created when the user is added, and holds information
+        about which branch of which store they belong to and what their
+        role is.
+        """
+
         user = models.OneToOneField(User, on_delete=models.CASCADE)
         branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
         role = models.CharField(max_length=16, choices=(
@@ -96,12 +104,58 @@ If we wanted to restrict the ability to edit shrubberies in our app to only user
 
     perms['shrubbery.update_shrubbery'] = is_shrubber
 
-Model Rules
------------
+Matching Against Model Instance Attributes
+------------------------------------------
 
-.. todo::
+Blanket rules let us allow or deny access to entire model classes based on the user, but we can also allow access to only certain instances. Consider the following requirement:
 
-    Fill out this section
+    Users can only edit shrubberies that belong to their branch.
+
+We can model this as a Bridgekeeper rule by creating an instance of the :class:`~bridgekeeper.rules.Attribute` class:
+
+.. code-block:: python
+    :caption: shrubberies/permissions.py
+
+    from bridgekeeper.rules import Attribute
+
+    perms['shrubbery.update_shrubbery'] = Attribute('branch', lambda user: user.profile.branch)
+
+You can think of :class:`~bridgekeeper.rules.Attribute` as the Bridgekeeper equivalent to the standard library's :func:`getattr` function. It will only allow access when the attribute named in the first argument (here, ``'branch'``) matches whatever is in the second argument. The second argument can either be a constant, or—as we've used here—a function that takes the current user and returns something to match against.
+
+Traversing Relationships
+------------------------
+
+What if we change the requirement to something like this?
+
+    Users can only edit shrubberies that belong to their store.
+
+Shrubberies don't have a ``store`` attribute; we have to go through the ``branch`` attribute to figure out which store a shrubbery belongs to, so we can't use :class:`~bridgekeeper.rules.Attribute`.
+
+This is where the :class:`~bridgekeeper.rules.Relation` class comes in. :class:`~bridgekeeper.rules.Relation` is similar to :class:`~bridgekeeper.rules.Attribute`, but instead of taking a constant or function as its last argument, it takes *another rule object*, which is applied to the other side of the relation.
+
+.. note::
+
+    :class:`~bridgekeeper.rules.Relation` currently takes three arguments. The first and last are described above, but the middle argument is the model class the relation points to.
+
+    This argument will be removed before the 1.x release series; for more details see `issue #3`_.
+
+ .. _`issue #3`: https://github.com/adambrenecki/bridgekeeper/issues/3
+
+
+.. code-block:: python
+    :caption: shrubberies/permissions.py
+
+    from bridgekeeper.rules import Relation
+
+    from . import models
+
+    perms['shrubbery.update_shrubbery'] = Relation(
+        'branch',
+        models.Branch,
+        # This rule gets checked against the branch object, not the shrubbery
+        Attribute('store', lambda user: user.profile.branch.store),
+    )
+
 
 Combining Rules Together
 ------------------------
@@ -124,9 +178,7 @@ We can implement that behaviour with the following permission:
     from . import models
 
     perms['shrubbery.update_shrubbery'] = is_staff | (
-        is_apprentice & Relation(
-            'branch', models.Branch, Is(lambda user: user.profile.branch),
-        )
+        is_apprentice & Attribute('branch', lambda user: user.profile.branch)
     ) | (
         is_shrubber & Relation(
             'branch', models.Branch, Relation(
