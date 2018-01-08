@@ -38,7 +38,13 @@ First, we'll define permissions for our ``Store`` model. We'll define them in ``
 
 :ref:`Permissions in Django <django:topic-authorization>` typically have names of the form ``appname.action_modelname``, where ``appname`` is the app name (``shrubbery`` in our case), ``modelname`` is the lowercased version of the model name, and ``action`` is one of ``create``, ``update`` or ``delete``. So, the permissions we want to create, we'll call ``shrubbery.create_store``, ``shrubbery.update_store`` and ``shrubbery.delete_store``.
 
-In Bridgekeeper, permissions are made up of **rules**, which you can think of as questions to ask about the user that is trying to gain access, and the objects they're trying to gain access to. For the ``Store`` model, we only want the administrators of our marketplace to be able to manipulate stores, so we can use the built-in :data:`~bridgekeeper.rules.is_staff` rule, which asks "Is the user a staff user?":
+In Bridgekeeper, permissions are defined by **rules**. A rule is an object that represents a question to ask about the user trying to gain access to something and the something that they're trying to access, and gives a yes or no answer.
+
+.. note::
+
+    From that description, you might be thinking that a rule object is just a function that takes a user object and a model instance and returns a boolean. While you can certainly think of them that way, internally they're a little more complex than that, for reasons that will become apparent in the next section.
+
+One of the simplest rules in Bridgekeeper is the built-in :data:`~bridgekeeper.rules.is_staff` rule, which answers "yes" if the user trying to log in has :attr:`~django.contrib.auth.models.User.is_staff` set, or "no" otherwise.
 
 .. code-block:: python
     :caption: shrubberies/permissions.py
@@ -52,7 +58,7 @@ In Bridgekeeper, permissions are made up of **rules**, which you can think of as
 
 We turn rules into permissions by putting them into :data:`bridgekeeper.perms`, which is a Python dictionary that maps permission names to their rules. (It's actually a custom subclass of :class:`dict` with a few small changes, but you can treat it as if it's a normal dictionary anyway.)
 
-These permissions are now fully working; if you wanted, you could skip right through to the next section to see how to use them in your views. Don't, though, because we've just scratched the surface.
+These permissions are now fully working; if you wanted, you could skip right through to the next section to see how to use them in your views. Don't, though, because Bridgekeeper is capable of far more.
 
 .. _tutorial-blanket:
 
