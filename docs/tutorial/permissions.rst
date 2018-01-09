@@ -76,11 +76,11 @@ These permissions are now fully working; if you wanted, you could skip right thr
 Blanket Rules
 -------------
 
-Blanket rules are rules whose outcome is only affected by the user. We said earlier that rules are *questions to ask about the user that is trying to gain access, and the objects they're trying to gain access to*; blanket rules are *questions to ask about the user that is trying to gain access*, without regard for what they're accessing.
+A blanket rule is a rule that decides whether or not to allow access based solely on the user that's trying to access the resource. They'll either allow access to everything or nothing at all, hence the name.
 
-The built-in rule :data:`~bridgekeeper.rules.is_staff` is an blanket rule, as are :data:`~bridgekeeper.rules.is_authenticated`, :data:`~bridgekeeper.rules.is_superuser` and :data:`~bridgekeeper.rules.is_active`.
+We've already used one blanket rule—the built-in :data:`~bridgekeeper.rules.is_staff` rule—but we can also define our own, by using the :class:`~bridgekeeper.rules.blanket_rule` decorator to wrap a function that takes a user and returns a boolean.
 
-We can define our own, too, by using the :class:`~bridgekeeper.rules.blanket_rule` decorator to wrap a function that takes a user and returns a boolean:
+In this example, we're using the ``role`` attribute on each user's associated ``Profile`` instance to restrict access to users that have been assigned a particular role:
 
 .. code-block:: python
     :caption: shrubberies/rules.py
@@ -95,7 +95,12 @@ We can define our own, too, by using the :class:`~bridgekeeper.rules.blanket_rul
     def is_shrubber(user):
         return user.profile.role == 'shrubber'
 
-If we wanted to restrict the ability to edit shrubberies in our app to only users that have the Shrubber role, we could write something like this:
+If we were given a requirement like this:
+
+    Only shrubbers can edit shrubberies.
+
+
+We could use our new ``is_shrubber`` rule the same way that we used ``is_staff`` before:
 
 .. code-block:: python
     :caption: shrubberies/permissions.py
@@ -160,15 +165,27 @@ This is where the :class:`~bridgekeeper.rules.Relation` class comes in. :class:`
 Combining Rules Together
 ------------------------
 
-Rules, much like :class:`~django.db.models.Q` objects, can be combined using the ``|`` (or), ``&`` (and), and ``~`` (not) operators.
+All of the rules that we've seen so far are quite simple, each only checking one thing. Fortunately, Bridgekeeper rules can be combined together, letting us model much more complex requirements.
 
-For instance, the expression ``~is_apprentice`` will return a new rule that is true for all users that aren't apprentices, and the expression ``is_staff | is_shrubber`` for all users that have the ``is_staff`` flag set, or that have the ``'shrubber'`` role in their profile.
+We do this using the ``&``, ``|`` and ``~`` operators. (If you've used :class:`~django.db.models.Q` objects, combining Bridgekeeper rules will feel familiar.)
 
-For a more complex example, let's say that we wanted the following rule to apply:
+- Prefixing a rule with ``~`` inverts it. For example, the expression ``~is_apprentice`` returns a rule that allows access to everyone that is **not** an apprentice shrubber.
+- Combining two rules with ``|`` allows access if *either* rule matches. For example, ``is_staff | is_shrubber`` allows access to users that are either administrative staff **or** shrubbers.
+- Combining two rules with ``&`` allows access if *both* rules match. For example, ``is_staff & is_shrubber`` allows access to users that are both administrative staff **and** shrubbers.
+
+For a more complex example, let's say that we needed to model the following requirement:
 
     Administrative staff (with ``is_staff`` set) can edit all shrubberies in the system. Shrubbers can edit all shrubberies in the store they belong to. Apprentice shrubbers can edit all shrubberies in their branch.
 
-We can implement that behaviour with the following permission:
+First, we need to rephrase this requirement so that it's made up of simpler rules combined with **and**, **or**, and **not**.
+
+    Users can edit shrubberies if:
+
+    - They are administrative staff (with ``is_staff`` set), **or**
+    - They are a shrubber, **and** the shrubbery belongs to the same store as them, **or**
+    - They are an apprentice shrubber, **and** the shrubbery belongs to the same branch as them
+
+In earlier sections of this chapter, we've already talked about rules that allow access to staff users and users with particular roles. We've also already discussed rules that allow access only to shrubberies belonging to the same store or branch as the user trying to access them. All we need to do now is combine them together:
 
 .. code-block:: python
     :caption: shrubberies/permissions.py
@@ -178,13 +195,13 @@ We can implement that behaviour with the following permission:
     from . import models
 
     perms['shrubbery.update_shrubbery'] = is_staff | (
-        is_apprentice & Attribute('branch', lambda user: user.profile.branch)
-    ) | (
         is_shrubber & Relation(
-            'branch', models.Branch, Relation(
-                'store', models.Store, Is(lambda user: user.profile.branch.store),
-            )
+            'branch',
+            models.Branch,
+            Attribute('store', lambda user: user.profile.branch.store),
         )
+    ) | (
+        is_apprentice & Attribute('branch', lambda user: user.profile.branch)
     )
 
 .. [#permissionmap] :data:`bridgekeeper.perms` is actually an instance of :class:`~bridgekeeper.permission_map.PermissionMap`, which is a subclass of :class:`dict` with a few small changes, but you can treat it as a normal dictionary anyway.
