@@ -20,7 +20,7 @@
    :caption: Reference
 
    api/rules
-   api/querysets
+   api/helpers
    changelog
 
 

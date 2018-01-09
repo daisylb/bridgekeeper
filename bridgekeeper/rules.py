@@ -31,29 +31,6 @@ class Rule:
     use (or write!) a subclass instead, as this class will raise
     :class:`NotImplementedError` if you try to actually do anything
     with it.
-
-    Subclasses will need to override the :meth:`query` and :meth:`check`
-    methods.
-
-    .. note::
-
-        To aid in testing, here are some invariants that every instance
-        of every subclass of this class should satisfy:
-
-        - For every user ``u``, for every instance ``i`` of a given
-          model ``A``, ``check(u, i)`` should be ``True`` if and only if
-          ``u`` is in the queryset returned by
-          ``filter(u, A.objects.all())``
-        - For every user ``u``, for every queryset ``q``:
-
-            - ``filter(u, q)`` returns ``UNIVERSAL`` if and only if
-              ``check(u, i)`` returns ``True`` for every possible
-              instance ``i``.
-            - ``filter(u, q)`` returns ``EMPTY`` if and only if
-              ``check(u, i)`` returns ``False`` for every possible
-              instance ``i``.
-            - ``check(u, None)`` returns ``True`` if and only if
-              ``filter(u, q)`` returns ``UNIVERSAL``.
     """
 
     def filter(self, user, queryset):
