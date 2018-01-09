@@ -2,3 +2,4 @@
 # when trying to install Bridgekeeper.
 -e .[dev]
 django
+setuptools_scm
