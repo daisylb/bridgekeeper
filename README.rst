@@ -1,6 +1,15 @@
 Bridgekeeper
 -------------------------------
 
+.. image:: https://img.shields.io/circleci/project/github/adambrenecki/bridgekeeper/master.svg
+   :target: https://circleci.com/gh/adambrenecki/bridgekeeper
+.. image:: https://img.shields.io/readthedocs/bridgekeeper.svg
+   :target: https://bridgekeeper.readthedocs.io/
+.. image:: https://img.shields.io/pypi/v/bridgekeeper.svg
+   :target: https://pypi.python.org/pypi/bridgekeeper/
+.. image:: https://img.shields.io/requires/github/adambrenecki/bridgekeeper.svg
+   :target: https://requires.io/github/adambrenecki/bridgekeeper/requirements/?branch=master
+
     | Who would cross the Bridge of Death
     | must answer me these questions three,
     | ere the other side he see.
