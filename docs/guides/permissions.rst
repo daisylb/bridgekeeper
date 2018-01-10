@@ -30,10 +30,10 @@ All we need to do is call :meth:`~bridgekeeper.rules.Rule.filter` instead of :me
     qs = models.Shrubbery.objects.all()
     filtered_qs = perms['shrubberies.view_shrubbery'].filter(user, qs)
 
-Bridgekeeper's :meth:`~bridgekeeper.rules.Rule.filter` method just calls :meth:`~django.db.models.query.QuerySet.filter` on the QuerySet it's supplied and returns the result. This means it's safe to call :meth:`~django.db.models.query.QuerySet.filter`, :meth:`~django.db.models.query.QuerySet.exclude`, :meth:`~django.db.models.query.QuerySet.order_by` and so on, on your QuerySet either before you pass it in to Bridgekeeper or after it's returned; it's also safe to slice the queryset or pass it into a paginator after you get it out of Bridgekeeper.
+Bridgekeeper's :meth:`~bridgekeeper.rules.Rule.filter` takes any QuerySet, and returns another normal QuerySet (it actually just calls the QuerySet's :meth:`~django.db.models.query.QuerySet.filter` method internally). This means you can call :meth:`~django.db.models.query.QuerySet.filter`, :meth:`~django.db.models.query.QuerySet.exclude` or :meth:`~django.db.models.query.QuerySet.order_by` your QuerySet before you pass it in, or you can :meth:`~django.db.models.query.QuerySet.filter`, :meth:`~django.db.models.query.QuerySet.exclude`, :meth:`~django.db.models.query.QuerySet.order_by`, slice or paginate the QuerySet that Bridgekeeper returns to you.
 
-Checking Permissions Globally
------------------------------
+Checking Permissions For All Possible Instances
+-----------------------------------------------
 
 Django's :meth:`~django.contrib.auth.models.User.has_perm` (and thus also Bridgekeeper's :meth:`~bridgekeeper.rules.Rule.check`) allows supplying only a permission name, and not an object instance::
 
@@ -43,25 +43,32 @@ Django's :meth:`~django.contrib.auth.models.User.has_perm` (and thus also Bridge
 
 Once again, these calls are equivalent, aside from the caveat described above regarding authorisation backends other than Bridgekeeper.
 
-When you check permissions like this without supplying an instance, Bridgekeeper will return ``True`` if and only if the user has that permission for *every possible instance* that could ever exist. As an example of this, let's say that the permission we checked for above was defined to allow staff users access to all shrubberies, and everyone else access to shrubberies in their own branch::
+When you check permissions like this without supplying an instance, Bridgekeeper will return ``True`` if and only if the user has that permission **for every possible instance that could ever exist**. (This is not the same thing as checking whether the user has the permission for every instance *currently in the database*; in fact, this check doesn't actually hit the database at all.)
+
+As an example of this, let's say that the ``shrubberies.view_shrubbery`` permission was defined to allow staff users access to all shrubberies, and everyone else access to shrubberies in their own branch::
 
     perms['shrubberies.view_shrubbery'] = is_staff | Attribute(
         'branch', lambda user: user.profile.branch,
     )
 
-In this case, the check would return ``True`` for a staff user, since they will always have access to every possible shrubbery. It will return ``False`` for a regular user, even if every shrubbery currently in the database belongs to their branch, because it is possible for a shrubbery to be created that belongs to a different branch.
+In this case, the check would return ``True`` for a staff user, since they will always have access to every possible shrubbery. It will return ``False`` for a regular user, even if every shrubbery currently in the database belongs to their branch, because it is possible for a shrubbery to be created that belongs to a different branch, which they would then be blocked from editing.
+
+Checking Permissions For *Any* Possible Instances
+-------------------------------------------------
 
 Bridgekeeper also provides a second method, :meth:`~bridgekeeper.rules.is_possible_for`, which is the opposite of the above behaviour, in a way::
 
     perms['shrubberies.update_shrubbery'].is_possible_for(user)
 
-This check will return ``False`` if and only if the user cannot have that permission for *any possible instance* that could ever exist. As an example of this, let's say that the permission we checked for above was defined to allow only shrubbers to edit shrubberies inside their own branch, using the ``is_shrubber`` rule we created in the :ref:`tutorial-blanket` section of the tutorial::
+This check will return ``True`` if and only if the user could possibly have that permission for **any possible instance that could exist**. (Once again, this is not the same as checking whether the user has the permission for at least one instance *currently in the database*, and once again it doesn't actually hit the database at all.)
+
+As an example of this, let's say that the ``shrubberies.view_shrubbery`` permission was defined to allow only shrubbers to edit shrubberies inside their own branch, using the ``is_shrubber`` rule we created in the :ref:`tutorial-blanket` section of the tutorial and combining it with an :class:`~bridgekeeper.rules.Attribute` check::
 
     perms['shrubberies.view_shrubbery'] = is_shrubber & Attribute(
         'branch', lambda user: user.profile.branch,
     )
 
-In this case, the check will return ``False`` for a user with the ``'apprentice'`` role, because only users with the ``'shrubber'`` role can access anything. It will always return ``True`` for a shrubber, however, even if all shrubberies currently in the database belong to different branches, beacuse it is possible for a shrubbery to be created that belongs to their branch.
+In this case, the check will return ``False`` for a user with the ``'apprentice'`` role, because only users with the ``'shrubber'`` role can access anything. It will always return ``True`` for a shrubber, however, even if there are no shrubberies belonging to their branch currently in the database, beacuse it is possible for a shrubbery to exist that belongs to their branch, which they would then be allowed to edit.
 
 .. note::
 
