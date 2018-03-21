@@ -21,6 +21,7 @@ import os
 import re
 import sys
 
+import django
 from setuptools_scm import get_version
 
 sys.path.insert(0, os.path.abspath('_ext'))
@@ -182,3 +183,9 @@ intersphinx_mapping = {
     'django': ('https://docs.djangoproject.com/en/1.11/',
                'https://docs.djangoproject.com/en/1.11/_objects/'),
 }
+
+# Django REST Framework has import side-effects that require Django to be
+# configured before it is imported, and we need to import it for autodoc
+sys.path.insert(0, os.path.abspath('../testproject'))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'testproject.settings'
+django.setup()

@@ -21,6 +21,7 @@
 
    api/rules
    api/helpers
+   api/rest_framework
    changelog
 
 
