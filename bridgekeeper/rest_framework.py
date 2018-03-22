@@ -1,16 +1,16 @@
+from logging import getLogger
+
 from bridgekeeper import perms
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Model, QuerySet
+from rest_framework.filters import BaseFilterBackend
 from rest_framework.permissions import BasePermission
 
+logger = getLogger(__name__)
 
-class RulePermissions(BasePermission):
-    """Django REST Framework permission class for Bridgekeeper.
 
-    Note that this class **does not**, by itself, perform queryset
-    filtering on list views, since Django REST Framework doesn't provide
-    an API for permission classes to do so.
-    """
+class BridgekeeperRESTMixin:
+    """Mixin for Django REST Framework integration classes."""
 
     def get_action(self, request, view, obj=None):
         """Return the action that a particular request is performing.
@@ -109,6 +109,7 @@ class RulePermissions(BasePermission):
         :rtype: bridgekeeper.rules.Rule
         """
         name = self.get_permission_name(request, view, obj)
+        print(name, flush=True)
         try:
             return perms[name]
         except KeyError:
@@ -120,8 +121,40 @@ class RulePermissions(BasePermission):
                 "to return the correct permission.".format(name=name)
             )
 
+
+class RulePermissions(BridgekeeperRESTMixin, BasePermission):
+    """Django REST Framework permission class for Bridgekeeper.
+
+    Note that this class **does not**, by itself, perform queryset
+    filtering on list views, since Django REST Framework doesn't provide
+    an API for permission classes to do so.
+    """
+
     def has_permission(self, request, view):
         return self.get_permission(request, view).is_possible_for(request.user)
 
     def has_object_permission(self, request, view, obj):
         return self.get_permission(request, view, obj).check(request.user, obj)
+
+
+class RuleFilter(BridgekeeperRESTMixin, BaseFilterBackend):
+    """Django REST Framework filter class for Bridgekeeper.
+
+    This filter class doesn't expect any client interaction or present
+    any UI to the API explorer; it's simply a mechanism for
+    automatically filtering QuerySets according to Bridgekeeper
+    permissions.
+
+    Note that this filter will always check the ``view`` permission;
+    this means that if a particular user has permissions to edit but not
+    view something, they'll get 404s on everything. That said, it
+    doesn't make much sense for users to have edit but not view
+    permissions on something anyway.
+    """
+
+    def get_action(self, request, view, obj=None):
+        return "view"
+
+    def filter_queryset(self, request, queryset, view):
+        return self.get_permission(request, view).filter(
+            request.user, queryset)
