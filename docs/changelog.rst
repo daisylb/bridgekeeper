@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.4
+---
+
+- Added initial support for Django REST Framework.
+- Documentation improvements.
+
 0.3
 ---
 
