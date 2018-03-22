@@ -14,6 +14,7 @@
 
    guides/rules
    guides/permissions
+   guides/rest_framework
 
 .. toctree::
    :maxdepth: 2
