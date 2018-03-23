@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.5
+---
+
+- Minor Django REST Framework-related fixes.
+
 0.4
 ---
 
