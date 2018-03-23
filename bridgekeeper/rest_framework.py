@@ -12,6 +12,25 @@ logger = getLogger(__name__)
 class BridgekeeperRESTMixin:
     """Mixin for Django REST Framework integration classes."""
 
+    def skip_permission_checks(self, request, view, obj=None):
+        """Skips all permission checks for certain requests.
+
+        The default implementation will skip permission checks for
+        the ``APIRootView`` view class used by the built-in
+        ``DefaultRouter``.
+
+        :returns: Whether to skip permission checks for the
+            given request.
+        :rtype: bool
+        """
+        # This causes an import cycle if it's at the top level,
+        # because REST Framework has import side effects, yay
+        from rest_framework.routers import APIRootView
+
+        if isinstance(view, APIRootView):
+            return True
+        return False
+
     def get_action(self, request, view, obj=None):
         """Return the action that a particular request is performing.
 
@@ -131,9 +150,13 @@ class RulePermissions(BridgekeeperRESTMixin, BasePermission):
     """
 
     def has_permission(self, request, view):
+        if self.skip_permission_checks(request, view):
+            return True
         return self.get_permission(request, view).is_possible_for(request.user)
 
     def has_object_permission(self, request, view, obj):
+        if self.skip_permission_checks(request, view, obj):
+            return True
         return self.get_permission(request, view, obj).check(request.user, obj)
 
 
@@ -156,5 +179,7 @@ class RuleFilter(BridgekeeperRESTMixin, BaseFilterBackend):
         return "view"
 
     def filter_queryset(self, request, queryset, view):
+        if self.skip_permission_checks(request, view):
+            return queryset
         return self.get_permission(request, view).filter(
             request.user, queryset)
