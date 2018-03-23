@@ -9,8 +9,8 @@ If you want to use Django REST Framework and Bridgekeeper together, you'll need 
     REST_FRAMEWORK = {
         'DEFAULT_PERMISSION_CLASSES': (
             'bridgekeeper.rest_framework.RulePermissions',
-        )
-        'DEFAULT_FILTER_BACKENDS': ('bridgekeeper.rest_framework.RuleFilter',)
+        ),
+        'DEFAULT_FILTER_BACKENDS': ('bridgekeeper.rest_framework.RuleFilter',),
     }
 
 .. info::
