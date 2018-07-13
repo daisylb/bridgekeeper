@@ -261,7 +261,7 @@ def always_deny(_):
 
 @blanket_rule
 def is_authenticated(user):
-    return user.is_authenticated()
+    return user.is_authenticated
 
 
 @blanket_rule
@@ -276,7 +276,7 @@ def is_staff(user):
 
 @blanket_rule
 def is_active(user):
-    return user.is_active()
+    return user.is_active
 
 
 class Attribute(Rule):
