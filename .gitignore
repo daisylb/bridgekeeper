@@ -6,3 +6,5 @@ bridgekeeper.egg-info
 docs/_build/*
 **/__pycache__
 .cache
+.pytest_cache
+.tox

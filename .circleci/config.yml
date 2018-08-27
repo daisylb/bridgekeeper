@@ -3,49 +3,41 @@ workflows:
   version: 2
   test:
     jobs:
-      - test-py36-dj111
-      - test-py35-dj111
-      - test-py36-dj20
-      - test-py35-dj20
+      - test-py36
+      - test-py35
+      - test-py34
 jobs:
-  test-py36-dj111: &test-template
+  test-py36: &test-template
     docker:
       - image: circleci/python:3.6
     environment:
-      DJANGO_VERSION: 1.11.0
-    working_directory: ~/repo
+      PY_FACTOR: py36
     steps:
       - checkout
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "setup.py" }}
-          - v1-dependencies-
+          - v2-dependencies-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}
+          - v2-dependencies-
       - run:
-          name: Install dependencies
+          name: run tox
           command: |
-            python -m venv venv
-            . venv/bin/activate
-            pip install -e .[dev] django~=$DJANGO_VERSION
+            pip install --user tox
+            export TOXENV=$(~/.local/bin/tox --listenvs | grep "^${PY_FACTOR}-" | tr '\n' ',')
+            ~/.local/bin/tox
       - save_cache:
           paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "setup.py" }}
-      - run:
-          name: Run tests
-          command: |
-            . venv/bin/activate
-            pytest
-  test-py35-dj111:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5
-  test-py36-dj20:
-    <<: *test-template
-    environment:
-      DJANGO_VERSION: 2.0.0
-  test-py35-dj20:
+            - ~/.local
+            - ./.tox
+          key: v2-dependencies-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}
+  test-py35:
     <<: *test-template
     docker:
       - image: circleci/python:3.5
     environment:
-      DJANGO_VERSION: 2.0.0
+      PY_FACTOR: py35
+  test-py34:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.4
+    environment:
+      PY_FACTOR: py34
