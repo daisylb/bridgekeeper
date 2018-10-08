@@ -10,6 +10,8 @@ Bridgekeeper
 .. image:: https://img.shields.io/requires/github/adambrenecki/bridgekeeper.svg
    :target: https://requires.io/github/adambrenecki/bridgekeeper/requirements/?branch=master
 
+..
+
     | Who would cross the Bridge of Death
     | must answer me these questions three,
     | ere the other side he see.
