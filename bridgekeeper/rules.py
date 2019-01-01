@@ -4,7 +4,7 @@ This module defines the :class:`Rule` base class, as well as a
 number of built-in rules.
 """
 
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 
 
 class Sentinel:
@@ -335,8 +335,7 @@ class Attribute(Rule):
 class Is(Rule):
     """Rule class that checks the identity of the instance.
 
-    This rule is satisfied only by the specific model instance that
-    is passed in as an argument.
+    This rule is satisfied only by a the provided model instance.
 
     :param instance: The instance to match against, or a callable that
         takes a user and returns a value to match against.
@@ -363,6 +362,59 @@ class Is(Rule):
         if instance is None:
             return False
         return instance == self.get_instance(user)
+
+
+#: This rule is satisfied by the user object itself.
+current_user = Is(lambda user: user)
+
+
+class In(Rule):
+    """Rule class that checks the instance is a member of a collection.
+
+    This rule is satisfied only by model instances that are members of
+    the provided collection.
+
+    :param collection: The collection to match against, or a callable
+        that takes a user and returns a value to match against.
+
+    For instance, if you only wanted to match groups a user is in::
+
+        own_profile = Is(lambda user: user.profile)
+    """
+
+    def __init__(self, collection):
+        self.collection = collection
+
+    def get_collection(self, user):
+        return self.collection(user) if callable(self.collection) else self.collection
+
+    def __repr__(self):
+        return "In({!r})".format(self.collection)
+
+    def query(self, user):
+        collection = self.get_collection(user)
+        if isinstance(collection, QuerySet):
+            return Q(pk__in=collection.values_list('pk'))
+        return Q(pk__in=[x.pk for x in collection])
+
+    def check(self, user, instance=None):
+        if instance is None:
+            return False
+
+        collection = self.get_collection(user)
+
+        if isinstance(collection, QuerySet):
+            # If we have a queryset, the rule passes if the instance is
+            # of the same model, and the pk is present in the qs
+            if not isinstance(instance, collection.model):
+                return False
+            return collection.filter(pk=instance.pk).exists()
+
+        return instance in collection
+
+
+#: This rule is satisfied by any group the user is in.
+in_current_groups = In(lambda user: user.groups.all())
 
 
 class Relation(Rule):

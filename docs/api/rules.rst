@@ -51,6 +51,15 @@ Rules
 
     .. autoclass:: Is
 
+    .. autoclass:: In
+
+    Built-in rule instances
+    -----------------------
+
+    .. autodata:: current_user
+
+    .. autodata:: in_current_groups
+
     Extension Points (For Writing Your Own ``Rule`` Subclasses)
     ----------------
 
