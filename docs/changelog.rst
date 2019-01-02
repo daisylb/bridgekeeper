@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.7
+---
+
+Add :class:`~bridgekeeper.rules.In` permission class, and two predefined rule instances, :data:`~bridgekeeper.rules.current_user` and :data:`~bridgekeeper.rules.in_current_groups`.
+
 0.5
 ---
 
