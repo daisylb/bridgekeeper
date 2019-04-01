@@ -131,6 +131,9 @@ class Rule:
     def __not__(self):
         return Not(self)
 
+    def __invert__(self):
+        return Not(self)
+
 
 class BinaryCompositeRule(Rule):
     def __init__(self, left, right):
@@ -219,6 +222,9 @@ class Not(Rule):
 
     def check(self, user, instance=None):
         return not self.base.check(user, instance)
+
+    def __invert__(self):
+        return self.base
 
 
 class blanket_rule(Rule):  # noqa: used as a decorator, so should be lowercase
