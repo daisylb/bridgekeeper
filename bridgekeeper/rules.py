@@ -279,6 +279,39 @@ def is_active(user):
     return user.is_active
 
 
+class R(Rule):
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def __repr__(self):
+        return "R({})".format(
+            ", ".join(
+                "{}={!r}".format(k, v) for k, v in self.kwargs.items()
+            )
+        )
+
+    def get_pairs(self, user):
+        for k, v in self.kwargs.items():
+            key_split = k.split('__')
+            value = v(user) if callable(v) else v
+            yield (key_split, value)
+
+    def check(self, user, instance=None):
+        for key, value in self.get_pairs(user):
+            if len(key) == 1:
+                if instance is None:
+                    return False
+                if getattr(instance, key[0]) != value:
+                    return False
+            else:
+                raise ValueError('Key paths are not supported yet')
+        return True
+
+    def query(self, user):
+        return Q(**{'__'.join(k): v for k, v in self.get_pairs(user)})
+
+
 class Attribute(Rule):
     """Rule class that checks the value of an instance attribute.
 
