@@ -298,14 +298,15 @@ class R(Rule):
             yield (key_split, value)
 
     def check(self, user, instance=None):
+        if instance is None:
+            return False
+
         for key, value in self.get_pairs(user):
-            if len(key) == 1:
-                if instance is None:
-                    return False
-                if getattr(instance, key[0]) != value:
-                    return False
-            else:
-                raise ValueError('Key paths are not supported yet')
+            thing_to_compare = instance
+            for key_fragment in key:
+                thing_to_compare = getattr(instance, key_fragment)
+            if thing_to_compare != value:
+                return False
         return True
 
     def query(self, user):
