@@ -280,6 +280,8 @@ def is_active(user):
 
 
 class R(Rule):
+    """.. todo:: document
+    """
 
     def __init__(self, **kwargs):
         self.kwargs = kwargs
@@ -314,7 +316,21 @@ class R(Rule):
 
 
 class Attribute(Rule):
-    """Rule class that checks the value of an instance attribute.
+    """.. deprecated:: 0.8
+
+        Use :class:`~bridgekeeper.rules.R` objects instead.
+
+        ::
+
+            # old
+            Attribute('colour', matches='blue')
+            Attribute('tenant', lambda user: user.tenant)
+
+            # new
+            R(colour='blue')
+            R(tenant=lambda user: user.tenant)
+
+    Rule class that checks the value of an instance attribute.
 
     This rule is satisfied by model instances where the attribute
     given in ``attr`` matches the value given in ``matches``.
