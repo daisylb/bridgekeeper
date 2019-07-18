@@ -1,6 +1,12 @@
 Changelog
 =========
 
+dev
+---
+
+- **Breaking change:** :class:`~bridgekeeper.rules.Relation` and :class:`~bridgekeeper.rules.ManyRelation` no longer require the model class on the other side of the relation to be passed in as an argument.
+- **Breaking change:** Python 3.4 and Django 1.11 are no longer supported.
+
 0.7
 ---
 

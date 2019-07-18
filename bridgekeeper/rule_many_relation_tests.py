@@ -1,6 +1,6 @@
 import pytest
-from shrubberies.factories import BranchFactory, StoreFactory, UserFactory
-from shrubberies.models import Branch, Store
+from shrubberies.factories import StoreFactory, UserFactory
+from shrubberies.models import Store
 
 from .rules import Is, ManyRelation
 
@@ -12,7 +12,7 @@ def test_many_relation_to_user():
     u1 = UserFactory(profile__branch__store=s1)
     u2 = UserFactory(profile__branch__store=s2)
     user_branch_in_store = ManyRelation(
-        'branch_set', 'branch', Branch, Is(lambda u: u.profile.branch))
+        'branch_set', 'branch', Is(lambda u: u.profile.branch))
 
     assert user_branch_in_store.check(u1, s1)
     assert user_branch_in_store.check(u2, s2)
@@ -33,5 +33,5 @@ def test_many_relation_to_user():
 def test_many_relation_never_global():
     user = UserFactory()
     user_branch_in_store = ManyRelation(
-        'branch_set', 'branch', Branch, Is(lambda u: u.profile.branch))
+        'branch_set', 'branch', Is(lambda u: u.profile.branch))
     assert not user_branch_in_store.check(user)

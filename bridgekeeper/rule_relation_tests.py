@@ -1,6 +1,6 @@
 import pytest
-from shrubberies.factories import BranchFactory, ShrubberyFactory, UserFactory
-from shrubberies.models import Branch, Shrubbery
+from shrubberies.factories import ShrubberyFactory, UserFactory
+from shrubberies.models import Shrubbery
 
 from .rules import Is, Relation
 
@@ -12,7 +12,7 @@ def test_relation_to_user():
     s1 = ShrubberyFactory(branch=u1.profile.branch)
     s2 = ShrubberyFactory(branch=u2.profile.branch)
     belongs_to_branch = Relation(
-        'branch', Branch, Is(lambda u: u.profile.branch))
+        'branch', Is(lambda u: u.profile.branch))
 
     assert belongs_to_branch.check(u1, s1)
     assert belongs_to_branch.check(u2, s2)
@@ -33,5 +33,5 @@ def test_relation_to_user():
 def test_relation_never_global():
     user = UserFactory()
     belongs_to_branch = Relation(
-        'branch', Branch, Is(lambda u: u.profile.branch))
+        'branch', Is(lambda u: u.profile.branch))
     assert not belongs_to_branch.check(user)

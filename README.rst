@@ -27,7 +27,7 @@ This means that you can efficiently show a :class:`~django.views.generic.list.Li
 .. _django: https://djangoproject.com/
 .. _django-rules: https://github.com/dfunckt/django-rules
 
-Bridgekeeper works on Django 1.11 and 2.0 on Python 3.5+, and is licensed under the MIT License.
+Bridgekeeper works on Django 2.0+ on Python 3.5+, and is licensed under the MIT License.
 
 .. warning::
 
