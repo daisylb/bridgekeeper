@@ -280,7 +280,17 @@ def is_active(user):
 
 
 class R(Rule):
-    """.. todo:: document
+    """Rules that depend on the values of objects.
+
+    ``R`` takes a set of field lookups.
+
+    On the left are attributes, specified just as in a
+    :class:`~django.db.models.Q` object, or in the arguments to
+    :class:`
+
+    right: thing to match, function returning thing to match,
+    rule object (only if LHS refers to a model instance or collection
+    thereof)
     """
 
     def __init__(self, **kwargs):
@@ -316,7 +326,9 @@ class R(Rule):
 
 
 class Attribute(Rule):
-    """.. deprecated:: 0.8
+    """Rule class that checks the value of an instance attribute.
+
+    .. deprecated:: 0.8
 
         Use :class:`~bridgekeeper.rules.R` objects instead.
 
@@ -329,8 +341,6 @@ class Attribute(Rule):
             # new
             R(colour='blue')
             R(tenant=lambda user: user.tenant)
-
-    Rule class that checks the value of an instance attribute.
 
     This rule is satisfied by model instances where the attribute
     given in ``attr`` matches the value given in ``matches``.
