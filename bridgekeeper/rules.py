@@ -475,16 +475,8 @@ class ManyRelation(Rule):
     across a :class:`~django.db.models.ManyToManyField`, or the remote
     end of a :class:`~django.db.models.ForeignKey`.
 
-    :param attr: Name of a many-object relationship to check. This is
-        the accessor name; the name that you access on a model
-        instance to get a manager for the other side of the
-        relationship. If you are on the reverse side of the relationship
-        (the side where the field is *not* defined), this is typically
-        ``mymodel_set``, where ``mymodel`` is the lowercased model name,
-        unless you've set
-        :attr:`~django.db.models.ForeignKey.related_name`.
-    :type attr: str
-    :param query_attr: Query name to use; that is, the name that you
+    :param query_attr: Name of a many-object relationship to check. This
+        This is the name that you
         use when filtering this relationship using ``.filter()``.
         If you are on the side of the relationship where the field
         is defined, this is typically the lowercased model name (e.g.
@@ -500,18 +492,17 @@ class ManyRelation(Rule):
     relationship with their agency::
 
         perms['foo.view_customer'] = ManyRelation(
-            'agency_set', 'agency', Is(lambda user: user.agency))
+            'agency', Is(lambda user: user.agency))
     """
 
-    def __init__(self, attr, query_attr, rule):
+    def __init__(self, query_attr, rule):
         # TODO: add support for 'all' as well as 'exists'
-        self.attr = attr
         self.query_attr = query_attr
         self.rule = rule
 
     def __repr__(self):
-        return "ManyRelation({!r}, {!r}, {!r})".format(
-            self.attr, self.query_attr, self.rule)
+        return "ManyRelation({!r}, {!r})".format(
+            self.query_attr, self.rule)
 
     def query(self, user):
         # Unfortunately you can't use Q objects on a relation, only proper
@@ -527,5 +518,8 @@ class ManyRelation(Rule):
         related_q = self.rule.query(user)
         if related_q is UNIVERSAL or related_q is EMPTY:
             return related_q
-        related_manager = getattr(instance, self.attr)
+        attr = instance.__class__._meta.get_field(
+            self.query_attr,
+        ).get_accessor_name()
+        related_manager = getattr(instance, attr)
         return related_manager.filter(related_q).exists()
