@@ -1,14 +1,10 @@
 Bridgekeeper
 -------------------------------
 
-.. image:: https://img.shields.io/circleci/project/github/excitedleigh/bridgekeeper/master.svg
-   :target: https://circleci.com/gh/excitedleigh/bridgekeeper
 .. image:: https://img.shields.io/readthedocs/bridgekeeper.svg
    :target: https://bridgekeeper.readthedocs.io/
 .. image:: https://img.shields.io/pypi/v/bridgekeeper.svg
    :target: https://pypi.python.org/pypi/bridgekeeper/
-.. image:: https://img.shields.io/requires/github/excitedleigh/bridgekeeper.svg
-   :target: https://requires.io/github/adambrenecki/excitedleigh/requirements/?branch=master
 
 ..
 
