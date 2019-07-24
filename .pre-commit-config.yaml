@@ -18,7 +18,7 @@ repos:
         exclude: \.csv$|\.bat$
     -   id: forbid-tabs
         exclude: Makefile|\.bat$
--   repo: git://github.com/adambrenecki/pre-commit-python-sorter
+-   repo: git://github.com/excitedleigh/pre-commit-python-sorter
     sha: 1.0.5
     hooks:
     -   id: python-import-sorter

@@ -57,8 +57,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Bridgekeeper'
-copyright = '2017, Learning Information Systems Pty Ltd, Adam Brenecki, and contributors'  # noqa
-author = 'Adam Brenecki and contributors'
+copyright = '2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors'  # noqa
+author = 'Leigh Brenecki and contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -151,7 +151,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Bridgekeeper.tex', 'Bridgekeeper Documentation',
-     'Learning Information Systems Pty Ltd, Adam Brenecki, and contributors', 'manual'),
+     'Leigh Brenecki, and contributors', 'manual'),
 ]
 
 

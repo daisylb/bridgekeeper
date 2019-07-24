@@ -138,14 +138,6 @@ Shrubberies don't have a ``store`` attribute; we have to go through the ``branch
 
 This is where the :class:`~bridgekeeper.rules.Relation` class comes in. :class:`~bridgekeeper.rules.Relation` is similar to :class:`~bridgekeeper.rules.Attribute`, but instead of taking a constant or function as its last argument, it takes *another rule object*, which is applied to the other side of the relation.
 
-.. note::
-
-    :class:`~bridgekeeper.rules.Relation` currently takes three arguments. The first and last are described above, but the middle argument is the model class the relation points to.
-
-    This argument will be removed before the 1.x release series; for more details see `issue #3`_.
-
- .. _`issue #3`: https://github.com/adambrenecki/bridgekeeper/issues/3
-
 
 .. code-block:: python
     :caption: shrubberies/permissions.py
@@ -156,7 +148,6 @@ This is where the :class:`~bridgekeeper.rules.Relation` class comes in. :class:`
 
     perms['shrubbery.update_shrubbery'] = Relation(
         'branch',
-        models.Branch,
         # This rule gets checked against the branch object, not the shrubbery
         Attribute('store', lambda user: user.profile.branch.store),
     )
@@ -197,7 +188,6 @@ In earlier sections of this chapter, we've already talked about rules that allow
     perms['shrubbery.update_shrubbery'] = is_staff | (
         is_shrubber & Relation(
             'branch',
-            models.Branch,
             Attribute('store', lambda user: user.profile.branch.store),
         )
     ) | (

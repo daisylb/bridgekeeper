@@ -1,14 +1,10 @@
 Bridgekeeper
 -------------------------------
 
-.. image:: https://img.shields.io/circleci/project/github/excitedleigh/bridgekeeper/master.svg
-   :target: https://circleci.com/gh/excitedleigh/bridgekeeper
 .. image:: https://img.shields.io/readthedocs/bridgekeeper.svg
    :target: https://bridgekeeper.readthedocs.io/
 .. image:: https://img.shields.io/pypi/v/bridgekeeper.svg
    :target: https://pypi.python.org/pypi/bridgekeeper/
-.. image:: https://img.shields.io/requires/github/excitedleigh/bridgekeeper.svg
-   :target: https://requires.io/github/adambrenecki/excitedleigh/requirements/?branch=master
 
 ..
 
@@ -27,7 +23,7 @@ This means that you can efficiently show a :class:`~django.views.generic.list.Li
 .. _django: https://djangoproject.com/
 .. _django-rules: https://github.com/dfunckt/django-rules
 
-Bridgekeeper works on Django 1.11 and 2.0 on Python 3.5+, and is licensed under the MIT License.
+Bridgekeeper works on Django 2.0+ on Python 3.5+, and is licensed under the MIT License.
 
 .. warning::
 

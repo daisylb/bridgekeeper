@@ -476,14 +476,27 @@ class In(Rule):
 #: This rule is satisfied by any group the user is in.
 in_current_groups = In(lambda user: user.groups.all())
 
+# from https://groups.google.com/forum/#!msg/django-developers/jEkCdzGnzRE/6lJQV4AqCwAJ
+
+
+def add_prefix(q_obj, prefix):
+    return Q(
+        *(
+            add_prefix(child, prefix)
+            if isinstance(child, Q)
+            else (prefix + '__' + child[0], child[1])
+            for child in q_obj.children
+        ),
+        _connector=q_obj.connector,
+        _negated=q_obj.negated,
+    )
+
 
 class Relation(Rule):
     """Check that a rule applies to a ForeignKey.
 
     :param attr: Name of a foreign key attribute to check.
     :type attr: str
-    :param model: Model class on the other side of the foreign key.
-    :type model: type
     :param rule: Rule to check the foreign key against.
     :type rule: Rule
 
@@ -492,25 +505,22 @@ class Relation(Rule):
     access the related applicant::
 
         perms['foo.view_application'] = Relation(
-            'applicant', Applicant, perms['foo.view_applicant'])
+            'applicant', perms['foo.view_applicant'])
     """
 
-    def __init__(self, attr, model, rule):
+    def __init__(self, attr, rule):
         self.attr = attr
-        self.model = model
         self.rule = rule
 
     def __repr__(self):
-        return "Relation({!r}, {}, {!r})".format(
-            self.attr, self.model.__name__, self.rule)
+        return "Relation({!r}, {!r})".format(
+            self.attr, self.rule)
 
     def query(self, user):
-        # Unfortunately you can't use Q objects on a relation, only proper
-        # QuerySets.
         related_q = self.rule.query(user)
         if related_q is UNIVERSAL or related_q is EMPTY:
             return related_q
-        return Q(**{self.attr + '__in': self.model.objects.filter(related_q)})
+        return add_prefix(related_q, self.attr)
 
     def check(self, user, instance=None):
         if instance is None:
@@ -525,16 +535,8 @@ class ManyRelation(Rule):
     across a :class:`~django.db.models.ManyToManyField`, or the remote
     end of a :class:`~django.db.models.ForeignKey`.
 
-    :param attr: Name of a many-object relationship to check. This is
-        the accessor name; the name that you access on a model
-        instance to get a manager for the other side of the
-        relationship. If you are on the reverse side of the relationship
-        (the side where the field is *not* defined), this is typically
-        ``mymodel_set``, where ``mymodel`` is the lowercased model name,
-        unless you've set
-        :attr:`~django.db.models.ForeignKey.related_name`.
-    :type attr: str
-    :param query_attr: Query name to use; that is, the name that you
+    :param query_attr: Name of a many-object relationship to check. This
+        This is the name that you
         use when filtering this relationship using ``.filter()``.
         If you are on the side of the relationship where the field
         is defined, this is typically the lowercased model name (e.g.
@@ -542,8 +544,6 @@ class ManyRelation(Rule):
         set :attr:`~django.db.models.ForeignKey.related_name` or
         :attr:`~django.db.models.ForeignKey.related_query_name`.
     :type query_attr: str
-    :param model: Model class on the other side of the relationship.
-    :type model: type
     :param rule: Rule to check the foreign object against.
     :type rule: Rule
 
@@ -552,19 +552,17 @@ class ManyRelation(Rule):
     relationship with their agency::
 
         perms['foo.view_customer'] = ManyRelation(
-            'agencies', Agency, Is(lambda user: user.agency))
+            'agency', Is(lambda user: user.agency))
     """
 
-    def __init__(self, attr, query_attr, model, rule):
+    def __init__(self, query_attr, rule):
         # TODO: add support for 'all' as well as 'exists'
-        self.attr = attr
         self.query_attr = query_attr
-        self.model = model
         self.rule = rule
 
     def __repr__(self):
-        return "ManyRelation({!r}, {}, {}, {!r})".format(
-            self.attr, self.query_attr, self.model.__name__, self.rule)
+        return "ManyRelation({!r}, {!r})".format(
+            self.query_attr, self.rule)
 
     def query(self, user):
         # Unfortunately you can't use Q objects on a relation, only proper
@@ -572,7 +570,7 @@ class ManyRelation(Rule):
         related_q = self.rule.query(user)
         if related_q is UNIVERSAL or related_q is EMPTY:
             return related_q
-        return Q(**{self.query_attr + '__in': self.model.objects.filter(related_q)})
+        return add_prefix(related_q, self.query_attr)
 
     def check(self, user, instance=None):
         if instance is None:
@@ -580,5 +578,8 @@ class ManyRelation(Rule):
         related_q = self.rule.query(user)
         if related_q is UNIVERSAL or related_q is EMPTY:
             return related_q
-        related_manager = getattr(instance, self.attr)
+        attr = instance.__class__._meta.get_field(
+            self.query_attr,
+        ).get_accessor_name()
+        related_manager = getattr(instance, attr)
         return related_manager.filter(related_q).exists()
