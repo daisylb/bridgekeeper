@@ -108,4 +108,4 @@ You can read about the other ways you can check permissions, including more conv
 If there's something that you don't understand after following through this tutorial, or that you think could be explained better, please `file a documentation bug <docbug_>`_ so that we can improve the docs for future users.
 
 
-.. _docbug: https://github.com/adambrenecki/bridgekeeper/issues/new?labels=docs
+.. _docbug: https://github.com/excitedleigh/bridgekeeper/issues/new?labels=docs
