@@ -1,6 +1,6 @@
 import nox
 
-nox.options.sessions = 'tests'
+nox.options.sessions = ('tests',)
 nox.options.reuse_existing_virtualenvs = True
 nox.options.error_on_external_run = True
 
