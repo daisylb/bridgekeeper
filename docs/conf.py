@@ -21,8 +21,9 @@ import os
 import re
 import sys
 
+import pkg_resources
+
 import django
-from setuptools_scm import get_version
 
 sys.path.insert(0, os.path.abspath('_ext'))
 
@@ -66,7 +67,7 @@ author = 'Leigh Brenecki and contributors'
 #
 
 # The full version, including alpha/beta/rc tags.
-release = get_version(root='..', relative_to=__file__)
+release = pkg_resources.get_distribution('bridgekeeper').version
 # The short X.Y version.
 version = re.match(r'\d+\.\d+', release).group(0)
 
