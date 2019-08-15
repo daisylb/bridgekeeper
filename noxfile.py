@@ -27,4 +27,10 @@ def docs(session):
                 # this is necessary to prevent poetry from creating
                 # its own virtualenv
                 env={'VIRTUAL_ENV': session.virtualenv.location})
-    session.run('sphinx-build', 'docs', 'docs/_build')
+
+    session.run('sphinx-build', 'docs', 'docs/_build/html')
+
+
+@nox.session(python=False)
+def clean_docs(session):
+    session.run('rm', '-rf', 'docs/_build')

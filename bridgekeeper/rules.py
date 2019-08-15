@@ -4,7 +4,8 @@ This module defines the :class:`Rule` base class, as well as a
 number of built-in rules.
 """
 
-from django.db.models import Q, QuerySet
+from django.db.models import Manager, Q, QuerySet
+from django.db.models.fields.reverse_related import ForeignObjectRel
 
 
 class Sentinel:
@@ -280,17 +281,20 @@ def is_active(user):
 
 
 class R(Rule):
-    """Rules that depend on the values of objects.
+    """Rules that allow access to some objects but not others.
 
-    ``R`` takes a set of field lookups.
+    ``R`` takes a set of field lookups as keyword arguments.
 
-    On the left are attributes, specified just as in a
-    :class:`~django.db.models.Q` object, or in the arguments to
-    :class:`
+    Each argument is a model attribute. Foreign keys can be traversed
+    using double underscores, as in :class:`~django.db.models.Q`
+    objects.
 
-    right: thing to match, function returning thing to match,
-    rule object (only if LHS refers to a model instance or collection
-    thereof)
+    The value assigned to each argument can be:
+
+    - A value to match.
+    - A function that accepts a user, and returns a value to match.
+    - If the argument refers to a foreign key or many-to-many
+      relationship, another :class:`~bridgekeeper.rules.Rule` object.
     """
 
     def __init__(self, **kwargs):
@@ -303,26 +307,64 @@ class R(Rule):
             )
         )
 
-    def get_pairs(self, user):
-        for k, v in self.kwargs.items():
-            key_split = k.split('__')
-            value = v(user) if callable(v) else v
-            yield (key_split, value)
-
     def check(self, user, instance=None):
         if instance is None:
             return False
 
-        for key, value in self.get_pairs(user):
-            thing_to_compare = instance
-            for key_fragment in key:
-                thing_to_compare = getattr(instance, key_fragment)
-            if thing_to_compare != value:
-                return False
+        # This loop exits early, returning False, if any argument
+        # doesn't match.
+        for key, value in self.kwargs.items():
+
+            # Find the appropriate LHS on this object, traversing
+            # foreign keys if necessary.
+            lhs = instance
+            for key_fragment in key.split('__'):
+                field = lhs.__class__._meta.get_field(
+                    key_fragment,
+                )
+                if isinstance(field, ForeignObjectRel):
+                    attr = field.get_accessor_name()
+                else:
+                    attr = key_fragment
+                lhs = getattr(lhs, attr)
+
+            # Compare it against the RHS.
+            # Note that the LHS will usually be a value, but in the case
+            # of a ManyToMany or the 'other side' of a ForeignKey it
+            # will be a RelatedManager. In this case, we need to check
+            # if there is at least one model that matches the RHS.
+            if isinstance(value, Rule):
+                if isinstance(lhs, Manager):
+                    if not value.filter(user, lhs.all()).exists():
+                        return False
+                else:
+                    if not value.check(user, lhs):
+                        return False
+            else:
+                resolved_value = value(user) if callable(value) else value
+                if isinstance(lhs, Manager):
+                    if resolved_value not in lhs.all():
+                        return False
+                else:
+                    if lhs != resolved_value:
+                        return False
+
+        # Woohoo, everything matches!
         return True
 
     def query(self, user):
-        return Q(**{'__'.join(k): v for k, v in self.get_pairs(user)})
+        accumulated_q = Q()
+
+        for key, value in self.kwargs.items():
+            # TODO: check lookups are not being used
+            if isinstance(value, Rule):
+                child_q_obj = value.query(user)
+                accumulated_q &= add_prefix(child_q_obj, key)
+            else:
+                resolved_value = value(user) if callable(value) else value
+                accumulated_q &= Q(**{key: resolved_value})
+
+        return accumulated_q
 
 
 class Attribute(Rule):
@@ -495,6 +537,18 @@ def add_prefix(q_obj, prefix):
 class Relation(Rule):
     """Check that a rule applies to a ForeignKey.
 
+    .. deprecated:: 0.8
+
+        Use :class:`~bridgekeeper.rules.R` objects instead.
+
+        ::
+
+            # old
+            Relation('applicant', perms['foo.view_applicant'])
+
+            # new
+            R(applicant=perms['foo.view_applicant'])
+
     :param attr: Name of a foreign key attribute to check.
     :type attr: str
     :param rule: Rule to check the foreign key against.
@@ -530,6 +584,18 @@ class Relation(Rule):
 
 class ManyRelation(Rule):
     """Check that a rule applies to a many-object relationship.
+
+    .. deprecated:: 0.8
+
+        Use :class:`~bridgekeeper.rules.R` objects instead.
+
+        ::
+
+            # old
+            ManyRelation('agency', Is(lambda user: user.agency))
+
+            # new
+            R(agency=lambda user: user.agency)
 
     This can be used in a similar fashion to :class:`Relation`, but
     across a :class:`~django.db.models.ManyToManyField`, or the remote

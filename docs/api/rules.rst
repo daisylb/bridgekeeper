@@ -43,15 +43,21 @@ Rules
     Rule Classes
     ------------
 
+    .. autoclass:: R
+
+    .. autoclass:: Is
+
+    .. autoclass:: In
+
+    Deprecated rule classes
+    -----------------------
+
     .. autoclass:: Attribute
 
     .. autoclass:: Relation
 
     .. autoclass:: ManyRelation
 
-    .. autoclass:: Is
-
-    .. autoclass:: In
 
     Built-in rule instances
     -----------------------

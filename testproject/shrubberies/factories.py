@@ -34,6 +34,7 @@ class ProfileFactory(DjangoModelFactory):
 class ShrubberyFactory(DjangoModelFactory):
     name = factory.Faker('catch_phrase')
     price = Decimal('14.99')
+    branch = factory.SubFactory(BranchFactory)
 
     class Meta:
         model = models.Shrubbery

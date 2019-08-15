@@ -1,12 +1,12 @@
 Installing Bridgekeeper
 =======================
 
-First, install the ``bridgekeeper`` package from PyPI.
+First, install the ``bridgekeeper`` package from PyPI, using one of the following, depending on which tool you're using:
 
 .. code-block:: sh
 
     $ pip install bridgekeeper
-    # or, if you're using pipenv
+    $ poetry add bridgekeeper
     $ pipenv install bridgekeeper
 
 Then, add Bridgekeeper to your ``settings.py``:

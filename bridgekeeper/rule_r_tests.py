@@ -4,8 +4,9 @@ from shrubberies.models import Shrubbery, Store
 
 from .rules import R
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 def test_constant_attribute():
     user = UserFactory()
     s1 = StoreFactory(name='a')
@@ -21,7 +22,6 @@ def test_constant_attribute():
     assert s2 not in filtered_qs_r
 
 
-@pytest.mark.django_db
 def test_user_func_attribute():
     u1 = UserFactory(username='a')
     u2 = UserFactory(username='b')
@@ -44,14 +44,12 @@ def test_user_func_attribute():
     assert s1 not in qs2_r
 
 
-@pytest.mark.django_db
 def test_when_called_without_object():
     user = UserFactory(username='a')
     pr = R(name=lambda u: u.username)
     assert not pr.check(user)
 
 
-@pytest.mark.django_db
 def test_relation_to_user():
     u1 = UserFactory()
     u2 = UserFactory()
@@ -74,8 +72,57 @@ def test_relation_to_user():
     assert s1 not in qs2_r
 
 
-@pytest.mark.django_db
 def test_relation_never_global():
     user = UserFactory()
     belongs_to_branch_r = R(branch=lambda u: u.profile.branch)
     assert not belongs_to_branch_r.check(user)
+
+
+def test_traverse_fk_user_func():
+    user = UserFactory()
+    shrubbery_match = ShrubberyFactory(branch__store=user.profile.branch.store)
+    shrubbery_nomatch = ShrubberyFactory()
+    store_check_r = R(branch__store=lambda user: user.profile.branch.store)
+
+    assert store_check_r.check(user, shrubbery_match)
+    assert not store_check_r.check(user, shrubbery_nomatch)
+
+    qs = store_check_r.filter(user, Shrubbery.objects.all())
+    assert shrubbery_match in qs
+    assert shrubbery_nomatch not in qs
+
+
+def test_nested_rule_object():
+    user = UserFactory()
+    shrubbery_match = ShrubberyFactory(branch__store=user.profile.branch.store)
+    shrubbery_nomatch = ShrubberyFactory()
+    store_check_r = R(branch=R(store=lambda user: user.profile.branch.store))
+
+    assert store_check_r.check(user, shrubbery_match)
+    assert not store_check_r.check(user, shrubbery_nomatch)
+
+    qs = store_check_r.filter(user, Shrubbery.objects.all())
+    assert shrubbery_match in qs
+    assert shrubbery_nomatch not in qs
+
+
+def test_many_relation_to_user():
+    s1 = StoreFactory()
+    s2 = StoreFactory()
+    u1 = UserFactory(profile__branch__store=s1)
+    u2 = UserFactory(profile__branch__store=s2)
+    user_branch_in_store = R(branch=lambda u: u.profile.branch)
+
+    assert user_branch_in_store.check(u1, s1)
+    assert user_branch_in_store.check(u2, s2)
+    assert not user_branch_in_store.check(u1, s2)
+    assert not user_branch_in_store.check(u2, s1)
+
+    qs1 = user_branch_in_store.filter(u1, Store.objects.all())
+    qs2 = user_branch_in_store.filter(u2, Store.objects.all())
+    assert qs1.count() == 1
+    assert s1 in qs1
+    assert s2 not in qs1
+    assert qs2.count() == 1
+    assert s2 in qs2
+    assert s1 not in qs2
