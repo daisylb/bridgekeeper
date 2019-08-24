@@ -1,0 +1,20 @@
+name: Documentation
+on: [push]
+jobs:
+  build-docs:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - uses: docker://thekevjames/nox
+      with:
+        entrypoint: nox
+        args: -s docs
+    - uses: actions/gcloud/auth@master
+      env:
+        GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+    - uses: vsoch/gcloud-actions/gsutil@07cfbb050596be267fa37be76c76b7765d82a207
+      with:
+        args: -m rsync -rd docs/_build/html gs://bridgekeeper-docs/${{ github.ref }}
