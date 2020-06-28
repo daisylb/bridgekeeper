@@ -370,7 +370,7 @@ class R(Rule):
 class Attribute(Rule):
     """Rule class that checks the value of an instance attribute.
 
-    .. deprecated:: 0.8
+    .. deprecated:: 0.9
 
         Use :class:`~bridgekeeper.rules.R` objects instead.
 
@@ -537,7 +537,7 @@ def add_prefix(q_obj, prefix):
 class Relation(Rule):
     """Check that a rule applies to a ForeignKey.
 
-    .. deprecated:: 0.8
+    .. deprecated:: 0.9
 
         Use :class:`~bridgekeeper.rules.R` objects instead.
 
@@ -584,7 +584,7 @@ class Relation(Rule):
 class ManyRelation(Rule):
     """Check that a rule applies to a many-object relationship.
 
-    .. deprecated:: 0.8
+    .. deprecated:: 0.9
 
         Use :class:`~bridgekeeper.rules.R` objects instead.
 

@@ -3,16 +3,16 @@ Writing Rules and Permissions
 
 In Bridgekeeper, a **rule** is something that is given a user and a resource, and either **allows** or **blocks** access to the resource. Rules are instances of the :class:`~bridgekeeper.rules.Rule` class (or rather, subclasses of that class), and can be combined together into composite rules.
 
-A Bridgekeeper **permission** consists of a name, usually conforming to Django permission name conventions e.g. ``shrubberies.update_shrubbery``, and a rule. Permissions are created by assigning a rule instance to a name in :data:`bridgekeeper.perms`, which acts like a dictionary::
+A Bridgekeeper **permission** consists of a name, usually conforming to Django permission name conventions e.g. ``shrubberies.change_shrubbery``, and a rule. Permissions are created by assigning a rule instance to a name in :data:`bridgekeeper.perms`, which acts like a dictionary::
 
     from bridgekeeper.rules import Attribute, is_staff
     from bridgekeeper import perms
 
-    perms['foo.update_widget'] = is_staff
+    perms['shrubberies.change_shrubbery'] = is_staff
 
 The :mod:`~bridgekeeper.rules` module provides a range of pre-made rule instances as well as rule classes you can instantiate, as shown above. You can also combine rules using the ``&`` (and), ``|`` (or), and ``~`` (not) operators::
 
-    perms['foo.view_widget'] = is_staff | Attribute(
+    perms['shrubberies.view_shrubbery'] = is_staff | Attribute(
         'company', lambda user: user.company)
 
 Finally, if none of the built-in rules do what you want, you can subclass :class:`~bridgekeeper.rules.Rule` yourself and write your own.

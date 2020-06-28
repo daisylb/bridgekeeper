@@ -14,9 +14,9 @@ Given an instance of our ``Shrubbery`` model called ``shrubbery``, and a :class:
     from bridgekeeper import perms
 
     # through Django:
-    user.has_perm('shrubberies.update_shrubbery', obj=shrubbery)
+    user.has_perm('shrubberies.change_shrubbery', obj=shrubbery)
     # or through Bridgekeeper:
-    perms['shrubberies.update_shrubbery'].check(user, shrubbery)
+    perms['shrubberies.change_shrubbery'].check(user, shrubbery)
 
 Both of these expressions will return either ``True`` or ``False``. Aside from the caveat described above regarding authorisation backends other than Bridgekeeper, these two calls are equivalent; in fact, when you call :meth:`~django.contrib.auth.models.User.has_perm`, Django will trigger a call to :meth:`~bridgekeeper.rules.Rule.check` under the hood.
 
@@ -58,7 +58,7 @@ Checking Permissions For *Any* Possible Instances
 
 Bridgekeeper also provides a second method, :meth:`~bridgekeeper.rules.is_possible_for`, which is the opposite of the above behaviour, in a way::
 
-    perms['shrubberies.update_shrubbery'].is_possible_for(user)
+    perms['shrubberies.change_shrubbery'].is_possible_for(user)
 
 This check will return ``True`` if and only if the user could possibly have that permission for **any possible instance that could exist**. (Once again, this is not the same as checking whether the user has the permission for at least one instance *currently in the database*, and once again it doesn't actually hit the database at all.)
 
@@ -134,7 +134,7 @@ Bridgekeeper also provides ``CreatePermissionGuardMixin``, which will validate u
     from bridgekeeper.mixins import CreatePermissionGuardMixin
 
     class MyView(CreatePermissionGuardMixin, CreateView):
-        permission_name = 'applicants.create_applicant'
+        permission_name = 'applicants.add_applicant'
         model = Applicant
 
 .. note::

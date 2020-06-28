@@ -56,8 +56,8 @@ We turn a rule into a **permission** by assigning it to a name. We do that by cr
     from bridgekeeper import perms
     from bridgekeeper.rules import is_staff
 
-    perms['shrubbery.create_store'] = is_staff
-    perms['shrubbery.update_store'] = is_staff
+    perms['shrubbery.add_store'] = is_staff
+    perms['shrubbery.change_store'] = is_staff
     perms['shrubbery.delete_store'] = is_staff
 
 
@@ -103,7 +103,7 @@ We could use our new ``is_shrubber`` rule the same way that we used ``is_staff``
 
     from .rules import is_shrubber
 
-    perms['shrubbery.update_shrubbery'] = is_shrubber
+    perms['shrubbery.change_shrubbery'] = is_shrubber
 
 Matching against model instances
 --------------------------------
@@ -121,7 +121,7 @@ To do this, we'll use an :class:`~bridgekeeper.rules.R` object. :class:`~bridgek
 
     from bridgekeeper.rules import R
 
-    perms['shrubbery.update_shrubbery'] = R(price=5)
+    perms['shrubbery.change_shrubbery'] = R(price=5)
 
 That's fairly useless, but it works! Let's move on to a slightly more useful requirement:
 
@@ -134,7 +134,7 @@ Fortunately, if you pass a callable to an :class:`~bridgekeeper.rules.R` object,
 .. code-block:: python
     :caption: shrubberies/permissions.py
 
-    perms['shrubbery.update_shrubbery'] = R(branch=lambda user: user.profile.branch)
+    perms['shrubbery.change_shrubbery'] = R(branch=lambda user: user.profile.branch)
 
 Traversing relationships
 ------------------------
@@ -148,7 +148,7 @@ Shrubberies don't have a ``store`` attribute; we have to go through the ``branch
 .. code-block:: python
     :caption: shrubberies/permissions.py
 
-    perms['shrubbery.update_shrubbery'] = R(branch__store=lambda user: user.profile.branch.store)
+    perms['shrubbery.change_shrubbery'] = R(branch__store=lambda user: user.profile.branch.store)
 
 
 Combining rules together
@@ -183,7 +183,7 @@ In earlier sections of this chapter, we've already talked about rules that allow
     from .rules import is_shrubber, is_apprentice
     from . import models
 
-    perms['shrubbery.update_shrubbery'] = is_staff | (
+    perms['shrubbery.change_shrubbery'] = is_staff | (
         is_shrubber & R(branch__store=lambda user: user.profile.branch.store)
     ) | (
         is_apprentice & R(branch=lambda user: user.profile.branch)

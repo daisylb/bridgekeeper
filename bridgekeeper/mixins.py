@@ -47,7 +47,7 @@ class QuerySetPermissionMixin(BasePermissionMixin):
     .. attribute:: permission_name
 
         The name of the Bridgekeeper permission to check against, e.g.
-        ``'shrubberies.update_shrubbery'``.
+        ``'shrubberies.change_shrubbery'``.
     """
 
     def get_queryset(self, *args, **kwargs):
@@ -90,7 +90,7 @@ class CreatePermissionGuardMixin(BasePermissionMixin):
     .. attribute:: permission_name
 
         The name of the Bridgekeeper permission to check against, e.g.
-        ``'shrubberies.update_shrubbery'``.
+        ``'shrubberies.change_shrubbery'``.
     """
 
     def dispatch(self, request, *args, **kwargs):

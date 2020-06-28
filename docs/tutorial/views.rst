@@ -15,7 +15,7 @@ Now that we've got our permissions defined, we need to write views that actually
 
     def shrubbery_edit(request, shrubbery_id):
         shrubbery = get_object_or_404(models.Shrubbery, id=shrubbery_id)
-        if not request.user.has_perm('shrubberies.update_shrubbery', shrubbery):
+        if not request.user.has_perm('shrubberies.change_shrubbery', shrubbery):
             raise Http404()
         return TemplateResponse(request, 'shrubbery_edit.html', {
             'shrubbery': shrubbery,
@@ -31,7 +31,7 @@ We can also check permissions directly through Bridgekeeper. Remember, :data:`br
 
     def shrubbery_edit(request, shrubbery_id):
         # ...
-        if not perms['shrubberies.update_shrubbery'].check(request.user, shrubbery):
+        if not perms['shrubberies.change_shrubbery'].check(request.user, shrubbery):
             raise Http404()
         # ...
 
@@ -94,7 +94,7 @@ All of the examples we've used so far have been function-based views. Of course,
 
     class ShrubberyUpdateView(QuerySetPermissionMixin, UpdateView):
         model = models.Shrubbery
-        permission_name = 'shrubberies.update_shrubbery'
+        permission_name = 'shrubberies.change_shrubbery'
 
 That's all there is to it; these two views will now only show shrubberies that the currently-logged-in user has permission to view.
 
