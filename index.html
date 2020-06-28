@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Bridgekeeper &mdash; Bridgekeeper 0.7 documentation</title>
+  <title>Bridgekeeper &mdash; Bridgekeeper 0.9 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.7
+                0.9
               </div>
             
           
@@ -170,8 +170,6 @@
             
   <div class="section" id="bridgekeeper">
 <h1>Bridgekeeper<a class="headerlink" href="#bridgekeeper" title="Permalink to this headline">¶</a></h1>
-<a class="reference external image-reference" href="https://bridgekeeper.readthedocs.io/"><img alt="https://img.shields.io/readthedocs/bridgekeeper.svg" src="https://img.shields.io/readthedocs/bridgekeeper.svg" /></a>
-<a class="reference external image-reference" href="https://pypi.python.org/pypi/bridgekeeper/"><img alt="https://img.shields.io/pypi/v/bridgekeeper.svg" src="https://img.shields.io/pypi/v/bridgekeeper.svg" /></a>
 <blockquote>
 <div><div class="line-block">
 <div class="line">Who would cross the Bridge of Death</div>
@@ -182,12 +180,8 @@
 </div></blockquote>
 <p>Bridgekeeper is a permissions library for <a class="reference external" href="https://djangoproject.com/">Django</a> projects, where permissions are defined in your code, rather than in your database.</p>
 <p>It’s heavily inspired by <a class="reference external" href="https://github.com/dfunckt/django-rules">django-rules</a>, but with one important difference: <strong>it works on QuerySets as well as individual model instances</strong>.</p>
-<p>This means that you can efficiently show a <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/class-based-views/generic-display/#django.views.generic.list.ListView" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></a> of all of the model instances that your user is allowed to edit, for instance, without having your permission-checking code in two different places.</p>
+<p>This means that you can efficiently show a list of all of the model instances that your user is allowed to edit, for instance, without having your permission-checking code in two different places.</p>
 <p>Bridgekeeper is tested on Django 2.2 and 3.0 on all Python versions Django supports, and is licensed under the MIT License.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Bridgekeeper (and these docs!) are a work in progress.</p>
-</div>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Tutorial</span></p>
 <ul>
@@ -289,7 +283,7 @@
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+        &copy; Copyright 2017–2020, Learning Information Systems Pty Ltd, Leigh Brenecki, and contributors
 
     </p>
   </div>
