@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bridgekeeper"
-version = "0.7"
+version = "0.9"
 description = "Django permissions that work with QuerySets."
 homepage = "https://bridgekeeper.leigh.party/"
 repository = "https://github.com/excitedleigh/bridgekeeper"
