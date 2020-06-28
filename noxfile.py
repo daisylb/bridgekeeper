@@ -40,3 +40,16 @@ def docs(session):
 @nox.session(python=False)
 def clean_docs(session):
     session.run("rm", "-rf", "docs/_build")
+
+
+@nox.session(python="3.8")
+def release_test(session):
+    session.install("poetry", "twine")
+    session.run(
+        "poetry",
+        "build",
+        # this is necessary to prevent poetry from creating
+        # its own virtualenv
+        env={"VIRTUAL_ENV": session.virtualenv.location},
+    )
+    session.run("twine", "check", "dist/*")

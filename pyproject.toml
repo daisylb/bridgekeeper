@@ -2,10 +2,11 @@
 name = "bridgekeeper"
 version = "0.7"
 description = "Django permissions that work with QuerySets."
-homepage = "https://bridgekeeper.readthedocs.io/"
+homepage = "https://bridgekeeper.leigh.party/"
 repository = "https://github.com/excitedleigh/bridgekeeper"
 authors = ["Leigh Brenecki <leigh@brenecki.id.au>"]
 license = "MIT"
+readme = "README.rst"
 
 [tool.poetry.dependencies]
 python = ">=3.5"
