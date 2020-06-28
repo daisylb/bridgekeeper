@@ -1,0 +1,407 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>bridgekeeper.rest_framework &mdash; Bridgekeeper 0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Bridgekeeper
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/installation.html">Installing Bridgekeeper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/permissions.html">Defining permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/views.html">Using Permissions In Views</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/rules.html">Writing Rules and Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/permissions.html">Checking Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/rest_framework.html">Django REST Framework integration</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rules.html">Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/helpers.html">Convenience Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rest_framework.html">Django REST Framework integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Bridgekeeper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>bridgekeeper.rest_framework</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for bridgekeeper.rest_framework</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span>
+
+<span class="kn">from</span> <span class="nn">bridgekeeper</span> <span class="kn">import</span> <span class="n">perms</span>
+<span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ImproperlyConfigured</span>
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">QuerySet</span>
+<span class="kn">from</span> <span class="nn">rest_framework.filters</span> <span class="kn">import</span> <span class="n">BaseFilterBackend</span>
+<span class="kn">from</span> <span class="nn">rest_framework.permissions</span> <span class="kn">import</span> <span class="n">BasePermission</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BridgekeeperRESTMixin"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.BridgekeeperRESTMixin">[docs]</a><span class="k">class</span> <span class="nc">BridgekeeperRESTMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Mixin for Django REST Framework integration classes.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BridgekeeperRESTMixin.skip_permission_checks"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.BridgekeeperRESTMixin.skip_permission_checks">[docs]</a>    <span class="k">def</span> <span class="nf">skip_permission_checks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Skips all permission checks for certain requests.</span>
+
+<span class="sd">        The default implementation will skip permission checks for</span>
+<span class="sd">        the ``APIRootView`` view class used by the built-in</span>
+<span class="sd">        ``DefaultRouter``.</span>
+
+<span class="sd">        :returns: Whether to skip permission checks for the</span>
+<span class="sd">            given request.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This causes an import cycle if it&#39;s at the top level,</span>
+        <span class="c1"># because REST Framework has import side effects, yay</span>
+        <span class="kn">from</span> <span class="nn">rest_framework.routers</span> <span class="kn">import</span> <span class="n">APIRootView</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="n">APIRootView</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="BridgekeeperRESTMixin.get_action"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the action that a particular request is performing.</span>
+
+<span class="sd">        Usually, this is one of ``&#39;view&#39;``, ``&#39;add&#39;``, ``&#39;change&#39;``</span>
+<span class="sd">        or ``&#39;delete&#39;``. This is used by :meth:`get_permission_name`</span>
+<span class="sd">        to generate the name of the appropriate permission.</span>
+
+<span class="sd">        :returns: Name of an action.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;view&quot;</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;add&quot;</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="s2">&quot;PATCH&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;change&quot;</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;DELETE&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;delete&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{method}</span><span class="s2"> isn&#39;t a HTTP method that &quot;</span>
+            <span class="s2">&quot;RulePermissions knows about, so it&#39;s unable to &quot;</span>
+            <span class="s2">&quot;determine the correct permission name for this &quot;</span>
+            <span class="s2">&quot;request. Subclass RulePermissions and override &quot;</span>
+            <span class="s2">&quot;get_action or get_permission_name to provide the &quot;</span>
+            <span class="s2">&quot;correct permission name for requests like this.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">method</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="BridgekeeperRESTMixin.get_operand_name"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_operand_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_operand_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the name of the thing that a request is acting on.</span>
+
+<span class="sd">        The default implementation works if ``obj`` is a model instance</span>
+<span class="sd">        (when it is provided), or if ``view`` is a view that has either</span>
+<span class="sd">        a ``queryset`` attribute or ``get_queryset()`` method</span>
+<span class="sd">        (otherwise).</span>
+
+<span class="sd">        This is used by :meth:`get_permission_name` to generate the name</span>
+<span class="sd">        of the appropriate permission.</span>
+
+<span class="sd">        :returns: A tuple in the form (app_label, operand_name).</span>
+<span class="sd">        :rtype: (str, str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span>
+        <span class="k">elif</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{obj!r}</span><span class="s2"> is not a model instance, so &quot;</span>
+                <span class="s2">&quot;RulePermissions is incapable of determining &quot;</span>
+                <span class="s2">&quot;the correct permission name for it. Subclass &quot;</span>
+                <span class="s2">&quot;RulePermissions and override get_operand_name &quot;</span>
+                <span class="s2">&quot;or get_permission_name to provide the correct &quot;</span>
+                <span class="s2">&quot;permission name for objects of this type.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="s2">&quot;get_queryset&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">callable</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">):</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">model</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="s2">&quot;queryset&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">queryset</span><span class="p">,</span> <span class="n">QuerySet</span><span class="p">):</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">queryset</span><span class="o">.</span><span class="n">model</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{view!r}</span><span class="s2"> does not provide a &#39;queryset&#39; &quot;</span>
+                <span class="s2">&quot;attribute or a &#39;get_queryset()&#39; method, so &quot;</span>
+                <span class="s2">&quot;RulePermissions is incapable of determining &quot;</span>
+                <span class="s2">&quot;the correct permission name for it. Subclass &quot;</span>
+                <span class="s2">&quot;RulePermissions and override get_operand_name &quot;</span>
+                <span class="s2">&quot;or get_permission_name to provide the correct &quot;</span>
+                <span class="s2">&quot;permission name for views like this.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">view</span><span class="o">=</span><span class="n">view</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BridgekeeperRESTMixin.get_permission_name"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_permission_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the name of the permission to use for a request.</span>
+
+<span class="sd">        The default implementation returns a name of the form</span>
+<span class="sd">        ``&#39;{app_label}.{action}_{operand_name}&#39;``, which will result in</span>
+<span class="sd">        something like ``&#39;shrubberies.view_shrubber&#39;`` or</span>
+<span class="sd">        ``&#39;shrubberies.delete_shrubbery&#39;``.</span>
+
+<span class="sd">        ``app_label`` and ``operand_name`` are provided by</span>
+<span class="sd">        :meth:`get_operand_name`, and ``action`` is provided by</span>
+<span class="sd">        :meth:`get_action`, so if you need to override this behaviour,</span>
+<span class="sd">        it may be easier to override those methods instead.</span>
+
+<span class="sd">        :returns: Permission name.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="n">app_label</span><span class="p">,</span> <span class="n">operand_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_operand_name</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{app_label}</span><span class="s2">.</span><span class="si">{action}</span><span class="s2">_</span><span class="si">{operand_name}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span> <span class="n">app_label</span><span class="o">=</span><span class="n">app_label</span><span class="p">,</span> <span class="n">operand_name</span><span class="o">=</span><span class="n">operand_name</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="BridgekeeperRESTMixin.get_permission"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission">[docs]</a>    <span class="k">def</span> <span class="nf">get_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a rule object to check against for this request.</span>
+
+<span class="sd">        The default implementation just looks up the name returned by</span>
+<span class="sd">        :meth:`get_permission_name`.</span>
+
+<span class="sd">        :returns: Rule object.</span>
+<span class="sd">        :rtype: bridgekeeper.rules.Rule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_permission_name</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">perms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                <span class="s2">&quot;A permission named </span><span class="si">{name}</span><span class="s2"> could not be found in the &quot;</span>
+                <span class="s2">&quot;Bridgekeeper permission registry. Define a permission &quot;</span>
+                <span class="s2">&quot;with that name, or subclass RulePermissions and &quot;</span>
+                <span class="s2">&quot;override get_permission or get_permission_name &quot;</span>
+                <span class="s2">&quot;to return the correct permission.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RulePermissions"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.RulePermissions">[docs]</a><span class="k">class</span> <span class="nc">RulePermissions</span><span class="p">(</span><span class="n">BridgekeeperRESTMixin</span><span class="p">,</span> <span class="n">BasePermission</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Django REST Framework permission class for Bridgekeeper.</span>
+
+<span class="sd">    Note that this class **does not**, by itself, perform queryset</span>
+<span class="sd">    filtering on list views, since Django REST Framework doesn&#39;t provide</span>
+<span class="sd">    an API for permission classes to do so.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RulePermissions.has_permission"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.RulePermissions.has_permission">[docs]</a>    <span class="k">def</span> <span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_permission_checks</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_permission</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">)</span><span class="o">.</span><span class="n">is_possible_for</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RulePermissions.has_object_permission"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.RulePermissions.has_object_permission">[docs]</a>    <span class="k">def</span> <span class="nf">has_object_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_permission_checks</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_permission</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RuleFilter"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.RuleFilter">[docs]</a><span class="k">class</span> <span class="nc">RuleFilter</span><span class="p">(</span><span class="n">BridgekeeperRESTMixin</span><span class="p">,</span> <span class="n">BaseFilterBackend</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Django REST Framework filter class for Bridgekeeper.</span>
+
+<span class="sd">    This filter class doesn&#39;t expect any client interaction or present</span>
+<span class="sd">    any UI to the API explorer; it&#39;s simply a mechanism for</span>
+<span class="sd">    automatically filtering QuerySets according to Bridgekeeper</span>
+<span class="sd">    permissions.</span>
+
+<span class="sd">    Note that this filter will always check the ``view`` permission;</span>
+<span class="sd">    this means that if a particular user has permissions to edit but not</span>
+<span class="sd">    view something, they&#39;ll get 404s on everything. That said, it</span>
+<span class="sd">    doesn&#39;t make much sense for users to have edit but not view</span>
+<span class="sd">    permissions on something anyway.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RuleFilter.get_action"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.RuleFilter.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;view&quot;</span></div>
+
+<div class="viewcode-block" id="RuleFilter.filter_queryset"><a class="viewcode-back" href="../../api/rest_framework.html#bridgekeeper.rest_framework.RuleFilter.filter_queryset">[docs]</a>    <span class="k">def</span> <span class="nf">filter_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">queryset</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_permission_checks</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">queryset</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_permission</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">queryset</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

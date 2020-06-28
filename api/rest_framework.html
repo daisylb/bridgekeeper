@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Django REST Framework integration &mdash; Bridgekeeper 0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Changelog" href="../changelog.html" />
+    <link rel="prev" title="Convenience Helpers" href="helpers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Bridgekeeper
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/installation.html">Installing Bridgekeeper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/permissions.html">Defining permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/views.html">Using Permissions In Views</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/rules.html">Writing Rules and Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/permissions.html">Checking Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/rest_framework.html">Django REST Framework integration</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rules.html">Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="helpers.html">Convenience Helpers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Django REST Framework integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Bridgekeeper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Django REST Framework integration</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/rest_framework.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-bridgekeeper.rest_framework">
+<span id="django-rest-framework-integration"></span><h1>Django REST Framework integration<a class="headerlink" href="#module-bridgekeeper.rest_framework" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="bridgekeeper.rest_framework.BridgekeeperRESTMixin">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rest_framework.</code><code class="sig-name descname">BridgekeeperRESTMixin</code><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#BridgekeeperRESTMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mixin for Django REST Framework integration classes.</p>
+<dl class="py method">
+<dt id="bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_action">
+<code class="sig-name descname">get_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">view</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#BridgekeeperRESTMixin.get_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the action that a particular request is performing.</p>
+<p>Usually, this is one of <code class="docutils literal notranslate"><span class="pre">'view'</span></code>, <code class="docutils literal notranslate"><span class="pre">'add'</span></code>, <code class="docutils literal notranslate"><span class="pre">'change'</span></code>
+or <code class="docutils literal notranslate"><span class="pre">'delete'</span></code>. This is used by <a class="reference internal" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission_name" title="bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_permission_name()</span></code></a>
+to generate the name of the appropriate permission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Name of an action.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_operand_name">
+<code class="sig-name descname">get_operand_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">view</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#BridgekeeperRESTMixin.get_operand_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_operand_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the thing that a request is acting on.</p>
+<p>The default implementation works if <code class="docutils literal notranslate"><span class="pre">obj</span></code> is a model instance
+(when it is provided), or if <code class="docutils literal notranslate"><span class="pre">view</span></code> is a view that has either
+a <code class="docutils literal notranslate"><span class="pre">queryset</span></code> attribute or <code class="docutils literal notranslate"><span class="pre">get_queryset()</span></code> method
+(otherwise).</p>
+<p>This is used by <a class="reference internal" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission_name" title="bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_permission_name()</span></code></a> to generate the name
+of the appropriate permission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A tuple in the form (app_label, operand_name).</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission">
+<code class="sig-name descname">get_permission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">view</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#BridgekeeperRESTMixin.get_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a rule object to check against for this request.</p>
+<p>The default implementation just looks up the name returned by
+<a class="reference internal" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission_name" title="bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_permission_name()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Rule object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="rules.html#id0" title="bridgekeeper.rules.Rule">bridgekeeper.rules.Rule</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission_name">
+<code class="sig-name descname">get_permission_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">view</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#BridgekeeperRESTMixin.get_permission_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_permission_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of the permission to use for a request.</p>
+<p>The default implementation returns a name of the form
+<code class="docutils literal notranslate"><span class="pre">'{app_label}.{action}_{operand_name}'</span></code>, which will result in
+something like <code class="docutils literal notranslate"><span class="pre">'shrubberies.view_shrubber'</span></code> or
+<code class="docutils literal notranslate"><span class="pre">'shrubberies.delete_shrubbery'</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">app_label</span></code> and <code class="docutils literal notranslate"><span class="pre">operand_name</span></code> are provided by
+<a class="reference internal" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_operand_name" title="bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_operand_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_operand_name()</span></code></a>, and <code class="docutils literal notranslate"><span class="pre">action</span></code> is provided by
+<a class="reference internal" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_action" title="bridgekeeper.rest_framework.BridgekeeperRESTMixin.get_action"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_action()</span></code></a>, so if you need to override this behaviour,
+it may be easier to override those methods instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Permission name.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bridgekeeper.rest_framework.BridgekeeperRESTMixin.skip_permission_checks">
+<code class="sig-name descname">skip_permission_checks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">view</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#BridgekeeperRESTMixin.skip_permission_checks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.BridgekeeperRESTMixin.skip_permission_checks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Skips all permission checks for certain requests.</p>
+<p>The default implementation will skip permission checks for
+the <code class="docutils literal notranslate"><span class="pre">APIRootView</span></code> view class used by the built-in
+<code class="docutils literal notranslate"><span class="pre">DefaultRouter</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether to skip permission checks for the
+given request.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bridgekeeper.rest_framework.RuleFilter">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rest_framework.</code><code class="sig-name descname">RuleFilter</code><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#RuleFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.RuleFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django REST Framework filter class for Bridgekeeper.</p>
+<p>This filter class doesn’t expect any client interaction or present
+any UI to the API explorer; it’s simply a mechanism for
+automatically filtering QuerySets according to Bridgekeeper
+permissions.</p>
+<p>Note that this filter will always check the <code class="docutils literal notranslate"><span class="pre">view</span></code> permission;
+this means that if a particular user has permissions to edit but not
+view something, they’ll get 404s on everything. That said, it
+doesn’t make much sense for users to have edit but not view
+permissions on something anyway.</p>
+<dl class="py method">
+<dt id="bridgekeeper.rest_framework.RuleFilter.filter_queryset">
+<code class="sig-name descname">filter_queryset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">queryset</span></em>, <em class="sig-param"><span class="n">view</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#RuleFilter.filter_queryset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.RuleFilter.filter_queryset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a filtered queryset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bridgekeeper.rest_framework.RuleFilter.get_action">
+<code class="sig-name descname">get_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">view</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#RuleFilter.get_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.RuleFilter.get_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the action that a particular request is performing.</p>
+<p>Usually, this is one of <code class="docutils literal notranslate"><span class="pre">'view'</span></code>, <code class="docutils literal notranslate"><span class="pre">'add'</span></code>, <code class="docutils literal notranslate"><span class="pre">'change'</span></code>
+or <code class="docutils literal notranslate"><span class="pre">'delete'</span></code>. This is used by <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_permission_name()</span></code>
+to generate the name of the appropriate permission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Name of an action.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bridgekeeper.rest_framework.RulePermissions">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rest_framework.</code><code class="sig-name descname">RulePermissions</code><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#RulePermissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.RulePermissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Django REST Framework permission class for Bridgekeeper.</p>
+<p>Note that this class <strong>does not</strong>, by itself, perform queryset
+filtering on list views, since Django REST Framework doesn’t provide
+an API for permission classes to do so.</p>
+<dl class="py method">
+<dt id="bridgekeeper.rest_framework.RulePermissions.has_object_permission">
+<code class="sig-name descname">has_object_permission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">view</span></em>, <em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#RulePermissions.has_object_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.RulePermissions.has_object_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>True</cite> if permission is granted, <cite>False</cite> otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bridgekeeper.rest_framework.RulePermissions.has_permission">
+<code class="sig-name descname">has_permission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">view</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rest_framework.html#RulePermissions.has_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rest_framework.RulePermissions.has_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>True</cite> if permission is granted, <cite>False</cite> otherwise.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../changelog.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="helpers.html" class="btn btn-neutral float-left" title="Convenience Helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

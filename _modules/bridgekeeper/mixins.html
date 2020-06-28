@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>bridgekeeper.mixins &mdash; Bridgekeeper 0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Bridgekeeper
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/installation.html">Installing Bridgekeeper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/permissions.html">Defining permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/views.html">Using Permissions In Views</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/rules.html">Writing Rules and Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/permissions.html">Checking Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/rest_framework.html">Django REST Framework integration</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rules.html">Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/helpers.html">Convenience Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rest_framework.html">Django REST Framework integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Bridgekeeper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>bridgekeeper.mixins</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for bridgekeeper.mixins</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ImproperlyConfigured</span><span class="p">,</span>
+    <span class="n">PermissionDenied</span><span class="p">,</span>
+    <span class="n">SuspiciousOperation</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">perms</span> <span class="k">as</span> <span class="n">global_permission_map</span>
+
+
+<span class="k">class</span> <span class="nc">BasePermissionMixin</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">permission_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">permission_map</span> <span class="o">=</span> <span class="n">global_permission_map</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rule</span> <span class="o">=</span> <span class="n">permission_map</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">permission_name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span><span class="s2">&quot;permission_name is not set&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;permission </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">permission_name</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="s2">&quot;does not exist&quot;</span>
+            <span class="p">)</span>
+
+
+<div class="viewcode-block" id="QuerySetPermissionMixin"><a class="viewcode-back" href="../../api/helpers.html#bridgekeeper.mixins.QuerySetPermissionMixin">[docs]</a><span class="k">class</span> <span class="nc">QuerySetPermissionMixin</span><span class="p">(</span><span class="n">BasePermissionMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;View mixin that filters QuerySets according to a permission.</span>
+
+<span class="sd">    Use this mixin with any class-based view that expects a</span>
+<span class="sd">    ``get_queryset`` method (e.g.</span>
+<span class="sd">    :class:`~django.views.generic.list.ListView`,</span>
+<span class="sd">    :class:`~django.views.generic.detail.DetailView`,</span>
+<span class="sd">    :class:`~django.views.generic.edit.UpdateView`, or any other views</span>
+<span class="sd">    that subclass from</span>
+<span class="sd">    :class:`~django.views.generic.list.MultipleObjectMixin` or</span>
+<span class="sd">    :class:`~django.views.generic.detail.SingleObjectMixin`), and</span>
+<span class="sd">    supply a :attr:`permission_name` attribute with the name of a</span>
+<span class="sd">    Bridgekeeper permission.</span>
+
+<span class="sd">    The view&#39;s queryset will then be automatically filtered to objects</span>
+<span class="sd">    that the user requesting the page has the supplied permission for.</span>
+<span class="sd">    For multiple-object views like</span>
+<span class="sd">    :class:`~django.views.generic.list.ListView`, objects the user</span>
+<span class="sd">    doesn&#39;t have the permission for just won&#39;t be in the list.</span>
+<span class="sd">    For single-object views like</span>
+<span class="sd">    :class:`~django.views.generic.edit.UpdateView`, attempts to access</span>
+<span class="sd">    objects the user doesn&#39;t have the permission for will just 404.</span>
+
+<span class="sd">    .. attribute:: permission_name</span>
+
+<span class="sd">        The name of the Bridgekeeper permission to check against, e.g.</span>
+<span class="sd">        ``&#39;shrubberies.change_shrubbery&#39;``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">qs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CreatePermissionGuardMixin"><a class="viewcode-back" href="../../api/helpers.html#bridgekeeper.mixins.CreatePermissionGuardMixin">[docs]</a><span class="k">class</span> <span class="nc">CreatePermissionGuardMixin</span><span class="p">(</span><span class="n">BasePermissionMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A view that checks permissions before creating model instances.</span>
+
+<span class="sd">    Use this mixin with :class:`~django.views.generic.edit.CreateView`,</span>
+<span class="sd">    and supply the :attr:`permission_name` of a Bridgekeeper permission.</span>
+<span class="sd">    Your view will then do two things:</span>
+
+<span class="sd">    - Check that it&#39;s possible for a user to create any new instances</span>
+<span class="sd">      at all (i.e. that</span>
+<span class="sd">      :meth:`~bridgekeeper.rules.Rule.is_possible_for` returns ``True``</span>
+<span class="sd">      on the supplied permission). If not, the mixin raises</span>
+<span class="sd">      :class:`~django.core.exceptions.PermissionDenied`.</span>
+<span class="sd">    - Just before the form is saved, checks the unsaved model instance</span>
+<span class="sd">      against the supplied permission; if it fails, the mixin raises</span>
+<span class="sd">      :class:`~django.core.exceptions.SuspiciousOperation`.</span>
+
+<span class="sd">    Note that unlike :class:`QuerySetPermissionMixin`, this mixin won&#39;t</span>
+<span class="sd">    automatically apply permissions for you. Ideally, your view (or</span>
+<span class="sd">    the form class your view uses) should make it impossible for</span>
+<span class="sd">    users to create instances they&#39;re not allowed to create; fields</span>
+<span class="sd">    that must be set to a certain value should be set automatically and</span>
+<span class="sd">    not displayed in the form, choice fields should have their</span>
+<span class="sd">    ``choices`` limited to only values the user is allowed to set, and</span>
+<span class="sd">    so on.</span>
+
+<span class="sd">    Bridgekeeper can&#39;t (and arguably shouldn&#39;t) reach into your form</span>
+<span class="sd">    and modify it for you. Instead, this mixin provides a last line of</span>
+<span class="sd">    defence; if your view has a bug where a user can create something</span>
+<span class="sd">    they&#39;re not allowed to, the mixin will prevent the object from</span>
+<span class="sd">    actually being created, and crash loudly in a way that your error</span>
+<span class="sd">    reporting systems can pick up, allowing you to fix the bug.</span>
+
+<span class="sd">    .. attribute:: permission_name</span>
+
+<span class="sd">        The name of the Bridgekeeper permission to check against, e.g.</span>
+<span class="sd">        ``&#39;shrubberies.change_shrubbery&#39;``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">dispatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="o">.</span><span class="n">is_possible_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">PermissionDenied</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dispatch</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">instance</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SuspiciousOperation</span><span class="p">(</span>
+                <span class="s2">&quot;Tried to create an instance which &quot;</span> <span class="s2">&quot;permissions do not allow&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

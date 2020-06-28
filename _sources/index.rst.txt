@@ -1,0 +1,35 @@
+.. include:: ../README.rst
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorial
+
+   tutorial/installation
+   tutorial/permissions
+   tutorial/views
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Guides
+
+   guides/rules
+   guides/permissions
+   guides/rest_framework
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference
+
+   api/rules
+   api/helpers
+   api/rest_framework
+   changelog
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

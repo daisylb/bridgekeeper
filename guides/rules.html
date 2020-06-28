@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Writing Rules and Permissions &mdash; Bridgekeeper 0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Checking Permissions" href="permissions.html" />
+    <link rel="prev" title="Using Permissions In Views" href="../tutorial/views.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Bridgekeeper
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/installation.html">Installing Bridgekeeper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/permissions.html">Defining permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/views.html">Using Permissions In Views</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing Rules and Permissions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#blanket-rules">Blanket Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Checking Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rest_framework.html">Django REST Framework integration</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/rules.html">Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/helpers.html">Convenience Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/rest_framework.html">Django REST Framework integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Bridgekeeper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Writing Rules and Permissions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/guides/rules.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="writing-rules-and-permissions">
+<h1>Writing Rules and Permissions<a class="headerlink" href="#writing-rules-and-permissions" title="Permalink to this headline">¶</a></h1>
+<p>In Bridgekeeper, a <strong>rule</strong> is something that is given a user and a resource, and either <strong>allows</strong> or <strong>blocks</strong> access to the resource. Rules are instances of the <a class="reference internal" href="../api/rules.html#id0" title="bridgekeeper.rules.Rule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code></a> class (or rather, subclasses of that class), and can be combined together into composite rules.</p>
+<p>A Bridgekeeper <strong>permission</strong> consists of a name, usually conforming to Django permission name conventions e.g. <code class="docutils literal notranslate"><span class="pre">shrubberies.change_shrubbery</span></code>, and a rule. Permissions are created by assigning a rule instance to a name in <code class="xref py py-data docutils literal notranslate"><span class="pre">bridgekeeper.perms</span></code>, which acts like a dictionary:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper.rules</span> <span class="kn">import</span> <span class="n">Attribute</span><span class="p">,</span> <span class="n">is_staff</span>
+<span class="kn">from</span> <span class="nn">bridgekeeper</span> <span class="kn">import</span> <span class="n">perms</span>
+
+<span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubberies.change_shrubbery&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_staff</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="../api/rules.html#module-bridgekeeper.rules" title="bridgekeeper.rules"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rules</span></code></a> module provides a range of pre-made rule instances as well as rule classes you can instantiate, as shown above. You can also combine rules using the <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> (and), <code class="docutils literal notranslate"><span class="pre">|</span></code> (or), and <code class="docutils literal notranslate"><span class="pre">~</span></code> (not) operators:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubberies.view_shrubbery&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_staff</span> <span class="o">|</span> <span class="n">Attribute</span><span class="p">(</span>
+    <span class="s1">&#39;company&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">company</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, if none of the built-in rules do what you want, you can subclass <a class="reference internal" href="../api/rules.html#id0" title="bridgekeeper.rules.Rule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code></a> yourself and write your own.</p>
+<div class="section" id="blanket-rules">
+<h2>Blanket Rules<a class="headerlink" href="#blanket-rules" title="Permalink to this headline">¶</a></h2>
+<p>We introduced what blanket rules are, as well as how to write a custom one, in the <a class="reference internal" href="../tutorial/permissions.html#tutorial-blanket"><span class="std std-ref">Blanket rules</span></a> section of the tutorial. There, we defined one rule for each role, but if we had more than two roles that might get a bit repetitive.</p>
+<p>If you need your blanket rules to take arguments, the easiest way is to write a function that <em>returns</em> a rule, like so:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">shrubberies/rules.py</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper.rules</span> <span class="kn">import</span> <span class="n">blanket_rule</span>
+
+<span class="k">def</span> <span class="nf">has_role</span><span class="p">(</span><span class="n">role</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">checker</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">role</span>
+
+    <span class="k">return</span> <span class="n">blanket_rule</span><span class="p">(</span><span class="n">checker</span><span class="p">,</span> <span class="n">repr_string</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;has_role(</span><span class="si">{</span><span class="n">role</span><span class="si">!r}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In this case, we’re using the optional <code class="docutils literal notranslate"><span class="pre">repr_string</span></code> argument to override how the rule is displayed when debugging, so that we can see what the <code class="docutils literal notranslate"><span class="pre">role</span></code> argument is. (We’re using <a class="reference external" href="https://www.python.org/dev/peps/pep-0498/">PEP 498</a> f-strings here, which are supported in Python 3.6+, but you don’t have to.)</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="permissions.html" class="btn btn-neutral float-right" title="Checking Permissions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../tutorial/views.html" class="btn btn-neutral float-left" title="Using Permissions In Views" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

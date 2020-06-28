@@ -1,0 +1,423 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Defining permissions &mdash; Bridgekeeper 0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Using Permissions In Views" href="views.html" />
+    <link rel="prev" title="Installing Bridgekeeper" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Bridgekeeper
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing Bridgekeeper</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Defining permissions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#defining-our-first-permission">Defining our first permission</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#blanket-rules">Blanket rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#matching-against-model-instances">Matching against model instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#traversing-relationships">Traversing relationships</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#combining-rules-together">Combining rules together</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">Using Permissions In Views</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/rules.html">Writing Rules and Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/permissions.html">Checking Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/rest_framework.html">Django REST Framework integration</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/rules.html">Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/helpers.html">Convenience Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/rest_framework.html">Django REST Framework integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Bridgekeeper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Defining permissions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tutorial/permissions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="defining-permissions">
+<h1>Defining permissions<a class="headerlink" href="#defining-permissions" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial, we’ll be using a example app, an online stock management portal for shrubberies. We’ll define some permissions for it in this section, then use them in views in the next section. It has a single app called <code class="docutils literal notranslate"><span class="pre">shrubberies</span></code>, with a <code class="docutils literal notranslate"><span class="pre">models.py</span></code> looks something like this:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">shrubberies/models.py</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+
+<span class="k">class</span> <span class="nc">Store</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Branch</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">store</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Store</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Shrubbery</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">branch</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Branch</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Profile</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;User profile.</span>
+
+<span class="sd">    Every user has one Profile object attached to them, which is</span>
+<span class="sd">    automatically created when the user is added, and holds information</span>
+<span class="sd">    about which branch of which store they belong to and what their</span>
+<span class="sd">    role is.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">OneToOneField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">branch</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Branch</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">)</span>
+    <span class="n">role</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;apprentice&#39;</span><span class="p">,</span> <span class="s1">&#39;Apprentice Shrubber&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;shrubber&#39;</span><span class="p">,</span> <span class="s1">&#39;Shrubber&#39;</span><span class="p">),</span>
+    <span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="defining-our-first-permission">
+<h2>Defining our first permission<a class="headerlink" href="#defining-our-first-permission" title="Permalink to this headline">¶</a></h2>
+<p>In Bridgekeeper, permissions are defined by <strong>rules</strong>. A rule is an object that can be given a user and a model instance, and decides whether or not to allow that user access to that instance.</p>
+<p>One of the simplest rules in Bridgekeeper is the built-in <a class="reference internal" href="../api/rules.html#bridgekeeper.rules.is_staff" title="bridgekeeper.rules.is_staff"><code class="xref py py-data docutils literal notranslate"><span class="pre">is_staff</span></code></a> rule, which answers “yes” if the user trying to log in has <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User.is_staff" title="(in Django v1.11)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_staff</span></code></a> set, or “no” otherwise.</p>
+<p>We turn a rule into a <strong>permission</strong> by assigning it to a name. We do that by creating a file called <code class="docutils literal notranslate"><span class="pre">permissions.py</span></code> inside our app, importing <code class="xref py py-data docutils literal notranslate"><span class="pre">bridgekeeper.perms</span></code> (which is a Python dictionary <a class="footnote-reference brackets" href="#permissionmap" id="id1">1</a> that maps permission names to their corresponding rules) and adding entries to it.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">shrubberies/permissions.py</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper</span> <span class="kn">import</span> <span class="n">perms</span>
+<span class="kn">from</span> <span class="nn">bridgekeeper.rules</span> <span class="kn">import</span> <span class="n">is_staff</span>
+
+<span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubbery.add_store&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_staff</span>
+<span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubbery.change_store&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_staff</span>
+<span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubbery.delete_store&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_staff</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We’ve used permission names that follow the convention set by <a class="reference external" href="https://docs.djangoproject.com/en/1.11/topics/auth/default/#topic-authorization" title="(in Django v1.11)"><span class="xref std std-ref">Django’s built-in permissions mechanism</span></a>, so that they’re used by other apps that expect that naming convention, such as Django’s built-in admin. You can use whatever permission names you like, although it’s best to namespace them with the name of your app followed by a full stop at the start (e.g. <code class="docutils literal notranslate"><span class="pre">shrubbery.foo</span></code>).</p>
+</div>
+<p>These permissions are now fully working; if you wanted, you could skip right through to the next section to see how to use them in your views. Don’t, though, because Bridgekeeper is capable of far more.</p>
+</div>
+<div class="section" id="blanket-rules">
+<span id="tutorial-blanket"></span><h2>Blanket rules<a class="headerlink" href="#blanket-rules" title="Permalink to this headline">¶</a></h2>
+<p>A blanket rule is a rule that decides whether or not to allow access based solely on the user that’s trying to access the resource. They can’t allow access to some objects but not others; they’re solely all-or-nothing, hence the name.</p>
+<p>We’ve already used one blanket rule—the built-in <a class="reference internal" href="../api/rules.html#bridgekeeper.rules.is_staff" title="bridgekeeper.rules.is_staff"><code class="xref py py-data docutils literal notranslate"><span class="pre">is_staff</span></code></a> rule—but we can also define our own, by using the <code class="xref py py-class docutils literal notranslate"><span class="pre">blanket_rule</span></code> decorator to wrap a function that takes a user and returns a boolean.</p>
+<p>In this example, we’re using the <code class="docutils literal notranslate"><span class="pre">role</span></code> attribute on each user’s associated <code class="docutils literal notranslate"><span class="pre">Profile</span></code> instance to restrict access to users that have been assigned a particular role:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">shrubberies/rules.py</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper.rules</span> <span class="kn">import</span> <span class="n">blanket_rule</span>
+
+<span class="nd">@blanket_rule</span>
+<span class="k">def</span> <span class="nf">is_apprentice</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s1">&#39;apprentice&#39;</span>
+
+<span class="nd">@blanket_rule</span>
+<span class="k">def</span> <span class="nf">is_shrubber</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s1">&#39;shrubber&#39;</span>
+</pre></div>
+</div>
+</div>
+<p>If we were given a requirement like this:</p>
+<blockquote>
+<div><p>Only shrubbers can edit shrubberies.</p>
+</div></blockquote>
+<p>We could use our new <code class="docutils literal notranslate"><span class="pre">is_shrubber</span></code> rule the same way that we used <code class="docutils literal notranslate"><span class="pre">is_staff</span></code> before:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">shrubberies/permissions.py</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.rules</span> <span class="kn">import</span> <span class="n">is_shrubber</span>
+
+<span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubbery.change_shrubbery&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_shrubber</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="matching-against-model-instances">
+<h2>Matching against model instances<a class="headerlink" href="#matching-against-model-instances" title="Permalink to this headline">¶</a></h2>
+<p>Blanket rules let us allow or deny access to entire model classes based on the user, but we can also allow access to only certain instances.</p>
+<p>To start with, we’ll use a rather contrived requirement to start with:</p>
+<blockquote>
+<div><p>Users can only edit shrubberies that cost $5.</p>
+</div></blockquote>
+<p>To do this, we’ll use an <a class="reference internal" href="../api/rules.html#bridgekeeper.rules.R" title="bridgekeeper.rules.R"><code class="xref py py-class docutils literal notranslate"><span class="pre">R</span></code></a> object. <a class="reference internal" href="../api/rules.html#bridgekeeper.rules.R" title="bridgekeeper.rules.R"><code class="xref py py-class docutils literal notranslate"><span class="pre">R</span></code></a> objects are a kind of Bridgekeeper rule that can filter model instances; they look kind of like a Django <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.Q" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Q</span></code></a> object or the <code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code> method on a Django queryset.</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">shrubberies/permissions.py</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper.rules</span> <span class="kn">import</span> <span class="n">R</span>
+
+<span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubbery.change_shrubbery&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>That’s fairly useless, but it works! Let’s move on to a slightly more useful requirement:</p>
+<blockquote>
+<div><p>Users can only edit shrubberies that belong to their branch.</p>
+</div></blockquote>
+<p>We have a problem here: we can’t just say <code class="docutils literal notranslate"><span class="pre">R(branch=SOME_BRANCH)</span></code>, where <code class="docutils literal notranslate"><span class="pre">SOME_BRANCH</span></code> is a constant, because <em>which</em> branch we want to filter against will be different for different users <a class="footnote-reference brackets" href="#modelconstant" id="id2">2</a>.</p>
+<p>Fortunately, if you pass a callable to an <a class="reference internal" href="../api/rules.html#bridgekeeper.rules.R" title="bridgekeeper.rules.R"><code class="xref py py-class docutils literal notranslate"><span class="pre">R</span></code></a> object, when it’s used it’ll call that callable with a user instance as an argument, and whatever gets returned is the thing that’ll get checked against.</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">shrubberies/permissions.py</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubbery.change_shrubbery&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span><span class="p">(</span><span class="n">branch</span><span class="o">=</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">branch</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="traversing-relationships">
+<h2>Traversing relationships<a class="headerlink" href="#traversing-relationships" title="Permalink to this headline">¶</a></h2>
+<p>What if we change the requirement to something like this?</p>
+<blockquote>
+<div><p>Users can only edit shrubberies that belong to any branch in the same store as them.</p>
+</div></blockquote>
+<p>Shrubberies don’t have a <code class="docutils literal notranslate"><span class="pre">store</span></code> attribute; we have to go through the <code class="docutils literal notranslate"><span class="pre">branch</span></code> attribute to figure out which store a shrubbery belongs to. We can do that using the same double-underscore notation that <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.Q" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Q</span></code></a> uses.</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">shrubberies/permissions.py</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubbery.change_shrubbery&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span><span class="p">(</span><span class="n">branch__store</span><span class="o">=</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">branch</span><span class="o">.</span><span class="n">store</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="combining-rules-together">
+<h2>Combining rules together<a class="headerlink" href="#combining-rules-together" title="Permalink to this headline">¶</a></h2>
+<p>All of the rules that we’ve seen so far are quite simple, each only checking one thing. Fortunately, Bridgekeeper rules can be combined together, letting us model much more complex requirements.</p>
+<p>We do this using the <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">|</span></code> and <code class="docutils literal notranslate"><span class="pre">~</span></code> operators.</p>
+<ul class="simple">
+<li><p>Prefixing a rule with <code class="docutils literal notranslate"><span class="pre">~</span></code> inverts it. For example, the expression <code class="docutils literal notranslate"><span class="pre">~is_apprentice</span></code> returns a rule that allows access to everyone that is <strong>not</strong> an apprentice shrubber.</p></li>
+<li><p>Combining two rules with <code class="docutils literal notranslate"><span class="pre">|</span></code> allows access if <em>either</em> rule matches. For example, <code class="docutils literal notranslate"><span class="pre">is_staff</span> <span class="pre">|</span> <span class="pre">is_shrubber</span></code> allows access to users that are either administrative staff <strong>or</strong> shrubbers.</p></li>
+<li><p>Combining two rules with <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> allows access if <em>both</em> rules match. For example, <code class="docutils literal notranslate"><span class="pre">is_staff</span> <span class="pre">&amp;</span> <span class="pre">is_shrubber</span></code> allows access to users that are both administrative staff <strong>and</strong> shrubbers.</p></li>
+</ul>
+<p>For a more complex example, let’s say that we needed to model the following requirement:</p>
+<blockquote>
+<div><p>Administrative staff (with <code class="docutils literal notranslate"><span class="pre">is_staff</span></code> set) can edit all shrubberies in the system. Shrubbers can edit all shrubberies in the store they belong to. Apprentice shrubbers can edit all shrubberies in their branch.</p>
+</div></blockquote>
+<p>First, we need to rephrase this requirement so that it’s made up of simpler rules combined with <strong>and</strong>, <strong>or</strong>, and <strong>not</strong>.</p>
+<blockquote>
+<div><p>Users can edit shrubberies if:</p>
+<ul class="simple">
+<li><p>They are administrative staff (with <code class="docutils literal notranslate"><span class="pre">is_staff</span></code> set), <strong>or</strong></p></li>
+<li><p>They are a shrubber, <strong>and</strong> the shrubbery belongs to the same store as them, <strong>or</strong></p></li>
+<li><p>They are an apprentice shrubber, <strong>and</strong> the shrubbery belongs to the same branch as them</p></li>
+</ul>
+</div></blockquote>
+<p>In earlier sections of this chapter, we’ve already talked about rules that allow access to staff users and users with particular roles. We’ve also already discussed rules that allow access only to shrubberies belonging to the same store or branch as the user trying to access them. All we need to do now is combine them together:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">shrubberies/permissions.py</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper.rules</span> <span class="kn">import</span> <span class="n">is_staff</span>
+<span class="kn">from</span> <span class="nn">.rules</span> <span class="kn">import</span> <span class="n">is_shrubber</span><span class="p">,</span> <span class="n">is_apprentice</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubbery.change_shrubbery&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_staff</span> <span class="o">|</span> <span class="p">(</span>
+    <span class="n">is_shrubber</span> <span class="o">&amp;</span> <span class="n">R</span><span class="p">(</span><span class="n">branch__store</span><span class="o">=</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">branch</span><span class="o">.</span><span class="n">store</span><span class="p">)</span>
+<span class="p">)</span> <span class="o">|</span> <span class="p">(</span>
+    <span class="n">is_apprentice</span> <span class="o">&amp;</span> <span class="n">R</span><span class="p">(</span><span class="n">branch</span><span class="o">=</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">branch</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<dl class="footnote brackets">
+<dt class="label" id="permissionmap"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p><code class="xref py py-data docutils literal notranslate"><span class="pre">bridgekeeper.perms</span></code> is actually an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionMap</span></code>, which is a subclass of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> with a few small changes, but you can treat it as a normal dictionary anyway.</p>
+</dd>
+<dt class="label" id="modelconstant"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Of course, this is one of multiple reasons we can’t do this, the other having to do with accessing the database at import time in order to define such a constant, which is a bad idea, but that’s rather academic.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="views.html" class="btn btn-neutral float-right" title="Using Permissions In Views" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installing Bridgekeeper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

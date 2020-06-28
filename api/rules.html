@@ -1,0 +1,622 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Rules &mdash; Bridgekeeper 0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Convenience Helpers" href="helpers.html" />
+    <link rel="prev" title="Django REST Framework integration" href="../guides/rest_framework.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Bridgekeeper
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/installation.html">Installing Bridgekeeper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/permissions.html">Defining permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/views.html">Using Permissions In Views</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/rules.html">Writing Rules and Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/permissions.html">Checking Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/rest_framework.html">Django REST Framework integration</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Rules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-rule-api">The <code class="docutils literal notranslate"><span class="pre">Rule</span></code> API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#built-in-blanket-rules">Built-in Blanket Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rule-classes">Rule Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deprecated-rule-classes">Deprecated rule classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#built-in-rule-instances">Built-in rule instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extension-points-for-writing-your-own-rule-subclasses">Extension Points (For Writing Your Own <code class="docutils literal notranslate"><span class="pre">Rule</span></code> Subclasses)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="helpers.html">Convenience Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rest_framework.html">Django REST Framework integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Bridgekeeper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Rules</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/rules.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-bridgekeeper.rules">
+<span id="rules"></span><h1>Rules<a class="headerlink" href="#module-bridgekeeper.rules" title="Permalink to this headline">¶</a></h1>
+<p>Rule library that forms the core of Bridgekeeper.</p>
+<p>This module defines the <a class="reference internal" href="#id0" title="bridgekeeper.rules.Rule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code></a> base class, as well as a
+number of built-in rules.</p>
+<div class="section" id="the-rule-api">
+<h2>The <code class="docutils literal notranslate"><span class="pre">Rule</span></code> API<a class="headerlink" href="#the-rule-api" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="bridgekeeper.rules.Rule">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">Rule</code><a class="reference internal" href="../_modules/bridgekeeper/rules.html#Rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.Rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for rules.</p>
+<p>All rules are instances of this class, but not directly;
+use (or write!) a subclass instead, as this class will raise
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotImplementedError</span></code></a> if you try to actually do anything
+with it.</p>
+<dl class="py method">
+<dt id="bridgekeeper.rules.Rule.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">instance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#Rule.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.Rule.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a user satisfies this rule.</p>
+<p>Given a user, return a boolean indicating if that user satisfies
+this rule for a given instance, or if none is provided,
+every instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bridgekeeper.rules.Rule.filter">
+<code class="sig-name descname">filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">queryset</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#Rule.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.Rule.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter a queryset to instances that satisfy this rule.</p>
+<p>Given a queryset and a user, this method will return a filtered
+queryset that contains only instances from the original
+queryset for which the user satisfies this rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>queryset</strong> (<em>django.db.models.QuerySet</em>) – The initial queryset to filter</p></li>
+<li><p><strong>user</strong> (<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User" title="(in Django v1.11)"><em>django.contrib.auth.models.User</em></a>) – The user to match against.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A filtered queryset</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>django.db.models.QuerySet</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you are subclassing this class, don’t override this
+method; override <a class="reference internal" href="#bridgekeeper.rules.Rule.query" title="bridgekeeper.rules.Rule.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">query()</span></code></a> instead.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bridgekeeper.rules.Rule.is_possible_for">
+<code class="sig-name descname">is_possible_for</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#Rule.is_possible_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.Rule.is_possible_for" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if it is possible for a user to satisfy this rule.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if it is possible for an instance to exist for
+which the given user satisfies this rule, <code class="docutils literal notranslate"><span class="pre">False</span></code>
+otherwise.</p>
+<p>For example, in a multi-tenanted app, you might have a rule
+that allows access to model instances if a user is a staff user,
+or if the instance’s tenant matches the user’s tenant.</p>
+<p>In that case, <a class="reference internal" href="#id1" title="bridgekeeper.rules.Rule.check"><code class="xref py py-meth docutils literal notranslate"><span class="pre">check()</span></code></a>, when called without an instance,
+would return <code class="docutils literal notranslate"><span class="pre">True</span></code> only for staff users (since only they can
+see <em>every</em> instance). This method would return <code class="docutils literal notranslate"><span class="pre">True</span></code> for all
+users, because every user could possibly see an instance
+(whether it’s one that exists currently in the database, or a
+hypothetical one that might in the future).</p>
+<p>Cases where this method would return <code class="docutils literal notranslate"><span class="pre">False</span></code> include where a
+user doesn’t have the right role or subscription plan to use a
+feature at all; this method is the single-permission equivalent
+of <span class="xref std std-ref">has-module-perms</span>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="built-in-blanket-rules">
+<h2>Built-in Blanket Rules<a class="headerlink" href="#built-in-blanket-rules" title="Permalink to this headline">¶</a></h2>
+<dl class="py data">
+<dt id="bridgekeeper.rules.always_allow">
+<code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">always_allow</code><a class="reference internal" href="../_modules/bridgekeeper/rules.html#always_allow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.always_allow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule that always allows access to everything.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="bridgekeeper.rules.always_deny">
+<code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">always_deny</code><a class="reference internal" href="../_modules/bridgekeeper/rules.html#always_deny"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.always_deny" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule that never allows access to anything.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="bridgekeeper.rules.is_authenticated">
+<code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">is_authenticated</code><a class="reference internal" href="../_modules/bridgekeeper/rules.html#is_authenticated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.is_authenticated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule that allows access to users for whom
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User.is_authenticated" title="(in Django v1.11)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_authenticated</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="bridgekeeper.rules.is_superuser">
+<code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">is_superuser</code><a class="reference internal" href="../_modules/bridgekeeper/rules.html#is_superuser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.is_superuser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule that allows access to users for whom
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User.is_superuser" title="(in Django v1.11)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_superuser</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="bridgekeeper.rules.is_staff">
+<code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">is_staff</code><a class="reference internal" href="../_modules/bridgekeeper/rules.html#is_staff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.is_staff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule that allows access to users for whom
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User.is_staff" title="(in Django v1.11)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_staff</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="bridgekeeper.rules.is_active">
+<code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">is_active</code><a class="reference internal" href="../_modules/bridgekeeper/rules.html#is_active"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.is_active" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule that allows access to users for whom
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User.is_active" title="(in Django v1.11)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_active</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="rule-classes">
+<h2>Rule Classes<a class="headerlink" href="#rule-classes" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="bridgekeeper.rules.R">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">R</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#R"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.R" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rules that allow access to some objects but not others.</p>
+<p><code class="docutils literal notranslate"><span class="pre">R</span></code> takes a set of field lookups as keyword arguments.</p>
+<p>Each argument is a model attribute. Foreign keys can be traversed
+using double underscores, as in <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.Q" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Q</span></code></a>
+objects.</p>
+<p>The value assigned to each argument can be:</p>
+<ul class="simple">
+<li><p>A value to match.</p></li>
+<li><p>A function that accepts a user, and returns a value to match.</p></li>
+<li><p>If the argument refers to a foreign key or many-to-many
+relationship, another <a class="reference internal" href="#id0" title="bridgekeeper.rules.Rule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rule</span></code></a> object.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py class">
+<dt id="bridgekeeper.rules.Is">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">Is</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">instance</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#Is"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.Is" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule class that checks the identity of the instance.</p>
+<p>This rule is satisfied only by a the provided model instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instance</strong> – The instance to match against, or a callable that
+takes a user and returns a value to match against.</p>
+</dd>
+</dl>
+<p>For instance, if you only wanted a user to be able to update their
+own profile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">own_profile</span> <span class="o">=</span> <span class="n">Is</span><span class="p">(</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt id="bridgekeeper.rules.In">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">In</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#In"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.In" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule class that checks the instance is a member of a collection.</p>
+<p>This rule is satisfied only by model instances that are members of
+the provided collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>collection</strong> – The collection to match against, or a callable
+that takes a user and returns a value to match against.</p>
+</dd>
+</dl>
+<p>For instance, if you only wanted to match groups a user is in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">own_profile</span> <span class="o">=</span> <span class="n">Is</span><span class="p">(</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="deprecated-rule-classes">
+<h2>Deprecated rule classes<a class="headerlink" href="#deprecated-rule-classes" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="bridgekeeper.rules.Attribute">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">Attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">matches</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#Attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.Attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule class that checks the value of an instance attribute.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.9: </span>Use <a class="reference internal" href="#bridgekeeper.rules.R" title="bridgekeeper.rules.R"><code class="xref py py-class docutils literal notranslate"><span class="pre">R</span></code></a> objects instead.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># old</span>
+<span class="n">Attribute</span><span class="p">(</span><span class="s1">&#39;colour&#39;</span><span class="p">,</span> <span class="n">matches</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="n">Attribute</span><span class="p">(</span><span class="s1">&#39;tenant&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">tenant</span><span class="p">)</span>
+
+<span class="c1"># new</span>
+<span class="n">R</span><span class="p">(</span><span class="n">colour</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="n">R</span><span class="p">(</span><span class="n">tenant</span><span class="o">=</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">tenant</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This rule is satisfied by model instances where the attribute
+given in <code class="docutils literal notranslate"><span class="pre">attr</span></code> matches the value given in <code class="docutils literal notranslate"><span class="pre">matches</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – An attribute name to match against on the
+model instance.</p></li>
+<li><p><strong>value</strong> – The value to match against, or a callable that takes
+a user and returns a value to match against.</p></li>
+</ul>
+</dd>
+</dl>
+<p>For instance, if you had a model class <code class="docutils literal notranslate"><span class="pre">Widget</span></code> with an attribute
+<code class="docutils literal notranslate"><span class="pre">colour</span></code> that was either <code class="docutils literal notranslate"><span class="pre">'red'</span></code>, <code class="docutils literal notranslate"><span class="pre">'green'</span></code> or <code class="docutils literal notranslate"><span class="pre">'blue'</span></code>,
+you could limit access to blue widgets with the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">blue_widgets_only</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span><span class="s1">&#39;colour&#39;</span><span class="p">,</span> <span class="n">matches</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Restricting access in a multi-tenanted application by matching a
+model’s <code class="docutils literal notranslate"><span class="pre">tenant</span></code> to the user’s might look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">applications_by_tenant</span> <span class="o">=</span> <span class="n">Attribute</span><span class="p">(</span><span class="s1">&#39;tenant&#39;</span><span class="p">,</span>
+                                   <span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">tenant</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This rule uses Python equality (<code class="docutils literal notranslate"><span class="pre">==</span></code>) when checking a
+retrieved Python object, but performs an equality check on the
+database when filtering a QuerySet. Avoid using it with
+imprecise types (e.g. floats), and ensure that you are using the
+correct Python type (e.g. <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code></a> for decimals
+rather than floats or strings), to prevent inconsistencies.</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt id="bridgekeeper.rules.Relation">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">Relation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">rule</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#Relation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.Relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that a rule applies to a ForeignKey.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.9: </span>Use <a class="reference internal" href="#bridgekeeper.rules.R" title="bridgekeeper.rules.R"><code class="xref py py-class docutils literal notranslate"><span class="pre">R</span></code></a> objects instead.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># old</span>
+<span class="n">Relation</span><span class="p">(</span><span class="s1">&#39;applicant&#39;</span><span class="p">,</span> <span class="n">perms</span><span class="p">[</span><span class="s1">&#39;foo.view_applicant&#39;</span><span class="p">])</span>
+
+<span class="c1"># new</span>
+<span class="n">R</span><span class="p">(</span><span class="n">applicant</span><span class="o">=</span><span class="n">perms</span><span class="p">[</span><span class="s1">&#39;foo.view_applicant&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Name of a foreign key attribute to check.</p></li>
+<li><p><strong>rule</strong> (<a class="reference internal" href="#id0" title="bridgekeeper.rules.Rule"><em>Rule</em></a>) – Rule to check the foreign key against.</p></li>
+</ul>
+</dd>
+</dl>
+<p>For example, given <code class="docutils literal notranslate"><span class="pre">Applicant</span></code> and <code class="docutils literal notranslate"><span class="pre">Application</span></code> models,
+to allow access to all applications to anyone who has permission to
+access the related applicant:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">perms</span><span class="p">[</span><span class="s1">&#39;foo.view_application&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Relation</span><span class="p">(</span>
+    <span class="s1">&#39;applicant&#39;</span><span class="p">,</span> <span class="n">perms</span><span class="p">[</span><span class="s1">&#39;foo.view_applicant&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt id="bridgekeeper.rules.ManyRelation">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">ManyRelation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query_attr</span></em>, <em class="sig-param"><span class="n">rule</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#ManyRelation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.ManyRelation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that a rule applies to a many-object relationship.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.9: </span>Use <a class="reference internal" href="#bridgekeeper.rules.R" title="bridgekeeper.rules.R"><code class="xref py py-class docutils literal notranslate"><span class="pre">R</span></code></a> objects instead.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># old</span>
+<span class="n">ManyRelation</span><span class="p">(</span><span class="s1">&#39;agency&#39;</span><span class="p">,</span> <span class="n">Is</span><span class="p">(</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">agency</span><span class="p">))</span>
+
+<span class="c1"># new</span>
+<span class="n">R</span><span class="p">(</span><span class="n">agency</span><span class="o">=</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">agency</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This can be used in a similar fashion to <a class="reference internal" href="#bridgekeeper.rules.Relation" title="bridgekeeper.rules.Relation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Relation</span></code></a>, but
+across a <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/fields/#django.db.models.ManyToManyField" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManyToManyField</span></code></a>, or the remote
+end of a <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/fields/#django.db.models.ForeignKey" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForeignKey</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Name of a many-object relationship to check. This
+This is the name that you
+use when filtering this relationship using <code class="docutils literal notranslate"><span class="pre">.filter()</span></code>.
+If you are on the side of the relationship where the field
+is defined, this is typically the lowercased model name (e.g.
+<code class="docutils literal notranslate"><span class="pre">mymodel</span></code> on its own, <em>not</em> <code class="docutils literal notranslate"><span class="pre">mymodel_set</span></code>), unless you’ve
+set <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/fields/#django.db.models.ForeignKey.related_name" title="(in Django v1.11)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">related_name</span></code></a> or
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/fields/#django.db.models.ForeignKey.related_query_name" title="(in Django v1.11)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">related_query_name</span></code></a>.</p></li>
+<li><p><strong>rule</strong> (<a class="reference internal" href="#id0" title="bridgekeeper.rules.Rule"><em>Rule</em></a>) – Rule to check the foreign object against.</p></li>
+</ul>
+</dd>
+</dl>
+<p>For example, given <code class="docutils literal notranslate"><span class="pre">Agency</span></code> and <code class="docutils literal notranslate"><span class="pre">Customer</span></code> models,
+to allow agency users access only to customers that have a
+relationship with their agency:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">perms</span><span class="p">[</span><span class="s1">&#39;foo.view_customer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ManyRelation</span><span class="p">(</span>
+    <span class="s1">&#39;agency&#39;</span><span class="p">,</span> <span class="n">Is</span><span class="p">(</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">agency</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="built-in-rule-instances">
+<h2>Built-in rule instances<a class="headerlink" href="#built-in-rule-instances" title="Permalink to this headline">¶</a></h2>
+<dl class="py data">
+<dt id="bridgekeeper.rules.current_user">
+<code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">current_user</code><em class="property"> = Is(&lt;function &lt;lambda&gt;&gt;)</em><a class="headerlink" href="#bridgekeeper.rules.current_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>This rule is satisfied by the user object itself.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="bridgekeeper.rules.in_current_groups">
+<code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">in_current_groups</code><em class="property"> = In(&lt;function &lt;lambda&gt;&gt;)</em><a class="headerlink" href="#bridgekeeper.rules.in_current_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>This rule is satisfied by any group the user is in.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="extension-points-for-writing-your-own-rule-subclasses">
+<h2>Extension Points (For Writing Your Own <code class="docutils literal notranslate"><span class="pre">Rule</span></code> Subclasses)<a class="headerlink" href="#extension-points-for-writing-your-own-rule-subclasses" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="id0">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">Rule</code><a class="reference internal" href="../_modules/bridgekeeper/rules.html#Rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>If you want to create your own rule class, these are the methods you
+need to override.</p>
+<dl class="py method">
+<dt id="bridgekeeper.rules.Rule.query">
+<code class="sig-name descname">query</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#Rule.query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.rules.Rule.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.Q" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Q</span></code></a> object.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is used internally by <a class="reference internal" href="#bridgekeeper.rules.Rule.filter" title="bridgekeeper.rules.Rule.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a>; subclasses
+will need to override it but you should never need to call
+it directly.</p>
+</div>
+<p>Given a user, return a <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.Q" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Q</span></code></a> object which
+will filter a queryset down to only instances for which the
+given user satisfies this rule.</p>
+<p>Alternatively, return <a class="reference internal" href="#bridgekeeper.rules.UNIVERSAL" title="bridgekeeper.rules.UNIVERSAL"><code class="xref py py-data docutils literal notranslate"><span class="pre">UNIVERSAL</span></code></a> if this user satisfies
+this rule for every possible object, or <a class="reference internal" href="#bridgekeeper.rules.EMPTY" title="bridgekeeper.rules.EMPTY"><code class="xref py py-data docutils literal notranslate"><span class="pre">EMPTY</span></code></a> if
+this user cannot satisfy this rule for any possible object.
+(These two values are usually only returned in “blanket
+rules” which depend only on some property of the user, e.g.
+the built-in <a class="reference internal" href="#bridgekeeper.rules.is_staff" title="bridgekeeper.rules.is_staff"><code class="xref any py py-data docutils literal notranslate"><span class="pre">is_staff</span></code></a>, but these are usually best created
+with the <code class="xref py py-class docutils literal notranslate"><span class="pre">blanket_rule</span></code> decorator.)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user</strong> (<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User" title="(in Django v1.11)"><em>django.contrib.auth.models.User</em></a>) – The user to match against.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A query that will filter a queryset to match this
+rule.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.Q" title="(in Django v1.11)">django.db.models.Q</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id1">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">instance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/rules.html#Rule.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a user satisfies this rule.</p>
+<p>Given a user, return a boolean indicating if that user satisfies
+this rule for a given instance, or if none is provided,
+every instance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt id="bridgekeeper.rules.UNIVERSAL">
+<code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">UNIVERSAL</code><em class="property"> = UNIVERSAL</em><a class="headerlink" href="#bridgekeeper.rules.UNIVERSAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sentinel value that represents the universal set. See
+<a class="reference internal" href="#bridgekeeper.rules.Rule.query" title="bridgekeeper.rules.Rule.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Rule.query()</span></code></a> for usage.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="bridgekeeper.rules.EMPTY">
+<code class="sig-prename descclassname">bridgekeeper.rules.</code><code class="sig-name descname">EMPTY</code><em class="property"> = EMPTY</em><a class="headerlink" href="#bridgekeeper.rules.EMPTY" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sentinel value that represents the empty set. See
+<a class="reference internal" href="#bridgekeeper.rules.Rule.query" title="bridgekeeper.rules.Rule.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Rule.query()</span></code></a> for usage.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="helpers.html" class="btn btn-neutral float-right" title="Convenience Helpers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../guides/rest_framework.html" class="btn btn-neutral float-left" title="Django REST Framework integration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

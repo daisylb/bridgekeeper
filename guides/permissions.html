@@ -1,0 +1,392 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Checking Permissions &mdash; Bridgekeeper 0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Django REST Framework integration" href="rest_framework.html" />
+    <link rel="prev" title="Writing Rules and Permissions" href="rules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Bridgekeeper
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/installation.html">Installing Bridgekeeper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/permissions.html">Defining permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/views.html">Using Permissions In Views</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rules.html">Writing Rules and Permissions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Checking Permissions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#checking-permissions-on-an-object">Checking Permissions on an Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checking-permissions-on-a-queryset">Checking Permissions on a QuerySet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checking-permissions-for-all-possible-instances">Checking Permissions For All Possible Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checking-permissions-for-any-possible-instances">Checking Permissions For <em>Any</em> Possible Instances</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#has-module-perms"><code class="docutils literal notranslate"><span class="pre">has_module_perms()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#permission-check-summary">Permission Check Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-permissions-in-views">Using permissions in views</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rest_framework.html">Django REST Framework integration</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/rules.html">Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/helpers.html">Convenience Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/rest_framework.html">Django REST Framework integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Bridgekeeper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Checking Permissions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/guides/permissions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="checking-permissions">
+<h1>Checking Permissions<a class="headerlink" href="#checking-permissions" title="Permalink to this headline">¶</a></h1>
+<p>There are two ways to check which permissions a user has using Bridgekeeper.</p>
+<ul class="simple">
+<li><p>Use the methods on the <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">User</span></code></a> model, which consult Bridgekeeper via its integration into Django’s pluggable authorisation system. You can only make the types of checks Django has built-in support for this way, which means you can’t check against QuerySets. Also, if you have multiple different authorisation backends (including Django’s built in <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.backends.ModelBackend" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelBackend</span></code></a>), these methods will consult all of them.</p></li>
+<li><p>Check against permissions in Bridgekeeper directly. This is the only way to filter QuerySets according to a permission; this method always uses the permissions defined in Bridgekeeper as a single source of truth and does not consult other backends.</p></li>
+</ul>
+<div class="section" id="checking-permissions-on-an-object">
+<h2>Checking Permissions on an Object<a class="headerlink" href="#checking-permissions-on-an-object" title="Permalink to this headline">¶</a></h2>
+<p>Given an instance of our <code class="docutils literal notranslate"><span class="pre">Shrubbery</span></code> model called <code class="docutils literal notranslate"><span class="pre">shrubbery</span></code>, and a <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">User</span></code></a> instance <code class="docutils literal notranslate"><span class="pre">user</span></code>, here’s how we’d check to see whether the user has permission to update it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper</span> <span class="kn">import</span> <span class="n">perms</span>
+
+<span class="c1"># through Django:</span>
+<span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s1">&#39;shrubberies.change_shrubbery&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">shrubbery</span><span class="p">)</span>
+<span class="c1"># or through Bridgekeeper:</span>
+<span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubberies.change_shrubbery&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">shrubbery</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Both of these expressions will return either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>. Aside from the caveat described above regarding authorisation backends other than Bridgekeeper, these two calls are equivalent; in fact, when you call <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User.has_perm" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_perm()</span></code></a>, Django will trigger a call to <a class="reference internal" href="../api/rules.html#id1" title="bridgekeeper.rules.Rule.check"><code class="xref py py-meth docutils literal notranslate"><span class="pre">check()</span></code></a> under the hood.</p>
+</div>
+<div class="section" id="checking-permissions-on-a-queryset">
+<h2>Checking Permissions on a QuerySet<a class="headerlink" href="#checking-permissions-on-a-queryset" title="Permalink to this headline">¶</a></h2>
+<p>Of course, Bridgekeeper’s headline feature is that it works with QuerySets; given a user and a permission, it can filter down a QuerySet to only return instances for which the user holds the permission.</p>
+<p>All we need to do is call <a class="reference internal" href="../api/rules.html#bridgekeeper.rules.Rule.filter" title="bridgekeeper.rules.Rule.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a> instead of <a class="reference internal" href="../api/rules.html#id1" title="bridgekeeper.rules.Rule.check"><code class="xref py py-meth docutils literal notranslate"><span class="pre">check()</span></code></a>, and pass it a QuerySet instead of a single model instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qs</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Shrubbery</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="n">filtered_qs</span> <span class="o">=</span> <span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubberies.view_shrubbery&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">qs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Bridgekeeper’s <a class="reference internal" href="../api/rules.html#bridgekeeper.rules.Rule.filter" title="bridgekeeper.rules.Rule.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a> takes any QuerySet, and returns another normal QuerySet (it actually just calls the QuerySet’s <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.query.QuerySet.filter" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a> method internally). This means you can call <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.query.QuerySet.filter" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a>, <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.query.QuerySet.exclude" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exclude()</span></code></a> or <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.query.QuerySet.order_by" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">order_by()</span></code></a> your QuerySet before you pass it in, or you can <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.query.QuerySet.filter" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a>, <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.query.QuerySet.exclude" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exclude()</span></code></a>, <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/models/querysets/#django.db.models.query.QuerySet.order_by" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">order_by()</span></code></a>, slice or paginate the QuerySet that Bridgekeeper returns to you.</p>
+</div>
+<div class="section" id="checking-permissions-for-all-possible-instances">
+<h2>Checking Permissions For All Possible Instances<a class="headerlink" href="#checking-permissions-for-all-possible-instances" title="Permalink to this headline">¶</a></h2>
+<p>Django’s <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User.has_perm" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_perm()</span></code></a> (and thus also Bridgekeeper’s <a class="reference internal" href="../api/rules.html#id1" title="bridgekeeper.rules.Rule.check"><code class="xref py py-meth docutils literal notranslate"><span class="pre">check()</span></code></a>) allows supplying only a permission name, and not an object instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s1">&#39;shrubberies.view_shrubbery&#39;</span><span class="p">)</span>
+<span class="c1"># or,</span>
+<span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubberies.view_shrubbery&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once again, these calls are equivalent, aside from the caveat described above regarding authorisation backends other than Bridgekeeper.</p>
+<p>When you check permissions like this without supplying an instance, Bridgekeeper will return <code class="docutils literal notranslate"><span class="pre">True</span></code> if and only if the user has that permission <strong>for every possible instance that could ever exist</strong>. (This is not the same thing as checking whether the user has the permission for every instance <em>currently in the database</em>; in fact, this check doesn’t actually hit the database at all.)</p>
+<p>As an example of this, let’s say that the <code class="docutils literal notranslate"><span class="pre">shrubberies.view_shrubbery</span></code> permission was defined to allow staff users access to all shrubberies, and everyone else access to shrubberies in their own branch:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubberies.view_shrubbery&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_staff</span> <span class="o">|</span> <span class="n">Attribute</span><span class="p">(</span>
+    <span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">branch</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, the check would return <code class="docutils literal notranslate"><span class="pre">True</span></code> for a staff user, since they will always have access to every possible shrubbery. It will return <code class="docutils literal notranslate"><span class="pre">False</span></code> for a regular user, even if every shrubbery currently in the database belongs to their branch, because it is possible for a shrubbery to be created that belongs to a different branch, which they would then be blocked from editing.</p>
+</div>
+<div class="section" id="checking-permissions-for-any-possible-instances">
+<h2>Checking Permissions For <em>Any</em> Possible Instances<a class="headerlink" href="#checking-permissions-for-any-possible-instances" title="Permalink to this headline">¶</a></h2>
+<p>Bridgekeeper also provides a second method, <code class="xref py py-meth docutils literal notranslate"><span class="pre">is_possible_for()</span></code>, which is the opposite of the above behaviour, in a way:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubberies.change_shrubbery&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">is_possible_for</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This check will return <code class="docutils literal notranslate"><span class="pre">True</span></code> if and only if the user could possibly have that permission for <strong>any possible instance that could exist</strong>. (Once again, this is not the same as checking whether the user has the permission for at least one instance <em>currently in the database</em>, and once again it doesn’t actually hit the database at all.)</p>
+<p>As an example of this, let’s say that the <code class="docutils literal notranslate"><span class="pre">shrubberies.view_shrubbery</span></code> permission was defined to allow only shrubbers to edit shrubberies inside their own branch, using the <code class="docutils literal notranslate"><span class="pre">is_shrubber</span></code> rule we created in the <a class="reference internal" href="../tutorial/permissions.html#tutorial-blanket"><span class="std std-ref">Blanket rules</span></a> section of the tutorial and combining it with an <a class="reference internal" href="../api/rules.html#bridgekeeper.rules.Attribute" title="bridgekeeper.rules.Attribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">Attribute</span></code></a> check:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubberies.view_shrubbery&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_shrubber</span> <span class="o">&amp;</span> <span class="n">Attribute</span><span class="p">(</span>
+    <span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">branch</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, the check will return <code class="docutils literal notranslate"><span class="pre">False</span></code> for a user with the <code class="docutils literal notranslate"><span class="pre">'apprentice'</span></code> role, because only users with the <code class="docutils literal notranslate"><span class="pre">'shrubber'</span></code> role can access anything. It will always return <code class="docutils literal notranslate"><span class="pre">True</span></code> for a shrubber, however, even if there are no shrubberies belonging to their branch currently in the database, beacuse it is possible for a shrubbery to exist that belongs to their branch, which they would then be allowed to edit.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The behaviours in this section are effectively implemented by checking whether a permission is always allowed (in the case of <a class="reference internal" href="../api/rules.html#id1" title="bridgekeeper.rules.Rule.check"><code class="xref py py-meth docutils literal notranslate"><span class="pre">check()</span></code></a>) or always denied (in the case of <code class="xref py py-meth docutils literal notranslate"><span class="pre">is_possible_for()</span></code>) due to the presence of blanket rules.</p>
+<p>In normal use, these methods should always behave how you’d expect. However, if you create a combination of rules that just happens to be tautological for a particular user, Bridgekeeper isn’t clever enough to detect that.</p>
+<p>This also means that the checks described in this section usually won’t need to hit the database.</p>
+</div>
+<div class="section" id="has-module-perms">
+<h3><code class="docutils literal notranslate"><span class="pre">has_module_perms()</span></code><a class="headerlink" href="#has-module-perms" title="Permalink to this headline">¶</a></h3>
+<p>Bridgekeeper also supports Django’s <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User.has_module_perms" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_module_perms()</span></code></a> method. The following call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">user</span><span class="o">.</span><span class="n">has_module_perms</span><span class="p">(</span><span class="s1">&#39;shrubberies&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is equivalent to calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">is_possible_for()</span></code> on every permission whose name begins with <code class="docutils literal notranslate"><span class="pre">shrubberies.</span></code>, and returning <code class="docutils literal notranslate"><span class="pre">True</span></code> if any one of them returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div>
+</div>
+<div class="section" id="permission-check-summary">
+<h2>Permission Check Summary<a class="headerlink" href="#permission-check-summary" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 30%" />
+<col style="width: 39%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Meaning</p></th>
+<th class="head"><p>Django</p></th>
+<th class="head"><p>Bridgekeeper</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>User has permission <code class="docutils literal notranslate"><span class="pre">foo.bar</span></code>
+for object <code class="docutils literal notranslate"><span class="pre">x</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">u.has_perm('foo.bar',</span> <span class="pre">x)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">perms['foo.bar'].check(u,</span> <span class="pre">x)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>User has permission <code class="docutils literal notranslate"><span class="pre">foo.bar</span></code>
+for all possible objects</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">u.has_perm('foo.bar')</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">perms['foo.bar'].check(u)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>It is possible for the user to
+have permission <code class="docutils literal notranslate"><span class="pre">foo.bar</span></code> for
+some object</p></td>
+<td><p><em>n/a</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">perms['foo.bar'].is_possible_for(u)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>It is possible for the user to
+have some permission <code class="docutils literal notranslate"><span class="pre">foo.*</span></code>
+for some object</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">u.has_module_perms('foo')</span></code></p></td>
+<td><p><em>n/a</em></p></td>
+</tr>
+<tr class="row-even"><td><p>Filter the queryset <code class="docutils literal notranslate"><span class="pre">qs</span></code> to
+only the objects that the user
+has permission <code class="docutils literal notranslate"><span class="pre">foo.bar</span></code> for</p></td>
+<td><p><em>n/a</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">perms['foo.bar'].filter(u,</span> <span class="pre">qs)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="using-permissions-in-views">
+<h2>Using permissions in views<a class="headerlink" href="#using-permissions-in-views" title="Permalink to this headline">¶</a></h2>
+<p>Bridgekeeper provides a <code class="docutils literal notranslate"><span class="pre">QuerySetPermissionMixin</span></code>, which will filter a view down to only objects that the currently logged-in user has access to. It works on <code class="docutils literal notranslate"><span class="pre">ListView</span></code>, <code class="docutils literal notranslate"><span class="pre">DetailView</span></code>, and most views that operate on the database except <code class="docutils literal notranslate"><span class="pre">CreateView</span></code>, and is used like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper.mixins</span> <span class="kn">import</span> <span class="n">QuerySetPermissionMixin</span>
+
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">QuerySetPermissionMixin</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">):</span>
+    <span class="n">permission_name</span> <span class="o">=</span> <span class="s1">&#39;applicants.view_applicant&#39;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Applicant</span>
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><code class="docutils literal notranslate"><span class="pre">QuerySetPermissionMixin</span></code> will return 404 both for objects that don’t exist and objects the user can’t access. It might be tempting to try to distinguish between an the two, by returning e.g. 404 for the former and 403 for the latter. Generally, though, it’s desirable from a security perspective to not let the user tell the difference between these two cases unless you really need to.</p>
+<p>If you’re concerned about users getting unexpected 404s when they try to access a page without being logged in, one alternative is to reword your <code class="docutils literal notranslate"><span class="pre">404.html</span></code> accordingly, or even embed a login form there if users aren’t logged in.</p>
+</div>
+<p>Bridgekeeper also provides <code class="docutils literal notranslate"><span class="pre">CreatePermissionGuardMixin</span></code>, which will validate unsaved model instances in a <code class="docutils literal notranslate"><span class="pre">CreateView</span></code> (or any subclass of <code class="docutils literal notranslate"><span class="pre">ModelFormView</span></code>) against a given permission, and raise <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/exceptions/#django.core.exceptions.SuspiciousOperation" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SuspiciousOperation</span></code></a>, thus preventing the call to <code class="docutils literal notranslate"><span class="pre">.save()</span></code>, if it does not pass. It’s used like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper.mixins</span> <span class="kn">import</span> <span class="n">CreatePermissionGuardMixin</span>
+
+<span class="k">class</span> <span class="nc">MyView</span><span class="p">(</span><span class="n">CreatePermissionGuardMixin</span><span class="p">,</span> <span class="n">CreateView</span><span class="p">):</span>
+    <span class="n">permission_name</span> <span class="o">=</span> <span class="s1">&#39;applicants.add_applicant&#39;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Applicant</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">QuerySetPermissionMixin</span></code>, <code class="docutils literal notranslate"><span class="pre">CreatePermissionGuardMixin</span></code> is only a safety net; you still need to write your forms and views so that a user can’t create instances they shouldn’t be allowed to, but the mixin will protect you against logic errors in your code, possibly combined with malicious users.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rest_framework.html" class="btn btn-neutral float-right" title="Django REST Framework integration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rules.html" class="btn btn-neutral float-left" title="Writing Rules and Permissions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

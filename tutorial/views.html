@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Using Permissions In Views &mdash; Bridgekeeper 0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Writing Rules and Permissions" href="../guides/rules.html" />
+    <link rel="prev" title="Defining permissions" href="permissions.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Bridgekeeper
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing Bridgekeeper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Defining permissions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using Permissions In Views</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#filtering-querysets">Filtering QuerySets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-based-views">Class-Based Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-next">What next?</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/rules.html">Writing Rules and Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/permissions.html">Checking Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/rest_framework.html">Django REST Framework integration</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/rules.html">Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/helpers.html">Convenience Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/rest_framework.html">Django REST Framework integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Bridgekeeper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Using Permissions In Views</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tutorial/views.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="using-permissions-in-views">
+<h1>Using Permissions In Views<a class="headerlink" href="#using-permissions-in-views" title="Permalink to this headline">¶</a></h1>
+<p>Now that we’ve got our permissions defined, we need to write views that actually use them. If you’ve already used Django’s built-in permission mechanism, Bridgekeeper integrates with that:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">shrubberies/views.py</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span> <span class="nn">django.template.response</span> <span class="kn">import</span> <span class="n">TemplateResponse</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">def</span> <span class="nf">shrubbery_edit</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">shrubbery_id</span><span class="p">):</span>
+    <span class="n">shrubbery</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Shrubbery</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">shrubbery_id</span><span class="p">)</span>
+<span class="hll">    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s1">&#39;shrubberies.change_shrubbery&#39;</span><span class="p">,</span> <span class="n">shrubbery</span><span class="p">):</span>
+</span>        <span class="k">raise</span> <span class="n">Http404</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">TemplateResponse</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;shrubbery_edit.html&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s1">&#39;shrubbery&#39;</span><span class="p">:</span> <span class="n">shrubbery</span><span class="p">,</span>
+    <span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<p>We can also check permissions directly through Bridgekeeper. Remember, <code class="xref py py-data docutils literal notranslate"><span class="pre">bridgekeeper.perms</span></code> is more or less just a dict, so we can pull it out of there and call the rule’s <a class="reference internal" href="../api/rules.html#id1" title="bridgekeeper.rules.Rule.check"><code class="xref py py-meth docutils literal notranslate"><span class="pre">check()</span></code></a> method:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">shrubberies/views.py</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper</span> <span class="kn">import</span> <span class="n">perms</span>
+
+<span class="k">def</span> <span class="nf">shrubbery_edit</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">shrubbery_id</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+<span class="hll">    <span class="k">if</span> <span class="ow">not</span> <span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubberies.change_shrubbery&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">shrubbery</span><span class="p">):</span>
+</span>        <span class="k">raise</span> <span class="n">Http404</span><span class="p">()</span>
+    <span class="c1"># ...</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you use Django’s <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User.has_perm" title="(in Django v1.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_perm()</span></code></a>, like in our first example, Django will consult <em>all</em> of your authentication backends to check permissions. For instance, if you’ve assigned permissions to users in your database through Django’s built-in <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User.user_permissions" title="(in Django v1.11)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">user_permissions</span></code></a>, they’ll be checked as well. Similarly, if you have a third-party authentication backend (e.g. for social media, LDAP or Active Directory integration) that provides some form of permission checking, that will be checked too.</p>
+<p>If you use Bridgekeeper directly, like in our second example, only Bridgekeeper permissions will be checked; in most cases this is what you want.</p>
+</div>
+<div class="section" id="filtering-querysets">
+<h2>Filtering QuerySets<a class="headerlink" href="#filtering-querysets" title="Permalink to this headline">¶</a></h2>
+<p>If we’re displaying a list, we can also filter a QuerySet so that it only contains objects that the currently-logged-in user holds a certain permission on.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">shrubberies/views.py</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper</span> <span class="kn">import</span> <span class="n">perms</span>
+<span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="kn">import</span> <span class="n">Paginator</span>
+<span class="kn">from</span> <span class="nn">django.template.response</span> <span class="kn">import</span> <span class="n">TemplateResponse</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">models</span>
+
+<span class="k">def</span> <span class="nf">shrubbery_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">shrubbery_id</span><span class="p">):</span>
+    <span class="n">all_shrubberies</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Shrubbery</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="hll">    <span class="n">shrubberies</span> <span class="o">=</span> <span class="n">perms</span><span class="p">[</span><span class="s1">&#39;shrubberies.view_shrubbery&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">all_shrubberies</span><span class="p">)</span>
+</span>
+    <span class="c1"># &#39;shrubberies&#39; is just a regular queryset, so we can do anything</span>
+    <span class="c1"># we would do with a normal queryset; in this case, let&#39;s paginate it</span>
+    <span class="n">paginator</span> <span class="o">=</span> <span class="n">Paginator</span><span class="p">(</span><span class="n">shrubberies</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">page</span> <span class="o">=</span> <span class="n">paginator</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">TemplateResponse</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;shrubbery_list.html&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s1">&#39;paginator&#39;</span><span class="p">:</span> <span class="n">paginator</span><span class="p">,</span>
+        <span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+        <span class="s1">&#39;shrubberies&#39;</span><span class="p">:</span> <span class="n">page</span><span class="o">.</span><span class="n">object_list</span><span class="p">,</span>
+    <span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="class-based-views">
+<h2>Class-Based Views<a class="headerlink" href="#class-based-views" title="Permalink to this headline">¶</a></h2>
+<p>All of the examples we’ve used so far have been function-based views. Of course, everything that we’ve covered so far will work inside a class-based view, but Bridgekeeper also comes with a handy shortcut in the form of <a class="reference internal" href="../api/helpers.html#bridgekeeper.mixins.QuerySetPermissionMixin" title="bridgekeeper.mixins.QuerySetPermissionMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">QuerySetPermissionMixin</span></code></a>.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">shrubberies/views.py</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bridgekeeper.mixins</span> <span class="kn">import</span> <span class="n">QuerySetPermissionMixin</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">ListView</span><span class="p">,</span> <span class="n">UpdateView</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">models</span>
+
+
+<span class="hll"><span class="k">class</span> <span class="nc">ShrubberyListView</span><span class="p">(</span><span class="n">QuerySetPermissionMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Shrubbery</span>
+<span class="hll">    <span class="n">permission_name</span> <span class="o">=</span> <span class="s1">&#39;shrubberies.view_shrubbery&#39;</span>
+</span>
+
+<span class="hll"><span class="k">class</span> <span class="nc">ShrubberyUpdateView</span><span class="p">(</span><span class="n">QuerySetPermissionMixin</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">):</span>
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Shrubbery</span>
+<span class="hll">    <span class="n">permission_name</span> <span class="o">=</span> <span class="s1">&#39;shrubberies.change_shrubbery&#39;</span>
+</span></pre></div>
+</div>
+</div>
+<p>That’s all there is to it; these two views will now only show shrubberies that the currently-logged-in user has permission to view.</p>
+</div>
+<div class="section" id="what-next">
+<h2>What next?<a class="headerlink" href="#what-next" title="Permalink to this headline">¶</a></h2>
+<p>That’s the end of the tutorial; you should now be able to get started modelling your permissions with Bridgekeeper now!</p>
+<p>You can read about the other ways you can check permissions, including more convenience shortcuts you can enable and ways to check things like whether somebody <em>could, hypothetically, have</em> a permission in the <a class="reference internal" href="../guides/permissions.html"><span class="doc">Checking Permissions</span></a> guide. Or, find out more detail about writing rules and permissions in the <a class="reference internal" href="../guides/rules.html"><span class="doc">Writing Rules and Permissions</span></a> guide.</p>
+<p>If there’s something that you don’t understand after following through this tutorial, or that you think could be explained better, please <a class="reference external" href="https://github.com/excitedleigh/bridgekeeper/issues/new?labels=docs">file a documentation bug</a> so that we can improve the docs for future users.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../guides/rules.html" class="btn btn-neutral float-right" title="Writing Rules and Permissions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="permissions.html" class="btn btn-neutral float-left" title="Defining permissions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

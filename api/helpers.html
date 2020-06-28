@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Convenience Helpers &mdash; Bridgekeeper 0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Django REST Framework integration" href="rest_framework.html" />
+    <link rel="prev" title="Rules" href="rules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Bridgekeeper
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/installation.html">Installing Bridgekeeper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/permissions.html">Defining permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/views.html">Using Permissions In Views</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/rules.html">Writing Rules and Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/permissions.html">Checking Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/rest_framework.html">Django REST Framework integration</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rules.html">Rules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Convenience Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-bridgekeeper.querysets">QuerySet and Manager Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-bridgekeeper.mixins">View Mixins</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rest_framework.html">Django REST Framework integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Bridgekeeper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Convenience Helpers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/helpers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="convenience-helpers">
+<h1>Convenience Helpers<a class="headerlink" href="#convenience-helpers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-bridgekeeper.querysets">
+<span id="queryset-and-manager-classes"></span><h2>QuerySet and Manager Classes<a class="headerlink" href="#module-bridgekeeper.querysets" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="bridgekeeper.querysets.PermissionManager">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.querysets.</code><code class="sig-name descname">PermissionManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bridgekeeper.querysets.PermissionManager" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="bridgekeeper.querysets.PermissionManager.visible_to">
+<code class="sig-name descname">visible_to</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bridgekeeper.querysets.PermissionManager.visible_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter the QuerySet to objects a user has a permission for.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user</strong> (<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User" title="(in Django v1.11)"><em>django.contrib.auth.models.User</em></a>) – User to check permission against.</p></li>
+<li><p><strong>permission</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Permission to check.</p></li>
+</ul>
+</dd>
+</dl>
+<p>This method only works with permissions that are defined in
+<code class="xref py py-data docutils literal notranslate"><span class="pre">perms</span></code>;
+regular Django row-level permission checkers can’t be invoked on
+the QuerySet level.</p>
+<p>It is a convenience wrapper around
+<a class="reference internal" href="rules.html#bridgekeeper.rules.Rule.filter" title="bridgekeeper.rules.Rule.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bridgekeeper.querysets.PermissionQuerySet">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.querysets.</code><code class="sig-name descname">PermissionQuerySet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">query</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">using</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hints</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/querysets.html#PermissionQuerySet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.querysets.PermissionQuerySet" title="Permalink to this definition">¶</a></dt>
+<dd><p>A QuerySet subclass that provides a convenience method.</p>
+<dl class="py method">
+<dt id="bridgekeeper.querysets.PermissionQuerySet.visible_to">
+<code class="sig-name descname">visible_to</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">permission</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/querysets.html#PermissionQuerySet.visible_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.querysets.PermissionQuerySet.visible_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter the QuerySet to objects a user has a permission for.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user</strong> (<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/contrib/auth/#django.contrib.auth.models.User" title="(in Django v1.11)"><em>django.contrib.auth.models.User</em></a>) – User to check permission against.</p></li>
+<li><p><strong>permission</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Permission to check.</p></li>
+</ul>
+</dd>
+</dl>
+<p>This method only works with permissions that are defined in
+<code class="xref py py-data docutils literal notranslate"><span class="pre">perms</span></code>;
+regular Django row-level permission checkers can’t be invoked on
+the QuerySet level.</p>
+<p>It is a convenience wrapper around
+<a class="reference internal" href="rules.html#bridgekeeper.rules.Rule.filter" title="bridgekeeper.rules.Rule.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bridgekeeper.mixins">
+<span id="view-mixins"></span><h2>View Mixins<a class="headerlink" href="#module-bridgekeeper.mixins" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="bridgekeeper.mixins.CreatePermissionGuardMixin">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.mixins.</code><code class="sig-name descname">CreatePermissionGuardMixin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">permission_map</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/mixins.html#CreatePermissionGuardMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.mixins.CreatePermissionGuardMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>A view that checks permissions before creating model instances.</p>
+<p>Use this mixin with <a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/class-based-views/generic-editing/#django.views.generic.edit.CreateView" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateView</span></code></a>,
+and supply the <a class="reference internal" href="#bridgekeeper.mixins.CreatePermissionGuardMixin.permission_name" title="bridgekeeper.mixins.CreatePermissionGuardMixin.permission_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">permission_name</span></code></a> of a Bridgekeeper permission.
+Your view will then do two things:</p>
+<ul class="simple">
+<li><p>Check that it’s possible for a user to create any new instances
+at all (i.e. that
+<a class="reference internal" href="rules.html#bridgekeeper.rules.Rule.is_possible_for" title="bridgekeeper.rules.Rule.is_possible_for"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_possible_for()</span></code></a> returns <code class="docutils literal notranslate"><span class="pre">True</span></code>
+on the supplied permission). If not, the mixin raises
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/exceptions/#django.core.exceptions.PermissionDenied" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionDenied</span></code></a>.</p></li>
+<li><p>Just before the form is saved, checks the unsaved model instance
+against the supplied permission; if it fails, the mixin raises
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/exceptions/#django.core.exceptions.SuspiciousOperation" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SuspiciousOperation</span></code></a>.</p></li>
+</ul>
+<p>Note that unlike <a class="reference internal" href="#bridgekeeper.mixins.QuerySetPermissionMixin" title="bridgekeeper.mixins.QuerySetPermissionMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">QuerySetPermissionMixin</span></code></a>, this mixin won’t
+automatically apply permissions for you. Ideally, your view (or
+the form class your view uses) should make it impossible for
+users to create instances they’re not allowed to create; fields
+that must be set to a certain value should be set automatically and
+not displayed in the form, choice fields should have their
+<code class="docutils literal notranslate"><span class="pre">choices</span></code> limited to only values the user is allowed to set, and
+so on.</p>
+<p>Bridgekeeper can’t (and arguably shouldn’t) reach into your form
+and modify it for you. Instead, this mixin provides a last line of
+defence; if your view has a bug where a user can create something
+they’re not allowed to, the mixin will prevent the object from
+actually being created, and crash loudly in a way that your error
+reporting systems can pick up, allowing you to fix the bug.</p>
+<dl class="py attribute">
+<dt id="bridgekeeper.mixins.CreatePermissionGuardMixin.permission_name">
+<code class="sig-name descname">permission_name</code><a class="headerlink" href="#bridgekeeper.mixins.CreatePermissionGuardMixin.permission_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the Bridgekeeper permission to check against, e.g.
+<code class="docutils literal notranslate"><span class="pre">'shrubberies.change_shrubbery'</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bridgekeeper.mixins.QuerySetPermissionMixin">
+<em class="property">class </em><code class="sig-prename descclassname">bridgekeeper.mixins.</code><code class="sig-name descname">QuerySetPermissionMixin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">permission_map</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bridgekeeper/mixins.html#QuerySetPermissionMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bridgekeeper.mixins.QuerySetPermissionMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>View mixin that filters QuerySets according to a permission.</p>
+<p>Use this mixin with any class-based view that expects a
+<code class="docutils literal notranslate"><span class="pre">get_queryset</span></code> method (e.g.
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/class-based-views/generic-display/#django.views.generic.list.ListView" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></a>,
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/class-based-views/generic-display/#django.views.generic.detail.DetailView" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DetailView</span></code></a>,
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/class-based-views/generic-editing/#django.views.generic.edit.UpdateView" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateView</span></code></a>, or any other views
+that subclass from
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/class-based-views/mixins-multiple-object/#django.views.generic.list.MultipleObjectMixin" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectMixin</span></code></a> or
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/class-based-views/mixins-single-object/#django.views.generic.detail.SingleObjectMixin" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleObjectMixin</span></code></a>), and
+supply a <a class="reference internal" href="#bridgekeeper.mixins.QuerySetPermissionMixin.permission_name" title="bridgekeeper.mixins.QuerySetPermissionMixin.permission_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">permission_name</span></code></a> attribute with the name of a
+Bridgekeeper permission.</p>
+<p>The view’s queryset will then be automatically filtered to objects
+that the user requesting the page has the supplied permission for.
+For multiple-object views like
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/class-based-views/generic-display/#django.views.generic.list.ListView" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></a>, objects the user
+doesn’t have the permission for just won’t be in the list.
+For single-object views like
+<a class="reference external" href="https://docs.djangoproject.com/en/1.11/ref/class-based-views/generic-editing/#django.views.generic.edit.UpdateView" title="(in Django v1.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateView</span></code></a>, attempts to access
+objects the user doesn’t have the permission for will just 404.</p>
+<dl class="py attribute">
+<dt id="bridgekeeper.mixins.QuerySetPermissionMixin.permission_name">
+<code class="sig-name descname">permission_name</code><a class="headerlink" href="#bridgekeeper.mixins.QuerySetPermissionMixin.permission_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the Bridgekeeper permission to check against, e.g.
+<code class="docutils literal notranslate"><span class="pre">'shrubberies.change_shrubbery'</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rest_framework.html" class="btn btn-neutral float-right" title="Django REST Framework integration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rules.html" class="btn btn-neutral float-left" title="Rules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

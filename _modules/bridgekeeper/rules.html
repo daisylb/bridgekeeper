@@ -1,0 +1,864 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>bridgekeeper.rules &mdash; Bridgekeeper 0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Bridgekeeper
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/installation.html">Installing Bridgekeeper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/permissions.html">Defining permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/views.html">Using Permissions In Views</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/rules.html">Writing Rules and Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/permissions.html">Checking Permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/rest_framework.html">Django REST Framework integration</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rules.html">Rules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/helpers.html">Convenience Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/rest_framework.html">Django REST Framework integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Bridgekeeper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>bridgekeeper.rules</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for bridgekeeper.rules</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Rule library that forms the core of Bridgekeeper.</span>
+
+<span class="sd">This module defines the :class:`Rule` base class, as well as a</span>
+<span class="sd">number of built-in rules.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Manager</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">QuerySet</span>
+<span class="kn">from</span> <span class="nn">django.db.models.fields.reverse_related</span> <span class="kn">import</span> <span class="n">ForeignObjectRel</span>
+
+
+<span class="k">class</span> <span class="nc">Sentinel</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repr</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">repr</span>
+
+
+<span class="c1">#: A sentinel value that represents the universal set. See</span>
+<span class="c1">#: :meth:`Rule.query` for usage.</span>
+<span class="n">UNIVERSAL</span> <span class="o">=</span> <span class="n">Sentinel</span><span class="p">(</span><span class="s2">&quot;UNIVERSAL&quot;</span><span class="p">)</span>
+
+<span class="c1">#: A sentinel value that represents the empty set. See</span>
+<span class="c1">#: :meth:`Rule.query` for usage.</span>
+<span class="n">EMPTY</span> <span class="o">=</span> <span class="n">Sentinel</span><span class="p">(</span><span class="s2">&quot;EMPTY&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Rule"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.Rule">[docs]</a><span class="k">class</span> <span class="nc">Rule</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Base class for rules.</span>
+
+<span class="sd">    All rules are instances of this class, but not directly;</span>
+<span class="sd">    use (or write!) a subclass instead, as this class will raise</span>
+<span class="sd">    :class:`NotImplementedError` if you try to actually do anything</span>
+<span class="sd">    with it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Rule.filter"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.Rule.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">queryset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Filter a queryset to instances that satisfy this rule.</span>
+
+<span class="sd">        Given a queryset and a user, this method will return a filtered</span>
+<span class="sd">        queryset that contains only instances from the original</span>
+<span class="sd">        queryset for which the user satisfies this rule.</span>
+
+<span class="sd">        :param queryset: The initial queryset to filter</span>
+<span class="sd">        :type queryset: django.db.models.QuerySet</span>
+<span class="sd">        :param user: The user to match against.</span>
+<span class="sd">        :type user: django.contrib.auth.models.User</span>
+<span class="sd">        :returns: A filtered queryset</span>
+<span class="sd">        :rtype: django.db.models.QuerySet</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            If you are subclassing this class, don&#39;t override this</span>
+<span class="sd">            method; override :meth:`query` instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">q_obj</span> <span class="ow">is</span> <span class="n">UNIVERSAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">queryset</span>
+        <span class="k">if</span> <span class="n">q_obj</span> <span class="ow">is</span> <span class="n">EMPTY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">q_obj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Rule.is_possible_for"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.Rule.is_possible_for">[docs]</a>    <span class="k">def</span> <span class="nf">is_possible_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if it is possible for a user to satisfy this rule.</span>
+
+<span class="sd">        Returns ``True`` if it is possible for an instance to exist for</span>
+<span class="sd">        which the given user satisfies this rule, ``False``</span>
+<span class="sd">        otherwise.</span>
+
+<span class="sd">        For example, in a multi-tenanted app, you might have a rule</span>
+<span class="sd">        that allows access to model instances if a user is a staff user,</span>
+<span class="sd">        or if the instance&#39;s tenant matches the user&#39;s tenant.</span>
+
+<span class="sd">        In that case, :meth:`check`, when called without an instance,</span>
+<span class="sd">        would return ``True`` only for staff users (since only they can</span>
+<span class="sd">        see *every* instance). This method would return ``True`` for all</span>
+<span class="sd">        users, because every user could possibly see an instance</span>
+<span class="sd">        (whether it&#39;s one that exists currently in the database, or a</span>
+<span class="sd">        hypothetical one that might in the future).</span>
+
+<span class="sd">        Cases where this method would return ``False`` include where a</span>
+<span class="sd">        user doesn&#39;t have the right role or subscription plan to use a</span>
+<span class="sd">        feature at all; this method is the single-permission equivalent</span>
+<span class="sd">        of :ref:`has-module-perms`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">EMPTY</span></div>
+
+<div class="viewcode-block" id="Rule.query"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.Rule.query">[docs]</a>    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate a :class:`~django.db.models.Q` object.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            This method is used internally by :meth:`filter`; subclasses</span>
+<span class="sd">            will need to override it but you should never need to call</span>
+<span class="sd">            it directly.</span>
+
+<span class="sd">        Given a user, return a :class:`~django.db.models.Q` object which</span>
+<span class="sd">        will filter a queryset down to only instances for which the</span>
+<span class="sd">        given user satisfies this rule.</span>
+
+<span class="sd">        Alternatively, return :data:`UNIVERSAL` if this user satisfies</span>
+<span class="sd">        this rule for every possible object, or :data:`EMPTY` if</span>
+<span class="sd">        this user cannot satisfy this rule for any possible object.</span>
+<span class="sd">        (These two values are usually only returned in &quot;blanket</span>
+<span class="sd">        rules&quot; which depend only on some property of the user, e.g.</span>
+<span class="sd">        the built-in :any:`is_staff`, but these are usually best created</span>
+<span class="sd">        with the :class:`blanket_rule` decorator.)</span>
+
+<span class="sd">        :param user: The user to match against.</span>
+<span class="sd">        :type user: django.contrib.auth.models.User</span>
+<span class="sd">        :returns: A query that will filter a queryset to match this</span>
+<span class="sd">            rule.</span>
+<span class="sd">        :rtype: django.db.models.Q</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Rule.check"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.Rule.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if a user satisfies this rule.</span>
+
+<span class="sd">        Given a user, return a boolean indicating if that user satisfies</span>
+<span class="sd">        this rule for a given instance, or if none is provided,</span>
+<span class="sd">        every instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">And</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Or</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__not__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Not</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Not</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">BinaryCompositeRule</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">right</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;(</span><span class="si">{!r}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">And</span><span class="p">(</span><span class="n">BinaryCompositeRule</span><span class="p">):</span>
+    <span class="n">sym</span> <span class="o">=</span> <span class="s2">&quot;&amp;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="c1"># Effectively an intersection (∩) of the two sets represented by</span>
+        <span class="c1"># left and right&#39;s Q expressions, but wth special-casing for the</span>
+        <span class="c1"># EMPTY (∅) and UNIVERSAL (U) values.</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="c1"># Because A ∩ ∅ = ∅, if either side returns EMPTY the entire</span>
+        <span class="c1"># expression is EMPTY.</span>
+        <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="n">EMPTY</span><span class="p">:</span>
+            <span class="c1"># Short-circuit evaluation, since the result of the RHS</span>
+            <span class="c1"># can&#39;t affect what we&#39;ll return here</span>
+            <span class="k">return</span> <span class="n">EMPTY</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">right</span> <span class="ow">is</span> <span class="n">EMPTY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">EMPTY</span>
+        <span class="c1"># Because A ∩ U = A, if one side returns UNIVERSAL the entire</span>
+        <span class="c1"># expression is whatever is on the other side.</span>
+        <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="n">UNIVERSAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">right</span>
+        <span class="k">if</span> <span class="n">right</span> <span class="ow">is</span> <span class="n">UNIVERSAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">left</span>
+        <span class="k">return</span> <span class="n">left</span> <span class="o">&amp;</span> <span class="n">right</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Or</span><span class="p">(</span><span class="n">BinaryCompositeRule</span><span class="p">):</span>
+    <span class="n">sym</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="c1"># Effectively a union (∪) of the two sets represented by left</span>
+        <span class="c1"># and right&#39;s Q expressions, but wth special-casing for the</span>
+        <span class="c1"># EMPTY (∅) and UNIVERSAL (U) values.</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="c1"># Because A ∪ U = U, if either side returns UNIVERSAL the entire</span>
+        <span class="c1"># expression is UNIVERSAL.</span>
+        <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="n">UNIVERSAL</span><span class="p">:</span>
+            <span class="c1"># Short-circuit evaluation, since the result of the RHS</span>
+            <span class="c1"># can&#39;t affect what we&#39;ll return here</span>
+            <span class="k">return</span> <span class="n">UNIVERSAL</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">right</span> <span class="ow">is</span> <span class="n">UNIVERSAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UNIVERSAL</span>
+        <span class="c1"># Because A ∪ ∅ = A, if one side returns EMPTY the entire</span>
+        <span class="c1"># expression is whatever is on the other side.</span>
+        <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="n">EMPTY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">right</span>
+        <span class="k">if</span> <span class="n">right</span> <span class="ow">is</span> <span class="n">EMPTY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">left</span>
+        <span class="k">return</span> <span class="n">left</span> <span class="o">|</span> <span class="n">right</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Not</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">base</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;~</span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="c1"># Special case EMPTY and UNIVERSAL by inverting them.</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="n">EMPTY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UNIVERSAL</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="n">UNIVERSAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">EMPTY</span>
+        <span class="k">return</span> <span class="o">~</span><span class="n">base</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span>
+
+
+<span class="k">class</span> <span class="nc">blanket_rule</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>  <span class="c1"># noqa: used as a decorator, so should be lowercase</span>
+    <span class="sd">&quot;&quot;&quot;A decorator for rules that don&#39;t depend on objects.</span>
+
+<span class="sd">    This decorator provides a shorthand method for defining rules</span>
+<span class="sd">    that depend only on the user. Decorate a function that takes a</span>
+<span class="sd">    :class:`~django.contrib.auth.models.User` object and returns a</span>
+<span class="sd">    boolean, and it will be turned into a :class:`Rule` instance,</span>
+<span class="sd">    for example::</span>
+
+<span class="sd">        @blanket_rule</span>
+<span class="sd">        def is_anonymous(user):</span>
+<span class="sd">            return user.is_anonymous</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_func</span><span class="p">,</span> <span class="n">repr_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule_func</span> <span class="o">=</span> <span class="n">rule_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repr</span> <span class="o">=</span> <span class="n">repr_string</span> <span class="ow">or</span> <span class="n">rule_func</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">repr</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">UNIVERSAL</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_func</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">else</span> <span class="n">EMPTY</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_func</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="always_allow"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.always_allow">[docs]</a><span class="nd">@blanket_rule</span>
+<span class="k">def</span> <span class="nf">always_allow</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="always_deny"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.always_deny">[docs]</a><span class="nd">@blanket_rule</span>
+<span class="k">def</span> <span class="nf">always_deny</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="is_authenticated"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.is_authenticated">[docs]</a><span class="nd">@blanket_rule</span>
+<span class="k">def</span> <span class="nf">is_authenticated</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span></div>
+
+
+<div class="viewcode-block" id="is_superuser"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.is_superuser">[docs]</a><span class="nd">@blanket_rule</span>
+<span class="k">def</span> <span class="nf">is_superuser</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span></div>
+
+
+<div class="viewcode-block" id="is_staff"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.is_staff">[docs]</a><span class="nd">@blanket_rule</span>
+<span class="k">def</span> <span class="nf">is_staff</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="n">is_staff</span></div>
+
+
+<div class="viewcode-block" id="is_active"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.is_active">[docs]</a><span class="nd">@blanket_rule</span>
+<span class="k">def</span> <span class="nf">is_active</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="n">is_active</span></div>
+
+
+<div class="viewcode-block" id="R"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.R">[docs]</a><span class="k">class</span> <span class="nc">R</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rules that allow access to some objects but not others.</span>
+
+<span class="sd">    ``R`` takes a set of field lookups as keyword arguments.</span>
+
+<span class="sd">    Each argument is a model attribute. Foreign keys can be traversed</span>
+<span class="sd">    using double underscores, as in :class:`~django.db.models.Q`</span>
+<span class="sd">    objects.</span>
+
+<span class="sd">    The value assigned to each argument can be:</span>
+
+<span class="sd">    - A value to match.</span>
+<span class="sd">    - A function that accepts a user, and returns a value to match.</span>
+<span class="sd">    - If the argument refers to a foreign key or many-to-many</span>
+<span class="sd">      relationship, another :class:`~bridgekeeper.rules.Rule` object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;R(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">=</span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># This loop exits early, returning False, if any argument</span>
+        <span class="c1"># doesn&#39;t match.</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="c1"># Find the appropriate LHS on this object, traversing</span>
+            <span class="c1"># foreign keys if necessary.</span>
+            <span class="n">lhs</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="k">for</span> <span class="n">key_fragment</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">lhs</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="n">key_fragment</span><span class="p">,)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">ForeignObjectRel</span><span class="p">):</span>
+                    <span class="n">attr</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">get_accessor_name</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">attr</span> <span class="o">=</span> <span class="n">key_fragment</span>
+                <span class="n">lhs</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+
+            <span class="c1"># Compare it against the RHS.</span>
+            <span class="c1"># Note that the LHS will usually be a value, but in the case</span>
+            <span class="c1"># of a ManyToMany or the &#39;other side&#39; of a ForeignKey it</span>
+            <span class="c1"># will be a RelatedManager. In this case, we need to check</span>
+            <span class="c1"># if there is at least one model that matches the RHS.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Rule</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">Manager</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">lhs</span><span class="o">.</span><span class="n">all</span><span class="p">())</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">lhs</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">resolved_value</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">Manager</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">resolved_value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lhs</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">lhs</span> <span class="o">!=</span> <span class="n">resolved_value</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Woohoo, everything matches!</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="n">accumulated_q</span> <span class="o">=</span> <span class="n">Q</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># TODO: check lookups are not being used</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Rule</span><span class="p">):</span>
+                <span class="n">child_q_obj</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+                <span class="n">accumulated_q</span> <span class="o">&amp;=</span> <span class="n">add_prefix</span><span class="p">(</span><span class="n">child_q_obj</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">resolved_value</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span>
+                <span class="n">accumulated_q</span> <span class="o">&amp;=</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">resolved_value</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">accumulated_q</span></div>
+
+
+<div class="viewcode-block" id="Attribute"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.Attribute">[docs]</a><span class="k">class</span> <span class="nc">Attribute</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rule class that checks the value of an instance attribute.</span>
+
+<span class="sd">    .. deprecated:: 0.9</span>
+
+<span class="sd">        Use :class:`~bridgekeeper.rules.R` objects instead.</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            # old</span>
+<span class="sd">            Attribute(&#39;colour&#39;, matches=&#39;blue&#39;)</span>
+<span class="sd">            Attribute(&#39;tenant&#39;, lambda user: user.tenant)</span>
+
+<span class="sd">            # new</span>
+<span class="sd">            R(colour=&#39;blue&#39;)</span>
+<span class="sd">            R(tenant=lambda user: user.tenant)</span>
+
+<span class="sd">    This rule is satisfied by model instances where the attribute</span>
+<span class="sd">    given in ``attr`` matches the value given in ``matches``.</span>
+
+<span class="sd">    :param attr: An attribute name to match against on the</span>
+<span class="sd">        model instance.</span>
+<span class="sd">    :type attr: str</span>
+<span class="sd">    :param value: The value to match against, or a callable that takes</span>
+<span class="sd">        a user and returns a value to match against.</span>
+
+<span class="sd">    For instance, if you had a model class ``Widget`` with an attribute</span>
+<span class="sd">    ``colour`` that was either ``&#39;red&#39;``, ``&#39;green&#39;`` or ``&#39;blue&#39;``,</span>
+<span class="sd">    you could limit access to blue widgets with the following::</span>
+
+<span class="sd">        blue_widgets_only = Attribute(&#39;colour&#39;, matches=&#39;blue&#39;)</span>
+
+<span class="sd">    Restricting access in a multi-tenanted application by matching a</span>
+<span class="sd">    model&#39;s ``tenant`` to the user&#39;s might look like this::</span>
+
+<span class="sd">        applications_by_tenant = Attribute(&#39;tenant&#39;,</span>
+<span class="sd">                                           lambda user: user.tenant)</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        This rule uses Python equality (``==``) when checking a</span>
+<span class="sd">        retrieved Python object, but performs an equality check on the</span>
+<span class="sd">        database when filtering a QuerySet. Avoid using it with</span>
+<span class="sd">        imprecise types (e.g. floats), and ensure that you are using the</span>
+<span class="sd">        correct Python type (e.g. :class:`decimal.Decimal` for decimals</span>
+<span class="sd">        rather than floats or strings), to prevent inconsistencies.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">matches</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attr</span> <span class="o">=</span> <span class="n">attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matches</span> <span class="o">=</span> <span class="n">matches</span>
+
+    <span class="k">def</span> <span class="nf">get_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Attribute(</span><span class="si">{!r}</span><span class="s2">, matches=</span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">attr</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_match</span><span class="p">(</span><span class="n">user</span><span class="p">)})</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attr</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_match</span><span class="p">(</span><span class="n">user</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Is"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.Is">[docs]</a><span class="k">class</span> <span class="nc">Is</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rule class that checks the identity of the instance.</span>
+
+<span class="sd">    This rule is satisfied only by a the provided model instance.</span>
+
+<span class="sd">    :param instance: The instance to match against, or a callable that</span>
+<span class="sd">        takes a user and returns a value to match against.</span>
+
+<span class="sd">    For instance, if you only wanted a user to be able to update their</span>
+<span class="sd">    own profile::</span>
+
+<span class="sd">        own_profile = Is(lambda user: user.profile)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
+
+    <span class="k">def</span> <span class="nf">get_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Is(</span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Q</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">instance</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">user</span><span class="p">)</span></div>
+
+
+<span class="c1">#: This rule is satisfied by the user object itself.</span>
+<span class="n">current_user</span> <span class="o">=</span> <span class="n">Is</span><span class="p">(</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="In"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.In">[docs]</a><span class="k">class</span> <span class="nc">In</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rule class that checks the instance is a member of a collection.</span>
+
+<span class="sd">    This rule is satisfied only by model instances that are members of</span>
+<span class="sd">    the provided collection.</span>
+
+<span class="sd">    :param collection: The collection to match against, or a callable</span>
+<span class="sd">        that takes a user and returns a value to match against.</span>
+
+<span class="sd">    For instance, if you only wanted to match groups a user is in::</span>
+
+<span class="sd">        own_profile = Is(lambda user: user.profile)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
+
+    <span class="k">def</span> <span class="nf">get_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;In(</span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">QuerySet</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="n">collection</span><span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="s2">&quot;pk&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">Q</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">pk</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">QuerySet</span><span class="p">):</span>
+            <span class="c1"># If we have a queryset, the rule passes if the instance is</span>
+            <span class="c1"># of the same model, and the pk is present in the qs</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">collection</span><span class="o">.</span><span class="n">model</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="n">collection</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">collection</span></div>
+
+
+<span class="c1">#: This rule is satisfied by any group the user is in.</span>
+<span class="n">in_current_groups</span> <span class="o">=</span> <span class="n">In</span><span class="p">(</span><span class="k">lambda</span> <span class="n">user</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+
+<span class="c1"># from https://groups.google.com/forum/#!msg/django-developers/jEkCdzGnzRE/6lJQV4AqCwAJ</span>
+
+
+<span class="k">def</span> <span class="nf">add_prefix</span><span class="p">(</span><span class="n">q_obj</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Q</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">(</span>
+            <span class="n">add_prefix</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
+            <span class="k">else</span> <span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;__&quot;</span> <span class="o">+</span> <span class="n">child</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">child</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">q_obj</span><span class="o">.</span><span class="n">children</span>
+        <span class="p">),</span>
+        <span class="n">_connector</span><span class="o">=</span><span class="n">q_obj</span><span class="o">.</span><span class="n">connector</span><span class="p">,</span>
+        <span class="n">_negated</span><span class="o">=</span><span class="n">q_obj</span><span class="o">.</span><span class="n">negated</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="Relation"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.Relation">[docs]</a><span class="k">class</span> <span class="nc">Relation</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check that a rule applies to a ForeignKey.</span>
+
+<span class="sd">    .. deprecated:: 0.9</span>
+
+<span class="sd">        Use :class:`~bridgekeeper.rules.R` objects instead.</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            # old</span>
+<span class="sd">            Relation(&#39;applicant&#39;, perms[&#39;foo.view_applicant&#39;])</span>
+
+<span class="sd">            # new</span>
+<span class="sd">            R(applicant=perms[&#39;foo.view_applicant&#39;])</span>
+
+<span class="sd">    :param attr: Name of a foreign key attribute to check.</span>
+<span class="sd">    :type attr: str</span>
+<span class="sd">    :param rule: Rule to check the foreign key against.</span>
+<span class="sd">    :type rule: Rule</span>
+
+<span class="sd">    For example, given ``Applicant`` and ``Application`` models,</span>
+<span class="sd">    to allow access to all applications to anyone who has permission to</span>
+<span class="sd">    access the related applicant::</span>
+
+<span class="sd">        perms[&#39;foo.view_application&#39;] = Relation(</span>
+<span class="sd">            &#39;applicant&#39;, perms[&#39;foo.view_applicant&#39;])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">rule</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attr</span> <span class="o">=</span> <span class="n">attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule</span> <span class="o">=</span> <span class="n">rule</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Relation(</span><span class="si">{!r}</span><span class="s2">, </span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="n">related_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">related_q</span> <span class="ow">is</span> <span class="n">UNIVERSAL</span> <span class="ow">or</span> <span class="n">related_q</span> <span class="ow">is</span> <span class="n">EMPTY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">related_q</span>
+        <span class="k">return</span> <span class="n">add_prefix</span><span class="p">(</span><span class="n">related_q</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attr</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ManyRelation"><a class="viewcode-back" href="../../api/rules.html#bridgekeeper.rules.ManyRelation">[docs]</a><span class="k">class</span> <span class="nc">ManyRelation</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check that a rule applies to a many-object relationship.</span>
+
+<span class="sd">    .. deprecated:: 0.9</span>
+
+<span class="sd">        Use :class:`~bridgekeeper.rules.R` objects instead.</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            # old</span>
+<span class="sd">            ManyRelation(&#39;agency&#39;, Is(lambda user: user.agency))</span>
+
+<span class="sd">            # new</span>
+<span class="sd">            R(agency=lambda user: user.agency)</span>
+
+<span class="sd">    This can be used in a similar fashion to :class:`Relation`, but</span>
+<span class="sd">    across a :class:`~django.db.models.ManyToManyField`, or the remote</span>
+<span class="sd">    end of a :class:`~django.db.models.ForeignKey`.</span>
+
+<span class="sd">    :param query_attr: Name of a many-object relationship to check. This</span>
+<span class="sd">        This is the name that you</span>
+<span class="sd">        use when filtering this relationship using ``.filter()``.</span>
+<span class="sd">        If you are on the side of the relationship where the field</span>
+<span class="sd">        is defined, this is typically the lowercased model name (e.g.</span>
+<span class="sd">        ``mymodel`` on its own, *not* ``mymodel_set``), unless you&#39;ve</span>
+<span class="sd">        set :attr:`~django.db.models.ForeignKey.related_name` or</span>
+<span class="sd">        :attr:`~django.db.models.ForeignKey.related_query_name`.</span>
+<span class="sd">    :type query_attr: str</span>
+<span class="sd">    :param rule: Rule to check the foreign object against.</span>
+<span class="sd">    :type rule: Rule</span>
+
+<span class="sd">    For example, given ``Agency`` and ``Customer`` models,</span>
+<span class="sd">    to allow agency users access only to customers that have a</span>
+<span class="sd">    relationship with their agency::</span>
+
+<span class="sd">        perms[&#39;foo.view_customer&#39;] = ManyRelation(</span>
+<span class="sd">            &#39;agency&#39;, Is(lambda user: user.agency))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_attr</span><span class="p">,</span> <span class="n">rule</span><span class="p">):</span>
+        <span class="c1"># TODO: add support for &#39;all&#39; as well as &#39;exists&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query_attr</span> <span class="o">=</span> <span class="n">query_attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule</span> <span class="o">=</span> <span class="n">rule</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;ManyRelation(</span><span class="si">{!r}</span><span class="s2">, </span><span class="si">{!r}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="c1"># Unfortunately you can&#39;t use Q objects on a relation, only proper</span>
+        <span class="c1"># QuerySets.</span>
+        <span class="n">related_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">related_q</span> <span class="ow">is</span> <span class="n">UNIVERSAL</span> <span class="ow">or</span> <span class="n">related_q</span> <span class="ow">is</span> <span class="n">EMPTY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">related_q</span>
+        <span class="k">return</span> <span class="n">add_prefix</span><span class="p">(</span><span class="n">related_q</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_attr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">related_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">related_q</span> <span class="ow">is</span> <span class="n">UNIVERSAL</span> <span class="ow">or</span> <span class="n">related_q</span> <span class="ow">is</span> <span class="n">EMPTY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">related_q</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query_attr</span><span class="p">,)</span><span class="o">.</span><span class="n">get_accessor_name</span><span class="p">()</span>
+        <span class="n">related_manager</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">related_manager</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">related_q</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
