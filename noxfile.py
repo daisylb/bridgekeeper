@@ -5,9 +5,11 @@ nox.options.reuse_existing_virtualenvs = True
 nox.options.error_on_external_run = True
 
 
-@nox.session(python=('3.5', '3.6', '3.7'))
-@nox.parametrize('django', ('2.0', '2.1', '2.2'))
+@nox.session(python=('3.5', '3.6', '3.7', '3.8'))
+@nox.parametrize('django', ('2.2', '3.0'))
 def tests(session, django):
+    if django == '3.0' and session.python == '3.5':
+        session.skip()
     session.install('poetry')
     session.install(f'django>={django},<{django}.999')
     session.install('factory-boy>=2.9.2,<2.9.99999')
