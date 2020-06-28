@@ -1,5 +1,4 @@
 from . import perms as global_permission_map
-from .rules import EMPTY
 
 
 class RulePermissionBackend:

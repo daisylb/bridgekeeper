@@ -1,5 +1,8 @@
-from django.core.exceptions import (ImproperlyConfigured, PermissionDenied,
-                                    SuspiciousOperation)
+from django.core.exceptions import (
+    ImproperlyConfigured,
+    PermissionDenied,
+    SuspiciousOperation,
+)
 
 from . import perms as global_permission_map
 
@@ -13,8 +16,9 @@ class BasePermissionMixin:
         except AttributeError:
             raise ImproperlyConfigured("permission_name is not set")
         except KeyError:
-            raise ImproperlyConfigured(f"permission {self.permission_name} "
-                                       "does not exist")
+            raise ImproperlyConfigured(
+                f"permission {self.permission_name} " "does not exist"
+            )
 
 
 class QuerySetPermissionMixin(BasePermissionMixin):
@@ -96,6 +100,7 @@ class CreatePermissionGuardMixin(BasePermissionMixin):
 
     def form_valid(self, form):
         if not self.rule.check(self.request.user, form.instance):
-            raise SuspiciousOperation("Tried to create an instance which "
-                                      "permissions do not allow")
+            raise SuspiciousOperation(
+                "Tried to create an instance which " "permissions do not allow"
+            )
         return super().form_valid(form)

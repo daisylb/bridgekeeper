@@ -15,49 +15,101 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Branch',
+            name="Branch",
             fields=[
-                ('id', models.AutoField(auto_created=True,
-                                        primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('id', models.AutoField(auto_created=True,
-                                        primary_key=True, serialize=False, verbose_name='ID')),
-                ('role', models.CharField(choices=[
-                 ('apprentice', 'Apprentice Shrubber'), ('shrubber', 'Shrubber')], max_length=16)),
-                ('branch', models.ForeignKey(
-                    on_delete=django.db.models.deletion.PROTECT, to='shrubberies.Branch')),
-                ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "role",
+                    models.CharField(
+                        choices=[
+                            ("apprentice", "Apprentice Shrubber"),
+                            ("shrubber", "Shrubber"),
+                        ],
+                        max_length=16,
+                    ),
+                ),
+                (
+                    "branch",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="shrubberies.Branch",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Shrubbery',
+            name="Shrubbery",
             fields=[
-                ('id', models.AutoField(auto_created=True,
-                                        primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('price', models.DecimalField(decimal_places=2, max_digits=5)),
-                ('branch', models.ForeignKey(
-                    on_delete=django.db.models.deletion.PROTECT, to='shrubberies.Branch')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("price", models.DecimalField(decimal_places=2, max_digits=5)),
+                (
+                    "branch",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="shrubberies.Branch",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Store',
+            name="Store",
             fields=[
-                ('id', models.AutoField(auto_created=True,
-                                        primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
             ],
         ),
         migrations.AddField(
-            model_name='branch',
-            name='store',
+            model_name="branch",
+            name="store",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to='shrubberies.Store'),
+                on_delete=django.db.models.deletion.CASCADE, to="shrubberies.Store"
+            ),
         ),
     ]

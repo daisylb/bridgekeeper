@@ -171,8 +171,7 @@ class And(BinaryCompositeRule):
         return left & right
 
     def check(self, user, instance=None):
-        return (self.left.check(user, instance) and
-                self.right.check(user, instance))
+        return self.left.check(user, instance) and self.right.check(user, instance)
 
 
 class Or(BinaryCompositeRule):
@@ -201,8 +200,7 @@ class Or(BinaryCompositeRule):
         return left | right
 
     def check(self, user, instance=None):
-        return (self.left.check(user, instance) or
-                self.right.check(user, instance))
+        return self.left.check(user, instance) or self.right.check(user, instance)
 
 
 class Not(Rule):
@@ -308,9 +306,7 @@ class R(Rule):
 
     def __repr__(self):
         return "R({})".format(
-            ", ".join(
-                "{}={!r}".format(k, v) for k, v in self.kwargs.items()
-            )
+            ", ".join("{}={!r}".format(k, v) for k, v in self.kwargs.items())
         )
 
     def check(self, user, instance=None):
@@ -324,10 +320,8 @@ class R(Rule):
             # Find the appropriate LHS on this object, traversing
             # foreign keys if necessary.
             lhs = instance
-            for key_fragment in key.split('__'):
-                field = lhs.__class__._meta.get_field(
-                    key_fragment,
-                )
+            for key_fragment in key.split("__"):
+                field = lhs.__class__._meta.get_field(key_fragment,)
                 if isinstance(field, ForeignObjectRel):
                     attr = field.get_accessor_name()
                 else:
@@ -502,7 +496,7 @@ class In(Rule):
     def query(self, user):
         collection = self.get_collection(user)
         if isinstance(collection, QuerySet):
-            return Q(pk__in=collection.values_list('pk'))
+            return Q(pk__in=collection.values_list("pk"))
         return Q(pk__in=[x.pk for x in collection])
 
     def check(self, user, instance=None):
@@ -532,7 +526,7 @@ def add_prefix(q_obj, prefix):
         *(
             add_prefix(child, prefix)
             if isinstance(child, Q)
-            else (prefix + '__' + child[0], child[1])
+            else (prefix + "__" + child[0], child[1])
             for child in q_obj.children
         ),
         _connector=q_obj.connector,
@@ -573,8 +567,7 @@ class Relation(Rule):
         self.rule = rule
 
     def __repr__(self):
-        return "Relation({!r}, {!r})".format(
-            self.attr, self.rule)
+        return "Relation({!r}, {!r})".format(self.attr, self.rule)
 
     def query(self, user):
         related_q = self.rule.query(user)
@@ -633,8 +626,7 @@ class ManyRelation(Rule):
         self.rule = rule
 
     def __repr__(self):
-        return "ManyRelation({!r}, {!r})".format(
-            self.query_attr, self.rule)
+        return "ManyRelation({!r}, {!r})".format(self.query_attr, self.rule)
 
     def query(self, user):
         # Unfortunately you can't use Q objects on a relation, only proper
@@ -650,8 +642,6 @@ class ManyRelation(Rule):
         related_q = self.rule.query(user)
         if related_q is UNIVERSAL or related_q is EMPTY:
             return related_q
-        attr = instance.__class__._meta.get_field(
-            self.query_attr,
-        ).get_accessor_name()
+        attr = instance.__class__._meta.get_field(self.query_attr,).get_accessor_name()
         related_manager = getattr(instance, attr)
         return related_manager.filter(related_q).exists()

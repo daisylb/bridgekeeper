@@ -11,8 +11,7 @@ def test_relation_to_user():
     u2 = UserFactory()
     s1 = ShrubberyFactory(branch=u1.profile.branch)
     s2 = ShrubberyFactory(branch=u2.profile.branch)
-    belongs_to_branch = Relation(
-        'branch', Is(lambda u: u.profile.branch))
+    belongs_to_branch = Relation("branch", Is(lambda u: u.profile.branch))
 
     assert belongs_to_branch.check(u1, s1)
     assert belongs_to_branch.check(u2, s2)
@@ -32,6 +31,5 @@ def test_relation_to_user():
 @pytest.mark.django_db
 def test_relation_never_global():
     user = UserFactory()
-    belongs_to_branch = Relation(
-        'branch', Is(lambda u: u.profile.branch))
+    belongs_to_branch = Relation("branch", Is(lambda u: u.profile.branch))
     assert not belongs_to_branch.check(user)

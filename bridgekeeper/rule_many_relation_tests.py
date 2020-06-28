@@ -11,8 +11,7 @@ def test_many_relation_to_user():
     s2 = StoreFactory()
     u1 = UserFactory(profile__branch__store=s1)
     u2 = UserFactory(profile__branch__store=s2)
-    user_branch_in_store = ManyRelation(
-        'branch', Is(lambda u: u.profile.branch))
+    user_branch_in_store = ManyRelation("branch", Is(lambda u: u.profile.branch))
 
     assert user_branch_in_store.check(u1, s1)
     assert user_branch_in_store.check(u2, s2)
@@ -32,6 +31,5 @@ def test_many_relation_to_user():
 @pytest.mark.django_db
 def test_many_relation_never_global():
     user = UserFactory()
-    user_branch_in_store = ManyRelation(
-        'branch', Is(lambda u: u.profile.branch))
+    user_branch_in_store = ManyRelation("branch", Is(lambda u: u.profile.branch))
     assert not user_branch_in_store.check(user)

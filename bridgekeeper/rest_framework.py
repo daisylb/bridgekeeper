@@ -41,21 +41,24 @@ class BridgekeeperRESTMixin:
         :returns: Name of an action.
         :rtype: str
         """
-        if request.method in ('GET', 'OPTIONS', 'HEAD'):
-            return 'view'
-        if request.method == 'POST':
-            return 'add'
-        if request.method in ('PUT', 'PATCH'):
-            return 'change'
-        if request.method == 'DELETE':
-            return 'delete'
-        raise ValueError("{method} isn't a HTTP method that "
-                         "RulePermissions knows about, so it's unable to "
-                         "determine the correct permission name for this "
-                         "request. Subclass RulePermissions and override "
-                         "get_action or get_permission_name to provide the "
-                         "correct permission name for requests like this."
-                         .format(method=request.method))
+        if request.method in ("GET", "OPTIONS", "HEAD"):
+            return "view"
+        if request.method == "POST":
+            return "add"
+        if request.method in ("PUT", "PATCH"):
+            return "change"
+        if request.method == "DELETE":
+            return "delete"
+        raise ValueError(
+            "{method} isn't a HTTP method that "
+            "RulePermissions knows about, so it's unable to "
+            "determine the correct permission name for this "
+            "request. Subclass RulePermissions and override "
+            "get_action or get_permission_name to provide the "
+            "correct permission name for requests like this.".format(
+                method=request.method
+            )
+        )
 
     def get_operand_name(self, request, view, obj=None):
         """Return the name of the thing that a request is acting on.
@@ -74,26 +77,28 @@ class BridgekeeperRESTMixin:
         if isinstance(obj, Model):
             model = obj.__class__
         elif obj is not None:
-            raise TypeError("{obj!r} is not a model instance, so "
-                            "RulePermissions is incapable of determining "
-                            "the correct permission name for it. Subclass "
-                            "RulePermissions and override get_operand_name "
-                            "or get_permission_name to provide the correct "
-                            "permission name for objects of this type."
-                            .format(obj=obj))
-        elif hasattr(view, 'get_queryset') and callable(view.get_queryset):
+            raise TypeError(
+                "{obj!r} is not a model instance, so "
+                "RulePermissions is incapable of determining "
+                "the correct permission name for it. Subclass "
+                "RulePermissions and override get_operand_name "
+                "or get_permission_name to provide the correct "
+                "permission name for objects of this type.".format(obj=obj)
+            )
+        elif hasattr(view, "get_queryset") and callable(view.get_queryset):
             model = view.get_queryset().model
-        elif hasattr(view, 'queryset') and isinstance(view.queryset, QuerySet):
+        elif hasattr(view, "queryset") and isinstance(view.queryset, QuerySet):
             model = view.queryset.model
         else:
-            raise ValueError("{view!r} does not provide a 'queryset' "
-                             "attribute or a 'get_queryset()' method, so "
-                             "RulePermissions is incapable of determining "
-                             "the correct permission name for it. Subclass "
-                             "RulePermissions and override get_operand_name "
-                             "or get_permission_name to provide the correct "
-                             "permission name for views like this."
-                             .format(view=view))
+            raise ValueError(
+                "{view!r} does not provide a 'queryset' "
+                "attribute or a 'get_queryset()' method, so "
+                "RulePermissions is incapable of determining "
+                "the correct permission name for it. Subclass "
+                "RulePermissions and override get_operand_name "
+                "or get_permission_name to provide the correct "
+                "permission name for views like this.".format(view=view)
+            )
 
         return (model._meta.app_label, model._meta.model_name)
 
@@ -116,7 +121,8 @@ class BridgekeeperRESTMixin:
         action = self.get_action(request, view, obj)
         app_label, operand_name = self.get_operand_name(request, view, obj)
         return "{app_label}.{action}_{operand_name}".format(
-            action=action, app_label=app_label, operand_name=operand_name)
+            action=action, app_label=app_label, operand_name=operand_name
+        )
 
     def get_permission(self, request, view, obj=None):
         """Return a rule object to check against for this request.
@@ -181,5 +187,4 @@ class RuleFilter(BridgekeeperRESTMixin, BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         if self.skip_permission_checks(request, view):
             return queryset
-        return self.get_permission(request, view).filter(
-            request.user, queryset)
+        return self.get_permission(request, view).filter(request.user, queryset)

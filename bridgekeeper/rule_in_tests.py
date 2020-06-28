@@ -37,15 +37,14 @@ def test_is_never_global():
 @pytest.mark.django_db
 def test_in_current_groups():
     user = UserFactory()
-    g_in_1 = Group.objects.create(name='g_in_1')
-    g_in_2 = Group.objects.create(name='g_in_2')
-    g_out_1 = Group.objects.create(name='g_out_1')
-    Group.objects.create(name='g_out_2')
+    g_in_1 = Group.objects.create(name="g_in_1")
+    g_in_2 = Group.objects.create(name="g_in_2")
+    g_out_1 = Group.objects.create(name="g_out_1")
+    Group.objects.create(name="g_out_2")
     user.groups.set((g_in_1, g_in_2))
     user.save()
 
     assert in_current_groups.check(user, g_in_1)
     assert not in_current_groups.check(user, g_out_1)
 
-    assert set(in_current_groups.filter(
-        user, Group.objects.all())) == {g_in_1, g_in_2}
+    assert set(in_current_groups.filter(user, Group.objects.all())) == {g_in_1, g_in_2}

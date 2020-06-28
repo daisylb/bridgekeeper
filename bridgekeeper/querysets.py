@@ -28,8 +28,10 @@ class PermissionQuerySet(QuerySet):
         try:
             rule = self.__permission_map[permission]
         except KeyError:
-            raise ValueError("Permission {} does not exist, or is not "
-                             "registered in Bridgekeeper".format(permission))
+            raise ValueError(
+                "Permission {} does not exist, or is not "
+                "registered in Bridgekeeper".format(permission)
+            )
         return rule.filter(user, self)
 
 
@@ -43,4 +45,5 @@ class PermissionQuerySet(QuerySet):
 #:
 #:         objects = PermissionManager()
 PermissionManager = Manager.from_queryset(
-    PermissionQuerySet, class_name="PermissionManager")
+    PermissionQuerySet, class_name="PermissionManager"
+)
