@@ -1,20 +1,27 @@
 name: Documentation
-on: [push]
+on:
+  release:
+    types:
+    - created
 jobs:
-  build-docs:
-    name: Build documentation
+  docs:
+    name: Documentation builds
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
-    - uses: docker://thekevjames/nox
-      with:
-        entrypoint: nox
-        args: -s docs
-    - uses: actions/gcloud/auth@master
-      env:
-        GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
-    - uses: vsoch/gcloud-actions/gsutil@07cfbb050596be267fa37be76c76b7765d82a207
-      with:
-        args: -m rsync -rd docs/_build/html gs://bridgekeeper-docs/${{ github.ref }}
+      - name: Check out
+        uses: actions/checkout@v1
+      - name: Pip cache
+        uses: actions/cache@v1
+        with:
+            path: ~/.cache/pip
+            key: ${{ runner.os }}-pip-1
+      - name: Set up Nox
+        uses: excitedleigh/setup-nox@0.1.0
+      - name: Build docs
+        run: nox -s docs
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          cname: bridgekeeper.leigh.party

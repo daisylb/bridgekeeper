@@ -23,11 +23,9 @@ def tests(session, django):
     session.run("pytest")
 
 
-@nox.session(python="3.7")
+@nox.session(python="3.8")
 def docs(session):
     session.install("poetry")
-    session.install("django")
-    session.install("sphinx==1.6.5", "sphinx-rtd-theme==0.2.4")
     session.run(
         "poetry",
         "install",

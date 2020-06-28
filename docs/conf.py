@@ -60,7 +60,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Bridgekeeper"
-copyright = "2017, Learning Information Systems Pty Ltd, A. Leigh Brenecki, and contributors"  # noqa
+copyright = "2017–2020, Learning Information Systems Pty Ltd, Leigh Brenecki, and contributors"  # noqa
 author = "Leigh Brenecki and contributors"
 
 # The version info for the project you're documenting, acts as replacement for
