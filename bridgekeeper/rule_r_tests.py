@@ -106,6 +106,36 @@ def test_nested_rule_object():
     assert shrubbery_nomatch not in qs
 
 
+def test_nested_one_to_many_rule_object():
+    user = UserFactory()
+
+    shrubbery_match = ShrubberyFactory(branch=user.profile.branch)
+    shrubbery_nomatch = ShrubberyFactory()
+    branch_profile_check_r = R(branch=R(profile=R(user=lambda user: user)))
+
+    assert branch_profile_check_r.check(user, shrubbery_match)
+    assert not branch_profile_check_r.check(user, shrubbery_nomatch)
+
+    qs = branch_profile_check_r.filter(user, Shrubbery.objects.all())
+    assert shrubbery_match in qs
+    assert shrubbery_nomatch not in qs
+
+
+def test_unnested_one_to_many_rule_object():
+    user = UserFactory()
+
+    shrubbery_match = ShrubberyFactory(branch=user.profile.branch)
+    shrubbery_nomatch = ShrubberyFactory()
+    branch_profile_check_r = R(branch__profile__user=lambda user: user)
+
+    assert branch_profile_check_r.check(user, shrubbery_match)
+    assert not branch_profile_check_r.check(user, shrubbery_nomatch)
+
+    qs = branch_profile_check_r.filter(user, Shrubbery.objects.all())
+    assert shrubbery_match in qs
+    assert shrubbery_nomatch not in qs
+
+
 def test_many_relation_to_user():
     s1 = StoreFactory()
     s2 = StoreFactory()

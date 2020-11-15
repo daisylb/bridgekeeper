@@ -320,7 +320,15 @@ class R(Rule):
             # Find the appropriate LHS on this object, traversing
             # foreign keys if necessary.
             lhs = instance
-            for key_fragment in key.split("__"):
+            fragments = key.split("__")
+            for i, key_fragment in enumerate(fragments):
+                # Catch a many-to-many or many-to-one traversal and split it
+                # across multiple Rules
+                if not hasattr(lhs.__class__, "_meta"):
+                    new_kwargs = {"__".join(fragments[i:]): value}
+                    value = R(**new_kwargs)
+                    break
+
                 field = lhs.__class__._meta.get_field(key_fragment,)
                 if isinstance(field, ForeignObjectRel):
                     attr = field.get_accessor_name()
