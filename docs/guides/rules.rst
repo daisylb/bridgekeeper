@@ -5,15 +5,14 @@ In Bridgekeeper, a **rule** is something that is given a user and a resource, an
 
 A Bridgekeeper **permission** consists of a name, usually conforming to Django permission name conventions e.g. ``shrubberies.change_shrubbery``, and a rule. Permissions are created by assigning a rule instance to a name in :data:`bridgekeeper.perms`, which acts like a dictionary::
 
-    from bridgekeeper.rules import Attribute, is_staff
+    from bridgekeeper.rules import R, is_staff
     from bridgekeeper import perms
 
     perms['shrubberies.change_shrubbery'] = is_staff
 
 The :mod:`~bridgekeeper.rules` module provides a range of pre-made rule instances as well as rule classes you can instantiate, as shown above. You can also combine rules using the ``&`` (and), ``|`` (or), and ``~`` (not) operators::
 
-    perms['shrubberies.view_shrubbery'] = is_staff | Attribute(
-        'company', lambda user: user.company)
+    perms['shrubberies.view_shrubbery'] = is_staff | R(company=lambda user: user.company)
 
 Finally, if none of the built-in rules do what you want, you can subclass :class:`~bridgekeeper.rules.Rule` yourself and write your own.
 
