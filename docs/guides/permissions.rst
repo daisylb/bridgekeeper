@@ -47,9 +47,7 @@ When you check permissions like this without supplying an instance, Bridgekeeper
 
 As an example of this, let's say that the ``shrubberies.view_shrubbery`` permission was defined to allow staff users access to all shrubberies, and everyone else access to shrubberies in their own branch::
 
-    perms['shrubberies.view_shrubbery'] = is_staff | Attribute(
-        'branch', lambda user: user.profile.branch,
-    )
+    perms['shrubberies.view_shrubbery'] = is_staff | R(branch=lambda user: user.profile.branch)
 
 In this case, the check would return ``True`` for a staff user, since they will always have access to every possible shrubbery. It will return ``False`` for a regular user, even if every shrubbery currently in the database belongs to their branch, because it is possible for a shrubbery to be created that belongs to a different branch, which they would then be blocked from editing.
 
@@ -64,9 +62,7 @@ This check will return ``True`` if and only if the user could possibly have that
 
 As an example of this, let's say that the ``shrubberies.view_shrubbery`` permission was defined to allow only shrubbers to edit shrubberies inside their own branch, using the ``is_shrubber`` rule we created in the :ref:`tutorial-blanket` section of the tutorial and combining it with an :class:`~bridgekeeper.rules.Attribute` check::
 
-    perms['shrubberies.view_shrubbery'] = is_shrubber & Attribute(
-        'branch', lambda user: user.profile.branch,
-    )
+    perms['shrubberies.view_shrubbery'] = is_shrubber & R(branch=lambda user: user.profile.branch)
 
 In this case, the check will return ``False`` for a user with the ``'apprentice'`` role, because only users with the ``'shrubber'`` role can access anything. It will always return ``True`` for a shrubber, however, even if there are no shrubberies belonging to their branch currently in the database, beacuse it is possible for a shrubbery to exist that belongs to their branch, which they would then be allowed to edit.
 
