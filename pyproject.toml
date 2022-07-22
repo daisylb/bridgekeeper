@@ -13,7 +13,7 @@ python = ">=3.5"
 
 [tool.poetry.dev-dependencies]
 djangorestframework = "^3.10"
-pytest = "^5.0"
+pytest = "^6.1"
 pytest-django = "^3.5"
 pytest-pythonpath = "^0.7.3"
 prospector = "^1.1"
