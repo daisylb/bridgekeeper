@@ -12,7 +12,7 @@ readme = "README.rst"
 python = ">=3.5"
 
 [tool.poetry.dev-dependencies]
-djangorestframework = "^3.10"
+djangorestframework = "^3.12"
 pytest = "^5.0"
 pytest-django = "^3.5"
 pytest-pythonpath = "^0.7.3"
