@@ -21,7 +21,7 @@ prospector = "^1.1"
 #factory-boy = "^2.9.2"
 
 sphinx = "^3.1.1"
-sphinx-rtd-theme = "^0.5.0"
+sphinx-rtd-theme = "^1.0.0"
 [tool.isort]
 multi_line_output = 3
 include_trailing_comma = true
