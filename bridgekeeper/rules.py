@@ -481,7 +481,7 @@ class In(Rule):
 
     For instance, if you only wanted to match groups a user is in::
 
-        own_profile = Is(lambda user: user.profile)
+        in_current_groups = In(lambda user: user.groups.all())
     """
 
     def __init__(self, collection):
