@@ -5,6 +5,6 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@1.0.0
-      - uses: excitedleigh/setup-nox@0.1.0
+      - uses: actions/checkout@v4
+      - uses: excitedleigh/setup-nox@v2.1.0
       - run: nox

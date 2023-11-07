@@ -81,7 +81,7 @@ class Rule:
         Cases where this method would return ``False`` include where a
         user doesn't have the right role or subscription plan to use a
         feature at all; this method is the single-permission equivalent
-        of :ref:`has-module-perms`.
+        of has-perms.
         """
         return self.query(user) is not EMPTY
 
