@@ -13,7 +13,7 @@ If you want to use Django REST Framework and Bridgekeeper together, you'll need 
         'DEFAULT_FILTER_BACKENDS': ('bridgekeeper.rest_framework.RuleFilter',),
     }
 
-.. info::
+.. note::
 
     Bridgekeeper needs to provide both a filter backend and a permission class, because permission classes can't filter querysets on their own. Don't worry, the filter backend should work just fine alongside whichever other filter backends you're using.
 

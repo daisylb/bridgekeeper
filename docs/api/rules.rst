@@ -67,9 +67,9 @@ Rules
     .. autodata:: in_current_groups
 
     Extension Points (For Writing Your Own ``Rule`` Subclasses)
-    ----------------
+    -----------------------------------------------------------
 
-    .. class:: Rule
+    .. :noindex:class:: Rule
 
         If you want to create your own rule class, these are the methods you
         need to override.

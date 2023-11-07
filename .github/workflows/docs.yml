@@ -9,14 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
       - name: Pip cache
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
             path: ~/.cache/pip
             key: ${{ runner.os }}-pip-1
       - name: Set up Nox
-        uses: excitedleigh/setup-nox@0.1.0
+        uses: excitedleigh/setup-nox@v2.1.0
       - name: Build docs
         run: nox -s docs
       - name: Deploy
